@@ -2,15 +2,12 @@
 # compiler
 CXX = g++
 
-
-
 ####################
 ### useful paths ###
 ####################
 
 # top and current dirs
 CURRENT_DIR = $(shell pwd)
-
 
 # obj, inc and src 
 OBJ_DIR = $(CURRENT_DIR)/obj
@@ -65,7 +62,8 @@ all: $(EXES)
 	$(CXX) -o bin/$(notdir $@) $< $(CXXFLAGS) $(CXXLIBS) obj/HGC.o 
 
 
-obj/HGC.o: src/HGC.cc
+obj/HGC.o: $(SOURCES_CC)
+	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
