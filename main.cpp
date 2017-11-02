@@ -3,10 +3,13 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
+#include <fstream>
+
 
 /* ROOT */
 #include <TString.h>
 #include <TFile.h>
+#include <TChain.h>
 #include <TTree.h>
 #include <TApplication.h>
 #include <TH1.h>
@@ -30,7 +33,7 @@ const bool flagC2D = true;
 int main(int argc, char **argv){
 
     /* PARSING THE COMMAND LINE ARGUMENTS */
-    TString fName;
+    TString fFileListName;
     int opt;
     int nEvt = -1;
     
@@ -44,7 +47,7 @@ int main(int argc, char **argv){
             nEvt = atoi(optarg);
             break;
         case 'f':
-            fName = optarg;
+            fFileListName = optarg;
             break;
         case '?':
             cout << "unknown param" << endl;
@@ -55,71 +58,23 @@ int main(int argc, char **argv){
     }
     
     cout << "Options " << endl;
-    cout << "  File Name: " << fName << endl;
+    cout << "  File List Name: " << fFileListName << endl;
     cout << "  Nevts: " << nEvt << endl;
     
     /* TApplication */
     TApplication app("app", &argc, argv);
-
-    /* Open file */
-    TFile f(fName, "READ");
     
-    /* Get The Tree*/
-    TTree* t = (TTree*)f.Get("hgcalTriggerNtuplizer/HGCalTriggerNtuple");
-    
-    /* Branches */
-    // Trigger Cells
-    int tc_n;
-    vector<unsigned int> *tc_id        = 0;
-    vector<int         > *tc_subdet    = 0;
-    vector<int         > *tc_zside     = 0;
-    vector<int         > *tc_layer     = 0;
-    vector<int         > *tc_wafer     = 0;
-    vector<int         > *tc_wafertype = 0;
-    vector<int         > *tc_cell      = 0;
-    vector<unsigned int> *tc_data      = 0;
-    vector<float       > *tc_energy    = 0;
-    vector<float       > *tc_eta       = 0;
-    vector<float       > *tc_phi       = 0;
-    vector<float       > *tc_z         = 0;
-    // C2D
-    int                           cl_n          ;
-    vector<float>                 *cl_pt     = 0;
-    vector<float>                 *cl_energy = 0;
-    vector<float>                 *cl_eta    = 0;
-    vector<float>                 *cl_phi    = 0;
-    vector<int>                   *cl_layer  = 0;
-    vector<int>                   *cl_ncells = 0;
-    vector<vector<unsigned int> > *cl_cells  = 0;
+    /* get the files and fill the detector*/
+    TList *fList = new TList();
+    ifstream fFileList(fFileListName);
+    char line[1000];
+    while ( !fFileList.eof() ){
+        fFileList.getline( line, 1000 );
+        fList->Add( new TObjString( line ) );
+    }
 
-    /* Set Branch Addresses*/
-    // trigger cells
-    if( flagTCs ){
-        t->SetBranchAddress( "tc_n"        , &tc_n         );
-        t->SetBranchAddress( "tc_id"       , &tc_id        );
-        t->SetBranchAddress( "tc_subdet"   , &tc_subdet    );
-        t->SetBranchAddress( "tc_zside"    , &tc_zside     );
-        t->SetBranchAddress( "tc_layer"    , &tc_layer     );
-        t->SetBranchAddress( "tc_wafer"    , &tc_wafer     );
-        t->SetBranchAddress( "tc_wafertype", &tc_wafertype );
-        t->SetBranchAddress( "tc_cell"     , &tc_cell      );
-        t->SetBranchAddress( "tc_data"     , &tc_data      );
-        t->SetBranchAddress( "tc_energy"   , &tc_energy    );
-        t->SetBranchAddress( "tc_eta"      , &tc_eta       );
-        t->SetBranchAddress( "tc_phi"      , &tc_phi       );
-        t->SetBranchAddress( "tc_z"        , &tc_z         );
-    }
-    // C2D
-    if( flagC2D ) {
-        t->SetBranchAddress("cl_n"      , &cl_n      );
-        t->SetBranchAddress("cl_pt"     , &cl_pt     );
-        t->SetBranchAddress("cl_energy" , &cl_energy );
-        t->SetBranchAddress("cl_eta"    , &cl_eta    );
-        t->SetBranchAddress("cl_phi"    , &cl_phi    );
-        t->SetBranchAddress("cl_layer"  , &cl_layer  );
-        t->SetBranchAddress("cl_ncells" , &cl_ncells );
-        t->SetBranchAddress("cl_cells"  , &cl_cells  );
-    }
+    /* build the detector */
+    HGC detector(fList, flagTCs, flagC2D, verboseLevel);
 
     /* 1D Histograms */
     TH2D *hhLayerVsEnergy = new TH2D( "Layer vs Energy", "LayerVsEnergy", 
@@ -156,7 +111,17 @@ int main(int argc, char **argv){
     TH1D* hTCinC2Did = new TH1D("TCinC2Did", "TCinC2Did", 100000, -0.5, 99999.5);
     TH1D* hTCinC2Dwafer = new TH1D("TCinC2Dwafer", "TCinC2Dwafer", 600, -0.5, 599.5);
     TH1D* hHGCROCperC2D= new TH1D("HGCROCperC2D", "HGCROCperC2D", 20, -0.5, 19.5);
+    TH2D* hhC2DcentreVsNcells = new TH2D("C2DcentreVsNcells", "C2DcentreVsNcells", 
+                                         1000, 0, 2000,
+                                         250 , -0.5, 249.5 );
+    TH2D* hhC2Dcentres = new TH2D("C2Dcentres", "C2Dcentres", 
+                                  600, -300, 300,
+                                  600, -300, 300);
+    TH2D* hhC2DcentresEtaPhi = new TH2D("C2DcentresEtaPhi", "C2DcentresEtaPhi", 
+                                        100, 0, 5,
+                                        100, 4, 4 );
     
+
     /* Store the pointers to object you wanna plot */
     vector<histoContainerGeneric*> histos = { 
         new histoContainer<TH2D> ( hhLayerVsEnergy             , TString("layer"),        TString("energy(GeV)"), TString("colz") ),
@@ -174,62 +139,45 @@ int main(int argc, char **argv){
         new histoContainer<TH2D> ( hhC2DptVsNcells             , TString("Pt(GeV)"),      TString("#TC"), TString("colz") ),
 //        new histoContainer<TH1D> ( hTCinC2Did                  , TString("TCdetId"),      TString(""),    TString("") ), 
 //        new histoContainer<TH1D> ( hTCinC2Dwafer               , TString("TCdetWafer"),   TString(""),    TString("") )
-        new histoContainer<TH1D> ( hHGCROCperC2D               , TString("N HGCROC"),   TString(""),    TString("") )
+        new histoContainer<TH1D> ( hHGCROCperC2D               , TString("N HGCROC"),   TString(""),    TString("") ),
+//        new histoContainer<TH2D> ( hhC2DcentreVsNcells         , TString("centre(????)"),   TString("N cells"),    TString("colz") ),
+        new histoContainer<TH2D> ( hhC2Dcentres                , TString("X(cm)"),   TString("Y(cm)"),    TString("colz") ),
+        new histoContainer<TH2D> ( hhC2DcentresEtaPhi          , TString("eta"),   TString("phi"),    TString("colz") ),
     };
 
-    /* THE DETECTOR */
-    HGC detector;
 
     /* Loop Over Events */
-    unsigned tEntries = t->GetEntries();
-    nEvt = (nEvt==-1) ? tEntries : nEvt;
+    unsigned totalEvt = detector.getEvents();
+    nEvt = (nEvt==-1) ? totalEvt : nEvt;
 
     for( int ievt=0; ievt<nEvt; ievt++ ){
 
         /* Get Entry */
-        t->GetEntry( ievt );        
+        detector.getEvent( ievt );        
         if(verboseLevel >= 1)
             cout << " > Analyzing event No " << ievt << endl;
        
         
         /* looping over TCs */
-        if( flagTCs ){
-            
-            /* check internal consistency for TCs*/
-            if( verboseLevel >= 1 )
-                cout << " >> there are " << tc_n << " TCs in the event" << endl;
-            if( tc_n != (int)tc_energy->size() ){
-                cout << " !!! Error !!! " << endl
-                     << " The number of TC expected doesn't match the number stored " << endl;
-                return 0;
-            }
+        if( detector.areTCpresent() ){
+                        
+            /* get the vector */
+            vector<HGCTC> tcs;
+            detector.getTCall( tcs );
             
             /* LOOP */
-            unsigned nTC = tc_id->size();
-            for( unsigned itc=0; itc<tc_id->size(); itc++ ){
+            unsigned nTC = tcs.size();
+            for( unsigned itc=0; itc<nTC; itc++ ){
+                
                 if( verboseLevel >= 2 ) {
                     float percent = 100.*(float)itc/(float)nTC; 
                     if( itc%1000 == 0 )
                         cout << "  > " << itc << " TC processed (" << percent << "%)" << endl;
                 }
-                
-                HGCTC tc;
-                tc._id        = tc_id->at( itc )       ;
-                tc._subdet    = tc_subdet->at( itc )   ;            
-                tc._zside     = tc_zside->at( itc )    ;
-                tc._layer     = tc_layer->at( itc )    ;
-                tc._wafer     = tc_wafer->at( itc )    ;
-                tc._wafertype = tc_wafertype->at( itc );
-                tc._cell      = tc_cell->at( itc )     ;
-                tc._data      = tc_data->at( itc )     ;
-                tc._energy    = tc_energy->at( itc )   ;
-                tc._eta       = tc_eta->at( itc )      ;
-                tc._phi       = tc_phi->at( itc )      ;
-                tc._z         = tc_z->at( itc )        ;
-            
-                /* fill detector data */
-                detector.addTC( tc );
-                
+                     
+                /* get the trigger cell */
+                HGCTC tc = tcs.at(itc);
+
                 /* DEBUG */
                 if(verboseLevel >= 5){
                     cout << " >>> Energy (MipT) " << tc.getMipT() << endl;
@@ -239,15 +187,20 @@ int main(int argc, char **argv){
                 /* Fill Histos */
                 hhLayerVsEnergy->Fill( tc.getCorrectedLayer(), tc._energy );
                 hTCmipT->Fill( tc.getMipT() );
+            
 
             }// end TCs LOOP
             
             /* get HGCROC info */
-            vector<HGCROC> *towerData = detector.getTDall();
-            for(unsigned int ihgcroc=0; ihgcroc<towerData->size(); ihgcroc++ ) {
-                float HGCROCmipt = towerData->at(ihgcroc).getMipT();
-                float HGCROCenergy = towerData->at(ihgcroc).getEnergy();
-                int TCsN = towerData->at(ihgcroc).getTCsN();
+            vector<HGCROC> towerData;
+            detector.getTDall( towerData );
+            for(unsigned int ihgcroc=0; ihgcroc<towerData.size(); ihgcroc++ ) {
+
+                HGCROC roc = towerData.at(ihgcroc);
+
+                float HGCROCmipt = roc.getMipT();
+                float HGCROCenergy = roc.getEnergy();
+                int TCsN = roc.getTCsN();
                 
                 /* fill histos*/
                 hHGCROCmipT->Fill( HGCROCmipt );
@@ -255,53 +208,55 @@ int main(int argc, char **argv){
                 hTCperHGCROC->Fill( TCsN );
                 hhTCperHGCROCvsMipT->Fill( TCsN, HGCROCmipt );
                 hhTCperHGCROCvsEnergy->Fill( TCsN, HGCROCenergy );
-                hhSeedsPercentVsNtcs->Fill( towerData->at(ihgcroc).getTCsNifOverMipT(5)/(float)TCsN, TCsN );
-                hhSeedsPercentVsHGCROCmipT->Fill( towerData->at(ihgcroc).getTCsNifOverMipT(5)/(float)TCsN, HGCROCmipt );
-                hhNSeedsVsNtcs->Fill( towerData->at(ihgcroc).getTCsNifOverMipT(5), towerData->at(ihgcroc).getTCsInMipTrange(2, 5) );
+                hhSeedsPercentVsNtcs->Fill( roc.getTCsNifOverMipT(5)/(float)TCsN, TCsN );
+                hhSeedsPercentVsHGCROCmipT->Fill( roc.getTCsNifOverMipT(5)/(float)TCsN, HGCROCmipt );
+                hhNSeedsVsNtcs->Fill( roc.getTCsNifOverMipT(5), roc.getTCsInMipTrange(2, 5) );
             }
             
             /* tower data printout*/
             if( verboseLevel >= 3 ){
-                cout << "Tower Data into the vector " << towerData->size() << endl;
-                for(unsigned int ihgcroc=0; ihgcroc<towerData->size(); ihgcroc++ ) {
-                    towerData->at(ihgcroc).print();
+                cout << "Tower Data into the vector " << towerData.size() << endl;
+                for(unsigned int ihgcroc=0; ihgcroc<towerData.size(); ihgcroc++ ) {
+                    towerData.at(ihgcroc).print();
                 }
             }
             
         }// end TCs
         
         /* Loop over C2D */
-        if( flagC2D ) {
+        if( detector.areC2Dpresent() ) {
+            
+            vector<HGCC2D> C2Ds;
+            detector.getC2Dall( C2Ds );
+
+            unsigned nC2D = C2Ds.size();
 
             if( verboseLevel >= 1 )
-                cout << " >> there are " << cl_n << " C2D in the event" << endl;
+                cout << " >> there are " << nC2D << " C2D in the event" << endl;
 
-            for(int iclu=0; iclu<cl_n; iclu++){
+
+            for(unsigned iclu=0; iclu<nC2D; iclu++){
                 
                 if( verboseLevel >= 2 ) {
-                    float percent = 100.*(float)iclu/(float)cl_n; 
+                    float percent = 100.*(float)iclu/(float)nC2D; 
                     if( iclu%100 == 0 )
                         cout << "  > " << iclu << " C2D processed (" << percent << "%)" << endl;
                 } 
-                
-                HGCC2D c2d;
-                c2d._pt     =  cl_pt->at(iclu);
-                c2d._energy =  cl_energy->at(iclu);
-                c2d._eta    =  cl_eta->at(iclu);
-                c2d._phi    =  cl_phi->at(iclu);
-                c2d._layer  =  cl_layer->at(iclu);
-                c2d._ncells =  cl_ncells->at(iclu);
-                c2d._cells  =  cl_cells->at(iclu);
-                
-                /* fill the detector */
-                detector.addC2D( c2d );
-          
+            
+                /* get the C2D */
+                HGCC2D c2d = C2Ds.at( iclu );
+                          
                 /* fill the histos*/
                 hC2Denergy->Fill( c2d._energy );
                 hC2DnCells->Fill( c2d._ncells );
                 hhC2DptVsNcells->Fill( c2d._pt, c2d._ncells );
                 
                 hHGCROCperC2D->Fill( c2d.getHGCROCn() );
+                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.get3Vector().X()*c2d.get3Vector().X() + c2d.get3Vector().Y()*c2d.get3Vector().Y() ), c2d._ncells );
+                //c2d.print();
+                hhC2Dcentres->Fill(c2d._x, c2d._y);
+                hhC2DcentresEtaPhi->Fill(c2d._eta, c2d._phi);
+                
                 /* loop over TC within the cluster */
                 for (unsigned itc=0; itc<c2d._cells.size(); itc++){
                     HGCalDetId tcid( c2d._cells.at(itc) );
@@ -312,7 +267,7 @@ int main(int argc, char **argv){
         }// end C2D
 
         /* clear the detector at the end of the event */
-        detector.clear();
+//        detector.clear();
 
     }
 
