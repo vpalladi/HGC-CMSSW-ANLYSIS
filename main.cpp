@@ -252,7 +252,7 @@ int main(int argc, char **argv){
                 hhC2DptVsNcells->Fill( c2d._pt, c2d._ncells );
                 
                 hHGCROCperC2D->Fill( c2d.getHGCROCn() );
-                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.get3Vector().X()*c2d.get3Vector().X() + c2d.get3Vector().Y()*c2d.get3Vector().Y() ), c2d._ncells );
+                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.get3VectorCentre().X()*c2d.get3VectorCentre().X() + c2d.get3VectorCentre().Y()*c2d.get3VectorCentre().Y() ), c2d._ncells );
                 //c2d.print();
                 hhC2Dcentres->Fill(c2d._x, c2d._y);
                 hhC2DcentresEtaPhi->Fill(c2d._eta, c2d._phi);

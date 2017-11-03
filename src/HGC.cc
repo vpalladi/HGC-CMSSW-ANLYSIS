@@ -155,30 +155,58 @@ void HGC::addTC( HGCTC tc ) {
         
 }
 
-void HGC::addC2D(HGCC2D c2d) { _C2D[c2d._layer]->push_back( c2d ); }
+void HGC::addC2D(HGCC2D c2d) { 
 
-vector<HGCTC>  *HGC::getTC(unsigned layer)  { return _TC[layer];  }
-vector<HGCC2D> *HGC::getC2D(unsigned layer) { return _C2D[layer]; }
-vector<HGCROC> *HGC::getTD(unsigned layer)  { return _TD[layer];  }
+    _C2D[c2d._layer]->push_back( c2d ); 
+
+}
+
+vector<HGCTC>  *HGC::getTC(unsigned layer)  { 
+
+    return _TC[layer];  
+
+}
+
+vector<HGCC2D> *HGC::getC2D(unsigned layer) { 
+
+    return _C2D[layer]; 
+
+}
+
+vector<HGCROC> *HGC::getTD(unsigned layer) { 
+    
+    return _TD[layer];  
+
+}
 
 void HGC::getTCall( vector<HGCTC> &data ) {  
+
     for(unsigned i=0; i<Nlayers; i++)
         data.insert(data.end(), _TC[i]->begin(), _TC[i]->end() );
+
 }
+
 void HGC::getC2Dall( vector<HGCC2D> &data ) {  
+
     for(unsigned i=0; i<Nlayers; i++)
         data.insert(data.end(), _C2D[i]->begin(), _C2D[i]->end() );
+
 }
+
 void HGC::getTDall( vector<HGCROC> &data ) {
+
     for(unsigned i=0; i<Nlayers; i++)
         data.insert(data.end(), _TD[i]->begin(), _TD[i]->end() );
+
 }
 
 void HGC::clear() {
+
     for(unsigned i=0; i<Nlayers; i++){
         _TC[i]->clear();
         _C2D[i]->clear();
         _TD[i]->clear();
     }    
+
 }
 

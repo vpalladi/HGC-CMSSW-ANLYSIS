@@ -32,11 +32,12 @@ public:
     float                _z    ;
     int                  _layer  ;
     int                  _ncells ;
-    vector<unsigned int> _cells  ; // this is the HGCDetId
+    vector<unsigned int> _cells  ; // vector of HGCDetId for all the TC 
 
     unsigned getHGCROCn();
+    TVector3 get3VectorCentre();
 
-    TVector3 get3Vector();
+    bool isTCcontained( HGCC2D tc );
 
     void print();
 
