@@ -12,11 +12,7 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
     _flagC2D = flagC2D;
     
     for(unsigned i=0; i<Nlayers; i++) {
-        _TC[i]  = new vector<HGCTC>  ;
-        _C2D[i] = new vector<HGCC2D> ;
         _TD[i]  = new vector<HGCROC> ;
-        _TC[i] ->reserve(10000); 
-        _C2D[i]->reserve(600); 
         _TD[i] ->reserve(5000);
     }
     
@@ -24,11 +20,11 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
     _chain = new TChain("hgcalTriggerNtuplizer/HGCalTriggerNtuple");
     TIter next(fileList);
     while ( TObject *file = next() ){
-        _chain->Add( ((TObjString*)file)->GetString() );
+      _chain->Add( ((TObjString*)file)->GetString() );
     }
     
     if( _flagTCs ){
-        _chain->SetBranchAddress( "tc_n"        , &_tc_n         );
+      //_chain->SetBranchAddress( "tc_n"        , &_tc_n         );
         _chain->SetBranchAddress( "tc_id"       , &_tc_id        );
         _chain->SetBranchAddress( "tc_subdet"   , &_tc_subdet    );
         _chain->SetBranchAddress( "tc_zside"    , &_tc_zside     );
@@ -49,9 +45,9 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
         _chain->SetBranchAddress("cl_energy" , &_cl_energy );
         _chain->SetBranchAddress("cl_eta"    , &_cl_eta    );
         _chain->SetBranchAddress("cl_phi"    , &_cl_phi    );
-        _chain->SetBranchAddress("cl_x"      , &_cl_x      );
+        /*_chain->SetBranchAddress("cl_x"      , &_cl_x      );
         _chain->SetBranchAddress("cl_y"      , &_cl_y      );
-        _chain->SetBranchAddress("cl_z"      , &_cl_z      );
+        _chain->SetBranchAddress("cl_z"      , &_cl_z      );*/
         _chain->SetBranchAddress("cl_layer"  , &_cl_layer  );
         _chain->SetBranchAddress("cl_ncells" , &_cl_ncells );
         _chain->SetBranchAddress("cl_cells"  , &_cl_cells  );
@@ -61,8 +57,6 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
 HGC::~HGC() {
     
     for(unsigned i=0; i<Nlayers; i++) {
-        delete _TC[i];
-        delete _C2D[i];
         delete _TD[i];
     }
 
@@ -89,56 +83,70 @@ void HGC::getEvent(int evt){
         unsigned nTC = _tc_id->size();
         for( unsigned itc=0; itc<nTC; itc++ ){
             
-            HGCTC tc;
-            tc._id        = _tc_id->at( itc )       ;
-            tc._subdet    = _tc_subdet->at( itc )   ;            
-            tc._zside     = _tc_zside->at( itc )    ;
-            tc._layer     = _tc_layer->at( itc )    ;
-            tc._wafer     = _tc_wafer->at( itc )    ;
-            tc._wafertype = _tc_wafertype->at( itc );
-            tc._cell      = _tc_cell->at( itc )     ;
-            tc._data      = _tc_data->at( itc )     ;
-            tc._energy    = _tc_energy->at( itc )   ;
-            tc._eta       = _tc_eta->at( itc )      ;
-            tc._phi       = _tc_phi->at( itc )      ;
-            tc._z         = _tc_z->at( itc )        ;
-                
-            /* fill detector data */
-            this->addTC( tc );
+	  HGCTC tc;
+	  tc.setId(         _tc_id->at( itc )       );
+	  tc.setSubdet(     _tc_subdet->at( itc )   );            
+	  tc.setZSide(      _tc_zside->at( itc )    );
+	  tc.setLayer(      _tc_layer->at( itc )    );
+	  tc.setWafer(      _tc_wafer->at( itc )    );
+	  tc.setWaferType(  _tc_wafertype->at( itc ));
+	  tc.setCell(       _tc_cell->at( itc )     );
+	  tc.setData(       _tc_data->at( itc )     );
+	  tc.setEnergy(     _tc_energy->at( itc )   );
+	  tc.setEta(        _tc_eta->at( itc )      );
+	  tc.setPhi(        _tc_phi->at( itc )      );
+	  tc.setZ(          _tc_z->at( itc )        );
+          
+	  /* fill detector data */
+	  this->addTC( tc );
                     
         }// end TCs LOOP
         
     }// end TCs
+
             
     /* Loop over C2D */
     if( _flagC2D ) {
                 
         for(int iclu=0; iclu<_cl_n; iclu++){
-            
+
             HGCC2D c2d;
-            c2d._pt     =  _cl_pt->at(iclu);
-            c2d._energy =  _cl_energy->at(iclu);
-            c2d._eta    =  _cl_eta->at(iclu);
-            c2d._phi    =  _cl_phi->at(iclu);
-            c2d._x      =  _cl_x->at(iclu);
+            c2d.setPt(       _cl_pt->at(iclu)     );
+	    c2d.setEnergy(   _cl_energy->at(iclu) );
+	    c2d.setEta(      _cl_eta->at(iclu)    );
+	    c2d.setPhi(      _cl_phi->at(iclu)    );
+	    c2d.setLayer(    _cl_layer->at(iclu)  );
+	    c2d.setCells(    _cl_cells->at(iclu)  );	    
+	    /*c2d._x      =  _cl_x->at(iclu);
             c2d._y      =  _cl_y->at(iclu);
-            c2d._z      =  _cl_z->at(iclu);
-            c2d._layer  =  _cl_layer->at(iclu);
-            c2d._ncells =  _cl_ncells->at(iclu);
-            c2d._cells  =  _cl_cells->at(iclu);
-            
+            c2d._z      =  _cl_z->at(iclu);*/
+
+	    int subdet = -1;
+	    if(_flagTCs){
+	      HGCTC tc0 = this->getTC(c2d.cells()[0]);
+	      subdet = tc0.subdet();
+	    }	
+	    c2d.setSubdet( subdet );
+	    
+
             /* fill the detector */
             this->addC2D( c2d );
+
             
         }
     }// end C2D
+
+
 
 }
 
 void HGC::addTC( HGCTC tc ) { 
 
-    const unsigned tcLayer = tc.getCorrectedLayer();
-    _TC[tcLayer]->push_back( tc ); 
+    const unsigned tcLayer = tc.correctedLayer();
+    _TC.emplace_back(tc);    
+    _TC_map[tc.id()] = _TC.size()-1;
+    _TC_layer[tcLayer].emplace_back( _TC.size()-1 );
+
     HGCROC TD( tc );
 
     /* add to the correct HGCROC */
@@ -157,19 +165,42 @@ void HGC::addTC( HGCTC tc ) {
 
 void HGC::addC2D(HGCC2D c2d) { 
 
-    _C2D[c2d._layer]->push_back( c2d ); 
+  _C2D.emplace_back(c2d);    
+  _C2D_map[c2d.id()] = _C2D.size()-1;
+  const unsigned c2dLayer = c2d.correctedLayer();
+  _C2D_layer[c2dLayer].emplace_back( _C2D.size()-1 );
 
 }
 
-vector<HGCTC>  *HGC::getTC(unsigned layer)  { 
 
-    return _TC[layer];  
+HGCTC HGC::getTC(unsigned int ID){
+
+  return _TC[_TC_map[ID]];
 
 }
 
-vector<HGCC2D> *HGC::getC2D(unsigned layer) { 
+HGCC2D HGC::getC2D(unsigned int ID){
 
-    return _C2D[layer]; 
+  return _C2D[_C2D_map[ID]];
+
+}
+
+
+vector<HGCTC>  HGC::getTC_layer(unsigned layer)  { 
+
+  vector<HGCTC> TCs;
+  for(auto i : _TC_layer[layer])
+    TCs.emplace_back(_TC[i]);
+  return TCs;  
+
+}
+
+vector<HGCC2D> HGC::getC2D_layer(unsigned layer) { 
+
+  vector<HGCC2D> C2Ds;
+  for(auto i : _C2D_layer[layer])
+    C2Ds.emplace_back(_C2D[i]);
+  return C2Ds;  
 
 }
 
@@ -181,15 +212,13 @@ vector<HGCROC> *HGC::getTD(unsigned layer) {
 
 void HGC::getTCall( vector<HGCTC> &data ) {  
 
-    for(unsigned i=0; i<Nlayers; i++)
-        data.insert(data.end(), _TC[i]->begin(), _TC[i]->end() );
+  data = _TC;
 
 }
 
 void HGC::getC2Dall( vector<HGCC2D> &data ) {  
 
-    for(unsigned i=0; i<Nlayers; i++)
-        data.insert(data.end(), _C2D[i]->begin(), _C2D[i]->end() );
+  data = _C2D;
 
 }
 
@@ -203,10 +232,16 @@ void HGC::getTDall( vector<HGCROC> &data ) {
 void HGC::clear() {
 
     for(unsigned i=0; i<Nlayers; i++){
-        _TC[i]->clear();
-        _C2D[i]->clear();
         _TD[i]->clear();
     }    
+    
+    _TC.clear();
+    _C2D.clear();
+    _TC_map.clear();
+    _C2D_map.clear();
+    _TC_layer.clear();
+    _C2D_layer.clear();
+
 
 }
 

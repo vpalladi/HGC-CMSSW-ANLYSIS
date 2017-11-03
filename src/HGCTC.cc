@@ -4,7 +4,15 @@
 
 HGCTC::HGCTC() {;}
 
-int HGCTC::getCorrectedLayer() { 
+const float triggerCellLsbBeforeCompression = 100./1024.;
+const int triggerCellTruncationBits = 0;
+const float adcSaturationBH_MIP = 1024.;
+const int adcNbitsBH = 12;
+const float fCperMIP = 2.57;
+const double thicknessCorrection = 1.092;
+
+
+int HGCTC::correctedLayer() { 
     
     if ( _subdet==3 ) return _layer;
     if ( _subdet==4 ) return ( _layer + 28 );
@@ -14,30 +22,44 @@ int HGCTC::getCorrectedLayer() {
 
 }
 
-int HGCTC::getThird() {
+int HGCTC::third() {
 
     HGCalDetId id( _id );
     return id.thirdId();
 
 }
 
-float HGCTC::getMipT() {   
+float HGCTC::MipT() {   
 
-    float dEdX_weights[] = { 0.0, 8.603,  8.0675,  8.0675,  8.0675,  8.0675,  8.0675,  8.0675,  8.0675,  8.0675,  8.9515,  10.135,  10.135,  10.135,  10.135,  10.135,  10.135,  10.135,  10.135,  10.135,  11.682,  13.654,  13.654,  13.654,  13.654,  13.654,  13.654,  13.654,  38.2005,  55.0265,  49.871,  49.871,  49.871,  49.871,  49.871,  49.871,  49.871,  49.871,  49.871,  49.871,  62.005,  83.1675,  92.196,  92.196,  92.196,  92.196,  92.196,  92.196,  92.196,  92.196,  92.196,  92.196,  46.098
-    }; 
-    int layer = this->getCorrectedLayer();
-
-    return ( (_energy*thicknessCorrection) /TMath::CosH(_eta) )/( dEdX_weights[layer]*0.001 );
+  float LSB_silicon_fC = triggerCellLsbBeforeCompression*(pow(2,triggerCellTruncationBits));
+  float LSB_scintillator_MIP = adcSaturationBH_MIP/(pow(2,adcNbitsBH));
+  
+  // Convert ADC to charge in fC (in EE+FH) or in MIPs (in BH)
+  float amplitude = _data * (_subdet==5 ? LSB_scintillator_MIP :  LSB_silicon_fC);
+  
+  /* convert the charge amplitude in MIP: */
+  float trgCellMipP = amplitude;
+  if( _subdet!=5 && fCperMIP > 0 ){
+    trgCellMipP /= fCperMIP; 
+  }
+  
+  /* compute the transverse-mip */
+  float trgCellMipPt = trgCellMipP/cosh( _eta ); 
+  
+  /* setting pT [mip] */
+  return trgCellMipPt;
     
 }
+
+
 
 void HGCTC::print(){
     
     cout << ">>> HGCTC : "
          << "zside " << _zside << "; "
-         << "layer " << getCorrectedLayer() << "; "
+         << "layer " << correctedLayer() << "; "
          << "wafer " << _wafer << "; "
-         << "third " << getThird() << endl; 
+         << "third " << third() << endl; 
                                  
 }
 

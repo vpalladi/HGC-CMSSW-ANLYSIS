@@ -5,9 +5,21 @@
 
 HGCC2D::HGCC2D() {};
 
+
+
+int HGCC2D::correctedLayer() { 
+    
+  if ( _subdet==3 ) return _layer;
+  else if ( _subdet==4 ) return ( _layer + 28 );
+  else if ( _subdet==5 ) return ( _layer + 40 );
+    
+  return -1;
+
+}
+
    
 
-unsigned HGCC2D::getHGCROCn() {
+unsigned HGCC2D::HGCROCn() {
 
     vector<pair<int,int>> thirds;
 
@@ -28,7 +40,7 @@ unsigned HGCC2D::getHGCROCn() {
 }
 
 
-TVector3 HGCC2D::get3VectorCentre() {
+TVector3 HGCC2D::Centre() {
 
     TVector3 vec;
     vec.SetXYZ(_pt, _eta, _phi);
@@ -44,9 +56,9 @@ void HGCC2D::print() {
          << " ene: " << _pt << endl
          << " eta:" << _eta << endl
          << " phi:" << _phi << endl
-         << "  x : " << get3VectorCentre().X() << endl
-         << "  y : " << get3VectorCentre().Y() << endl
-         << "  z : " << get3VectorCentre().Z() << endl;
+         << "  x : " << Centre().X() << endl
+         << "  y : " << Centre().Y() << endl
+         << "  z : " << Centre().Z() << endl;
     cout << "=============" << endl;
 
 }

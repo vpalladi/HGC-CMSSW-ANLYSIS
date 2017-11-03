@@ -19,10 +19,49 @@ using namespace std;
 
 class HGCC2D {
 
-public:
+ public:
 
     HGCC2D();
 
+    void setId(unsigned int id) { _id = id; }
+    void setSubdet(int subdet)  { _subdet = subdet; }
+    void setPt(float pt)        { _pt = pt; }
+    void setEnergy(float energy)  { _energy = energy; }
+    void setEta(float eta)      { _eta = eta; }
+    void setPhi(float phi)      { _phi = phi; }
+    void setX(float x)          { _x = x; }
+    void setY(float y)          { _y = y; }
+    void setZ(float z)          { _z = z; }
+    void setLayer(int layer)    { _layer = layer; }
+    void setCells(vector<unsigned int> cells)    { _cells = cells; }
+
+
+    unsigned int id()        { return _id; }
+    int   subdet()    { return _subdet; }
+    float Pt()        { return _pt; }
+    float Energy()    { return _energy; }
+    float Eta()       { return _eta; }
+    float Phi()       { return _phi; }
+    float x()         { return _x; }
+    float y()         { return _y; }
+    float z()         { return _z; }
+    float layer()     { return _layer; }
+    float ncells()    { return _cells.size(); }
+    vector<unsigned int> cells()     { return _cells; }
+
+    int correctedLayer();
+
+    unsigned HGCROCn();
+    TVector3 Centre();
+
+    bool isTCcontained( HGCC2D tc );
+
+    void print();
+
+ private:
+
+    unsigned int         _id     ;
+    int                  _subdet ;
     float                _pt     ;
     float                _energy ;
     float                _eta    ;
@@ -33,14 +72,6 @@ public:
     int                  _layer  ;
     int                  _ncells ;
     vector<unsigned int> _cells  ; // vector of HGCDetId for all the TC 
-
-    unsigned getHGCROCn();
-    TVector3 get3VectorCentre();
-
-    bool isTCcontained( HGCC2D tc );
-
-    void print();
-
 
 };
 

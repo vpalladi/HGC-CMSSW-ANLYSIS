@@ -3,6 +3,7 @@
 
 /* c/c++ */
 #include <iostream>
+#include <unordered_map>
 
 /* mylibs */
 #include "detId.h"
@@ -37,8 +38,11 @@ public:
     void addTC( HGCTC tc );
     void addC2D(HGCC2D c2d);
 
-    vector<HGCTC>  *getTC(unsigned layer);
-    vector<HGCC2D> *getC2D(unsigned layer);
+    HGCTC getTC(unsigned int ID);
+    HGCC2D getC2D(unsigned int ID);
+    vector<HGCTC>  getTC_layer(unsigned layer);
+    vector<HGCC2D> getC2D_layer(unsigned layer);
+
     vector<HGCROC> *getTD(unsigned layer);
 
     void getTCall( vector<HGCTC> &data );
@@ -86,8 +90,12 @@ private:
     vector<vector<unsigned int> > *_cl_cells  = 0;
     
     /* all events */
-    vector<HGCTC>  *_TC[Nlayers];
-    vector<HGCC2D> *_C2D[Nlayers];
+    vector<HGCTC> _TC;
+    vector<HGCC2D> _C2D;
+    unordered_map<unsigned int,unsigned int> _TC_map;
+    unordered_map<unsigned int,unsigned int> _C2D_map;  
+    unordered_map<unsigned int,vector<unsigned int> >  _TC_layer;
+    unordered_map<unsigned int,vector<unsigned int> > _C2D_layer;
     vector<HGCROC> *_TD[Nlayers];
 
 };

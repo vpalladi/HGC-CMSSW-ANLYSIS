@@ -23,12 +23,15 @@
 #include "HGCTC.h"
 #include "HGCC2D.h"
 #include "HGCROC.h"
+#include "Ntuplizer.h"
 
 using namespace std;
 
 const int verboseLevel = 2;
 const bool flagTCs = true;
 const bool flagC2D = true;
+const bool histos = false;
+const bool ntuple = true;
 
 int main(int argc, char **argv){
 
@@ -36,8 +39,10 @@ int main(int argc, char **argv){
     TString fFileListName;
     int opt;
     int nEvt = -1;
+    TString inputFileName;
+    TString outputFileName;
     
-    while ( (opt = getopt (argc, argv, "hn:f:")) != -1 ) {
+    while ( (opt = getopt (argc, argv, "hn:f:i:o:")) != -1 ) {
         switch (opt)
         {
         case 'h':
@@ -48,6 +53,12 @@ int main(int argc, char **argv){
             break;
         case 'f':
             fFileListName = optarg;
+            break;
+        case 'i':
+            inputFileName = optarg;
+            break;
+	case 'o':
+            outputFileName = optarg;
             break;
         case '?':
             cout << "unknown param" << endl;
@@ -60,70 +71,79 @@ int main(int argc, char **argv){
     cout << "Options " << endl;
     cout << "  File List Name: " << fFileListName << endl;
     cout << "  Nevts: " << nEvt << endl;
-    
-    /* TApplication */
-    TApplication app("app", &argc, argv);
-    
+    cout << "  OutputFile: " << outputFileName <<endl;
+    cout << "  InputFile: " << inputFileName <<endl;
+	    
     /* get the files and fill the detector*/
+    
     TList *fList = new TList();
-    ifstream fFileList(fFileListName);
-    char line[1000];
-    while ( !fFileList.eof() ){
-        fFileList.getline( line, 1000 );
-        fList->Add( new TObjString( line ) );
+
+    if(fFileListName!=""){
+      ifstream fFileList(fFileListName);    
+      string line;
+      while( getline(fFileList,line) ){
+        fList->Add( new TObjString( TString(line) ) );
+      }
     }
+    else
+      fList->Add( new TObjString(inputFileName) );
 
     /* build the detector */
     HGC detector(fList, flagTCs, flagC2D, verboseLevel);
 
-    /* 1D Histograms */
-    TH2D *hhLayerVsEnergy = new TH2D( "Layer vs Energy", "LayerVsEnergy", 
-                                    53, -0.5, 52.5, //Layer
-                                    100, 0, 100    // energy
-        ); 
-    TH1D* hHGCROCmipT = new TH1D("HGCROCmipT", "HGCROCmipT", 1000, 0, 50);
-    TH1D* hHGCROCenergy = new TH1D("HGCROCenergy", "HGCROCenergy", 1000, 0, 10);
-    TH1D* hTCmipT = new TH1D("TCmipT", "TCmipT", 1000, 0, 50);
-    TH1D* hTCperHGCROC = new TH1D("TCperHGCROC", "TCperHGCROC", 100, -0.5, 99.5);
-    TH2D* hhTCperHGCROCvsMipT = new TH2D("TCperHGCROCvsMipT", "TCperHGCROCvsMipT", 
-                                        100, -0.5, 99.5,
-                                        1000, 0, 50 );
-    TH2D* hhTCperHGCROCvsEnergy = new TH2D("TCperHGCROCvsEnergy", "TCperHGCROCvsEnergy", 
-                                        100, -0.5, 99.5,
-                                        1000, 0, 10 );
-    TH2D* hhSeedsPercentVsNtcs = new TH2D("seedsPercentVsNtcs", "seedsPercentVsNtcs", 
-                                          100, 0, 1,
-                                          30, -0.5, 29.5);
-    TH2D* hhSeedsPercentVsHGCROCmipT = new TH2D("seedsPercentVsHGCROCmipT", "seedsPercentVsHGCROCmipT", 
-                                                100, 0, 1,
-                                                1000, 0, 50 );
-    TH2D* hhNSeedsVsNtcs = new TH2D("nSeedsVsNtcs", "nSeedsVsNtcs", 
-                                    30, -0.5, 29.5,
-                                    30, -0.5, 29.5 );
-    // c2d
-    TH1D* hC2Denergy = new TH1D("C2Denergy", "C2Denergy", 1000, 0, 100);
-    TH1D* hC2DnCells = new TH1D("C2DnCells", "C2DnCells", 1000, -0.5, 999.5);
-    TH2D* hhC2DptVsNcells = new TH2D("C2DptVsNcells", "C2DptVsNcells", 
-                                     100, 0, 20,
-                                     250 , -0.5, 249.5 );
+    /* TApplication */
+    TApplication app("app", &argc, argv);
 
-    // tc in c2d
-    TH1D* hTCinC2Did = new TH1D("TCinC2Did", "TCinC2Did", 100000, -0.5, 99999.5);
-    TH1D* hTCinC2Dwafer = new TH1D("TCinC2Dwafer", "TCinC2Dwafer", 600, -0.5, 599.5);
-    TH1D* hHGCROCperC2D= new TH1D("HGCROCperC2D", "HGCROCperC2D", 20, -0.5, 19.5);
-    TH2D* hhC2DcentreVsNcells = new TH2D("C2DcentreVsNcells", "C2DcentreVsNcells", 
+    if(histos){
+
+      /* 1D Histograms */
+      TH2D *hhLayerVsEnergy = new TH2D( "Layer vs Energy", "LayerVsEnergy", 
+					53, -0.5, 52.5, //Layer
+					100, 0, 100    // energy
+					); 
+      TH1D* hHGCROCmipT = new TH1D("HGCROCmipT", "HGCROCmipT", 1000, 0, 50);
+      TH1D* hHGCROCenergy = new TH1D("HGCROCenergy", "HGCROCenergy", 1000, 0, 10);
+      TH1D* hTCmipT = new TH1D("TCmipT", "TCmipT", 1000, 0, 50);
+      TH1D* hTCperHGCROC = new TH1D("TCperHGCROC", "TCperHGCROC", 100, -0.5, 99.5);
+      TH2D* hhTCperHGCROCvsMipT = new TH2D("TCperHGCROCvsMipT", "TCperHGCROCvsMipT", 
+					   100, -0.5, 99.5,
+					   1000, 0, 50 );
+      TH2D* hhTCperHGCROCvsEnergy = new TH2D("TCperHGCROCvsEnergy", "TCperHGCROCvsEnergy", 
+					     100, -0.5, 99.5,
+					     1000, 0, 10 );
+      TH2D* hhSeedsPercentVsNtcs = new TH2D("seedsPercentVsNtcs", "seedsPercentVsNtcs", 
+					    100, 0, 1,
+					    30, -0.5, 29.5);
+      TH2D* hhSeedsPercentVsHGCROCmipT = new TH2D("seedsPercentVsHGCROCmipT", "seedsPercentVsHGCROCmipT", 
+						  100, 0, 1,
+						  1000, 0, 50 );
+      TH2D* hhNSeedsVsNtcs = new TH2D("nSeedsVsNtcs", "nSeedsVsNtcs", 
+				      30, -0.5, 29.5,
+				      30, -0.5, 29.5 );
+      // c2d
+      TH1D* hC2Denergy = new TH1D("C2Denergy", "C2Denergy", 1000, 0, 100);
+      TH1D* hC2DnCells = new TH1D("C2DnCells", "C2DnCells", 1000, -0.5, 999.5);
+      TH2D* hhC2DptVsNcells = new TH2D("C2DptVsNcells", "C2DptVsNcells", 
+				       100, 0, 20,
+				       250 , -0.5, 249.5 );
+
+      // tc in c2d
+      TH1D* hTCinC2Did = new TH1D("TCinC2Did", "TCinC2Did", 100000, -0.5, 99999.5);
+      TH1D* hTCinC2Dwafer = new TH1D("TCinC2Dwafer", "TCinC2Dwafer", 600, -0.5, 599.5);
+      TH1D* hHGCROCperC2D= new TH1D("HGCROCperC2D", "HGCROCperC2D", 20, -0.5, 19.5);
+      TH2D* hhC2DcentreVsNcells = new TH2D("C2DcentreVsNcells", "C2DcentreVsNcells", 
                                          1000, 0, 2000,
-                                         250 , -0.5, 249.5 );
-    TH2D* hhC2Dcentres = new TH2D("C2Dcentres", "C2Dcentres", 
-                                  600, -300, 300,
-                                  600, -300, 300);
-    TH2D* hhC2DcentresEtaPhi = new TH2D("C2DcentresEtaPhi", "C2DcentresEtaPhi", 
-                                        100, 0, 5,
-                                        100, 4, 4 );
-    
-
-    /* Store the pointers to object you wanna plot */
-    vector<histoContainerGeneric*> histos = { 
+					   250 , -0.5, 249.5 );
+      TH2D* hhC2Dcentres = new TH2D("C2Dcentres", "C2Dcentres", 
+				    600, -300, 300,
+				    600, -300, 300);
+      TH2D* hhC2DcentresEtaPhi = new TH2D("C2DcentresEtaPhi", "C2DcentresEtaPhi", 
+					  100, 0, 5,
+					  100, 4, 4 );
+      
+      
+      /* Store the pointers to object you wanna plot */
+      vector<histoContainerGeneric*> histos = { 
         new histoContainer<TH2D> ( hhLayerVsEnergy             , TString("layer"),        TString("energy(GeV)"), TString("colz") ),
         new histoContainer<TH1D> ( hHGCROCmipT                 , TString("energy(MipT)"), TString("entries"), TString("") ),
         new histoContainer<TH1D> ( hHGCROCenergy               , TString("energy(GeV)"),  TString("entries"), TString("") ),
@@ -180,13 +200,13 @@ int main(int argc, char **argv){
 
                 /* DEBUG */
                 if(verboseLevel >= 5){
-                    cout << " >>> Energy (MipT) " << tc.getMipT() << endl;
-                    cout << " >>> HGROC id (third) " << tc.getThird() << endl;
+                    cout << " >>> Energy (MipT) " << tc.MipT() << endl;
+                    cout << " >>> HGROC id (third) " << tc.third() << endl;
                 }
            
                 /* Fill Histos */
-                hhLayerVsEnergy->Fill( tc.getCorrectedLayer(), tc._energy );
-                hTCmipT->Fill( tc.getMipT() );
+                hhLayerVsEnergy->Fill( tc.correctedLayer(), tc.Energy() );
+                hTCmipT->Fill( tc.MipT() );
             
 
             }// end TCs LOOP
@@ -247,20 +267,20 @@ int main(int argc, char **argv){
                 HGCC2D c2d = C2Ds.at( iclu );
                           
                 /* fill the histos*/
-                hC2Denergy->Fill( c2d._energy );
-                hC2DnCells->Fill( c2d._ncells );
-                hhC2DptVsNcells->Fill( c2d._pt, c2d._ncells );
+                hC2Denergy->Fill( c2d.Energy() );
+                hC2DnCells->Fill( c2d.ncells() );
+                hhC2DptVsNcells->Fill( c2d.Pt(), c2d.ncells() );
                 
-                hHGCROCperC2D->Fill( c2d.getHGCROCn() );
-                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.get3VectorCentre().X()*c2d.get3VectorCentre().X() + c2d.get3VectorCentre().Y()*c2d.get3VectorCentre().Y() ), c2d._ncells );
+                hHGCROCperC2D->Fill( c2d.HGCROCn() );
+                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.Centre().X()*c2d.Centre().X() + c2d.Centre().Y()*c2d.Centre().Y() ), c2d.ncells() );
                 //c2d.print();
-                hhC2Dcentres->Fill(c2d._x, c2d._y);
-                hhC2DcentresEtaPhi->Fill(c2d._eta, c2d._phi);
+                hhC2Dcentres->Fill(c2d.x(), c2d.y());
+                hhC2DcentresEtaPhi->Fill(c2d.Eta(), c2d.Phi());
                 
                 /* loop over TC within the cluster */
-                for (unsigned itc=0; itc<c2d._cells.size(); itc++){
-                    HGCalDetId tcid( c2d._cells.at(itc) );
-                    hTCinC2Did->Fill( c2d._cells.at(itc) );
+                for (unsigned itc=0; itc<c2d.cells().size(); itc++){
+		  HGCalDetId tcid( c2d.cells().at(itc) );
+		  hTCinC2Did->Fill( c2d.cells().at(itc) );
                     hTCinC2Dwafer->Fill( tcid.wafer() );                    
                 }
             }
@@ -281,6 +301,34 @@ int main(int argc, char **argv){
     
     /* Run the App (don't quit the graphycs) */
     app.Run();
+
+
+    }
+
+
+    
+
+    if(ntuple){
+
+      TFile* f_new = TFile::Open(outputFileName);
+      if(f_new!=0){
+	cout<<outputFileName<<" already exists, please delete it before converting again"<<endl;
+	return 0;
+      }
+      
+      f_new = TFile::Open(outputFileName,"RECREATE");
+
+      Ntuplizer* ntp = new Ntuplizer(&detector,"HGCalTriggerNtuple_ext");
+      unsigned totalEvt = detector.getEvents();   
+      nEvt = (nEvt==-1) ? totalEvt : nEvt;
+      ntp->fillTree(nEvt);
+      TTree* tree = ntp->getTree();      
+      
+      tree->Write();
+      f_new->Close();
+
+    }
+
 
     return 0;
 

@@ -5,10 +5,10 @@
 HGCROC::HGCROC() { ; }
 HGCROC::HGCROC( HGCTC tc ) { 
 
-    zside = tc._zside;
-    layer = tc.getCorrectedLayer();
-    wafer = tc._wafer;
-    third = tc.getThird();
+  zside = tc.zside();
+  layer = tc.correctedLayer();
+  wafer = tc.wafer();
+  third = tc.third();
 
     if( addTC( tc ) == -1 ){
         cout << "----ERROR-TC-not-FOUND----" << endl;
@@ -33,15 +33,15 @@ int HGCROC::addTC( HGCTC tc ) {
 
 bool HGCROC::tcIsContained( HGCTC &tc ){
 
-    if( (zside == tc._zside) and
-        (layer == tc.getCorrectedLayer()) and
-        (wafer == tc._wafer) and
-        (third == tc.getThird()) ) {
-        return true;
-    }
-    else {
-        return false;    
-    }
+  if( (zside == tc.zside()) and
+      (layer == tc.correctedLayer()) and
+      (wafer == tc.wafer()) and
+      (third == tc.third()) ) {
+    return true;
+  }
+  else {
+    return false;    
+  }
  
 }
 
@@ -63,7 +63,7 @@ unsigned HGCROC::getTCsNifOverMipT(float thrMipT) {
     unsigned n=0;
 
     for( unsigned itc=0; itc<_tcs.size(); itc++ )
-        n = ( _tcs.at(itc).getMipT() > thrMipT ) ? n+1 : n;
+        n = ( _tcs.at(itc).MipT() > thrMipT ) ? n+1 : n;
 
     return n;
 
@@ -74,7 +74,7 @@ unsigned HGCROC::getTCsInMipTrange(float min, float max) {
     unsigned n=0;
 
     for( unsigned itc=0; itc<_tcs.size(); itc++ )
-        n = ( _tcs.at(itc).getMipT() > min ) ? n+1 : n;
+        n = ( _tcs.at(itc).MipT() > min ) ? n+1 : n;
 
     return n;
 
@@ -103,7 +103,7 @@ float HGCROC::getEnergy() {
     float ene=0;
 
     for(unsigned itc=0; itc<_tcs.size(); itc++)
-        ene += _tcs.at( itc )._energy;
+      ene += _tcs.at( itc ).energy();
 
     return ene;
 
@@ -114,7 +114,7 @@ float HGCROC::getMipT() {
     float mipt=0;
 
     for(unsigned itc=0; itc<_tcs.size(); itc++)
-        mipt += _tcs.at( itc ).getMipT();
+        mipt += _tcs.at( itc ).MipT();
 
     return mipt;
 
