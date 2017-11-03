@@ -7,16 +7,15 @@ CXX = g++
 ####################
 
 # top and current dirs
-CURRENT_DIR = $(shell pwd)
+#CURRENT_DIR = $(shell pwd)
 
-# obj, inc and src 
-OBJ_DIR = $(CURRENT_DIR)/obj
-INC_DIR = $(CURRENT_DIR)/inc
-SRC_DIR = $(CURRENT_DIR)/src
+# inc and src dirs 
+INC_DIR = ./inc
+SRC_DIR = ./src
 
-
-# bin dir
-BIN_DIR = $(CURRENT_DIR)/bin
+# obj and bin dirs
+OBJ_DIR = ./obj
+BIN_DIR = ./bin
 
 ##########################
 ### flags and libs and INC
@@ -31,14 +30,13 @@ ROOT_GLIBS = $(shell root-config --glibs)
 #BOOST_FLAGS = -I$(BOOST_DIR)/include
 #BOOST_LIBS = -L$(BOOST_DIR)/lib -lboost_filesystem -lboost_system
 
-
 # CXX flags
 CXXFLAGS =  -Wall -std=c++11 -Wno-write-strings
 CXXFLAGS += $(ROOT_CFLAGS)
 #CXXFLAGS += $(wildcard pwd)
 #CXXFLAGS += $(BOOST_FLAGS)
 #CXXFLAGS += $(HEPMC_FLAGS)
-CXXFLAGS += -I$(INC_DIR) 
+#CXXFLAGS += -I$(INC_DIR) 
 
 # CXX LIBS
 CXXLIBS =  $(ROOT_GLIBS)
@@ -48,35 +46,38 @@ CXXLIBS =  $(ROOT_GLIBS)
 
 # all my files .ccp .cc and .hh
 MAINS_CPP := $(wildcard ./*.cpp)
-SOURCES_CC := $(wildcard ./src/*.cc)
-INCLUDES_HH := $(wildcard ./inc/*.hh)
+EXE := $(MAINS_CPP:.cpp=.exe)
 
-EXES := $(MAINS_CPP:.cpp=.exe)
-OBJ  := $(SOURCES_CC:.cc=.o)
-OBJ  := $(subst src,obj,${OBJ})
+SOURCES_CC  := $(wildcard $(SRC_DIR)/*.cc)
+OBJ         := $(SOURCES_CC:$(SRC_DIR)/%.cc=$(OBJ_DIR)/%.o)
 
-all: $(EXES)
+INCLUDES_HH := $(wildcard $(INC_DIR)/*.h)
 
-%.exe: %.cpp obj/HGC.o
+
+all: $(EXE) 
+
+$(EXE): %.exe: %.cpp $(OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) -o bin/$(notdir $@) $< $(CXXFLAGS) $(CXXLIBS) obj/HGC.o 
+	$(CXX) -o bin/$(notdir $@) $< $(CXXFLAGS) $(CXXLIBS) -I$(INC_DIR) $(OBJ) 
 
-
-obj/HGC.o: $(SOURCES_CC)
+$(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.cc
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(CXXLIBS) -I$(INC_DIR) -c $< -o $@
 
 clean:
-	rm $(CURRENT_DIR)/bin/*
-	rm $(CURRENT_DIR)/obj/*
+	rm -rf $(BIN_DIR)
+	rm -rf $(OBJ_DIR)
 echo:
 #	echo $(HEPMCFLAGS)
-#	echo $(TOP)
-	echo $(CURRENT_DIR)
-#	echo $(BOOST_DIR)
-	echo $(INC_DIR)
-	echo $(SRC_DIR)
-#	echo $(CXX) $(CXXFLAGS) -o bin/$@ $<
+	echo $(EXE)
+#	echo $(OBJ)
+	echo $(SOURCES_CC)
+#	echo $(INCLUDES_HH)
+#	echo $(CURRENT_DIR)
+##	echo $(BOOST_DIR)
+#	echo $(INC_DIR)
+#	echo $(SRC_DIR)
+#	echo $(SOURCES_CC)
 	echo $(OBJ)
-	echo $(MAINS_CPP)
+#	echo $(MAINS_CPP)
 

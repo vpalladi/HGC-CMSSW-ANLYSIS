@@ -84,16 +84,7 @@ void HGC::getEvent(int evt){
     
     /* looping over TCs */
     if( _flagTCs ){
-        
-        ///* check internal consistency for TCs*/
-        //if( _verboselevel >= 1 )
-        //    cout << " >> there are " << _tc_n << " TCs in the event" << endl;
-        //if( _tc_n != (int)_tc_energy->size() ){
-        //    cout << " !!! Error !!! " << endl
-        //         << " The number of TC expected doesn't match the number stored in the tree" << endl;
-        //    return 0;
-        //}
-        
+     
         /* LOOP */
         unsigned nTC = _tc_id->size();
         for( unsigned itc=0; itc<nTC; itc++ ){
