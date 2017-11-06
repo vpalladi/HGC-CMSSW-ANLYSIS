@@ -15,7 +15,6 @@ Ntuplizer::Ntuplizer( HGC* detector, TString treename){
     _tree->Branch("cl_HGClayer",     &_cl_HGClayer);
   }
 
-
 }
 
 
@@ -28,11 +27,7 @@ void Ntuplizer::clear(){
 }
 
 
-
-
-void Ntuplizer::fillTree(int nEvt){
-
-  
+void Ntuplizer::fillTree(unsigned nEvt){
 
   for(unsigned i=0; i<nEvt; i++){
 
@@ -62,8 +57,8 @@ void Ntuplizer::fillTree(int nEvt){
       
       for( unsigned icl=0; icl<cls.size(); icl++ ){	  
 	
-	HGCC2D cl = cls[icl];	 
-	HGCTC tc0 = _detector->getTC(cl.getCells()[0]);
+	HGCC2D cl = cls[icl];
+	HGCTC tc0 = _detector->getTC(cl.cells()[0]);
 	_cl_HGClayer.emplace_back(tc0.correctedLayer());
  	  	
       }   

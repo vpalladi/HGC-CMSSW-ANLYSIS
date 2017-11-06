@@ -35,8 +35,8 @@ public:
     void print();
 
     /* HGCROC energies */
-    float getEnergy();
-    float getMipT();
+    float Energy();
+    float MipT();
 
 private:
     
