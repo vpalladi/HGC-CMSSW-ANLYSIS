@@ -23,39 +23,47 @@ class HGCC2D {
 
     HGCC2D();
 
-    void setId(unsigned int id) { _id = id; }
-    void setSubdet(int subdet)  { _subdet = subdet; }
-    void setPt(float pt)        { _pt = pt; }
-    void setEnergy(float energy)  { _energy = energy; }
-    void setEta(float eta)      { _eta = eta; }
-    void setPhi(float phi)      { _phi = phi; }
-    void setX(float x)          { _x = x; }
-    void setY(float y)          { _y = y; }
-    void setZ(float z)          { _z = z; }
-    void setLayer(int layer)    { _layer = layer; }
-    void setCells(vector<unsigned int> cells)    { _cells = cells; }
+    /* set C2D parameters */
+    void setId(unsigned id)                  { _id = id; }
+    void setSubdet(int subdet)               { _subdet = subdet; }
+    void setPt(float pt)                     { _pt = pt; }
+    void setEnergy(float energy)             { _energy = energy; }
+    void setEta(float eta)                   { _eta = eta; }
+    void setPhi(float phi)                   { _phi = phi; }
+    void setX(float x)                       { _x = x; }
+    void setY(float y)                       { _y = y; }
+    void setZ(float z)                       { _z = z; }
+    void setLayer(int layer)                 { _layer = layer; }
+    void setCells(vector<unsigned> cells)    { _cells = cells; }
 
+    /* get C2D parameters */
+    unsigned id()            { return _id; }
+    int      subdet()        { return _subdet; }
+    float    Pt()            { return _pt; }
+    float    Energy()        { return _energy; }
+    float    Eta()           { return _eta; }
+    float    Phi()           { return _phi; }
+    float    x()             { return _x; }
+    float    y()             { return _y; }
+    float    z()             { return _z; }
+    float    layer()         { return _layer; }
+    float    ncells()        { return _cells.size(); }
+    vector<unsigned> cells() { return _cells; }
 
-    unsigned int id()        { return _id; }
-    int   subdet()    { return _subdet; }
-    float Pt()        { return _pt; }
-    float Energy()    { return _energy; }
-    float Eta()       { return _eta; }
-    float Phi()       { return _phi; }
-    float x()         { return _x; }
-    float y()         { return _y; }
-    float z()         { return _z; }
-    float layer()     { return _layer; }
-    float ncells()    { return _cells.size(); }
-    vector<unsigned int> cells()     { return _cells; }
-
+    /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */
     int correctedLayer();
 
+    /* HGCROC info*/
     unsigned HGCROCn();
-    TVector3 Centre();
+    TVector3 centre();
 
+    /* get useful info */
     bool isTCcontained( HGCC2D tc );
+    void getEtaSpan( double &minEta, double &maxEta );
+    void getPhiSpan( double &minPhi, double &maxPhi );
+    
 
+    /* print to stdout some useful info */
     void print();
 
  private:
@@ -66,12 +74,12 @@ class HGCC2D {
     float                _energy ;
     float                _eta    ;
     float                _phi    ;
-    float                _x    ;
-    float                _y    ;
-    float                _z    ;
+    float                _x      ;
+    float                _y      ;
+    float                _z      ;
     int                  _layer  ;
     int                  _ncells ;
-    vector<unsigned int> _cells  ; // vector of HGCDetId for all the TC 
+    vector<unsigned>     _cells  ; // vector of HGCDetId for all the TC 
 
 };
 

@@ -33,17 +33,17 @@ public:
     bool areC2Dpresent() { return _flagC2D; }
 
     unsigned getEvents();
-    void getEvent(int evt);
+    void getEvent( int evt );
 
     void addTC( HGCTC tc );
-    void addC2D(HGCC2D c2d);
+    void addC2D( HGCC2D c2d );
 
-    HGCTC getTC(unsigned int ID);
-    HGCC2D getC2D(unsigned int ID);
-    vector<HGCTC>  getTC_layer(unsigned layer);
-    vector<HGCC2D> getC2D_layer(unsigned layer);
+    HGCTC getTC(unsigned ID);
+    HGCC2D getC2D(unsigned ID);
 
-    vector<HGCROC> *getTD(unsigned layer);
+    vector<HGCTC>  getTC_layer( unsigned layer );
+    vector<HGCC2D> getC2D_layer( unsigned layer );
+    vector<HGCROC> *getTD( unsigned layer );
 
     void getTCall( vector<HGCTC> &data );
     void getC2Dall( vector<HGCC2D> &data );
@@ -63,39 +63,40 @@ private:
 
     /* Branches */
     // Trigger Cells
-    int                   _tc_n;
-    vector<unsigned int> *_tc_id        = 0;
-    vector<int         > *_tc_subdet    = 0;
-    vector<int         > *_tc_zside     = 0;
-    vector<int         > *_tc_layer     = 0;
-    vector<int         > *_tc_wafer     = 0;
-    vector<int         > *_tc_wafertype = 0;
-    vector<int         > *_tc_cell      = 0;
-    vector<unsigned int> *_tc_data      = 0;
-    vector<float       > *_tc_energy    = 0;
-    vector<float       > *_tc_eta       = 0;
-    vector<float       > *_tc_phi       = 0;
-    vector<float       > *_tc_z         = 0;
+    int                 _tc_n;
+    vector<unsigned>   *_tc_id        = 0;
+    vector<int>        *_tc_subdet    = 0;
+    vector<int>        *_tc_zside     = 0;
+    vector<int>        *_tc_layer     = 0;
+    vector<int>        *_tc_wafer     = 0;
+    vector<int>        *_tc_wafertype = 0;
+    vector<int>        *_tc_cell      = 0;
+    vector<unsigned>   *_tc_data        = 0;
+    vector<float>      *_tc_energy    = 0;
+    vector<float>      *_tc_eta       = 0;
+    vector<float>      *_tc_phi       = 0;
+    vector<float>      *_tc_z         = 0;
+    
     // C2D
-    int                            _cl_n      ;
-    vector<float>                 *_cl_pt     = 0;
-    vector<float>                 *_cl_energy = 0;
-    vector<float>                 *_cl_eta    = 0;
-    vector<float>                 *_cl_phi    = 0;
-    vector<float>                 *_cl_x      = 0;
-    vector<float>                 *_cl_y      = 0;
-    vector<float>                 *_cl_z      = 0;
-    vector<int>                   *_cl_layer  = 0;
-    vector<int>                   *_cl_ncells = 0;
-    vector<vector<unsigned int> > *_cl_cells  = 0;
+    int                       _cl_n         ;
+    vector<float>            *_cl_pt     = 0;
+    vector<float>            *_cl_energy = 0;
+    vector<float>            *_cl_eta    = 0;
+    vector<float>            *_cl_phi    = 0;
+    vector<float>            *_cl_x      = 0;
+    vector<float>            *_cl_y      = 0;
+    vector<float>            *_cl_z      = 0;
+    vector<int>              *_cl_layer  = 0;
+    vector<int>              *_cl_ncells = 0;
+    vector<vector<unsigned>> *_cl_cells  = 0;
     
     /* all events */
     vector<HGCTC> _TC;
     vector<HGCC2D> _C2D;
-    unordered_map<unsigned int,unsigned int> _TC_map;
-    unordered_map<unsigned int,unsigned int> _C2D_map;  
-    unordered_map<unsigned int,vector<unsigned int> >  _TC_layer;
-    unordered_map<unsigned int,vector<unsigned int> > _C2D_layer;
+    unordered_map<unsigned,unsigned> _TC_map;
+    unordered_map<unsigned,unsigned> _C2D_map;  
+    unordered_map<unsigned,vector<unsigned> >  _TC_layer;
+    unordered_map<unsigned,vector<unsigned> > _C2D_layer;
     vector<HGCROC> *_TD[Nlayers];
 
 };

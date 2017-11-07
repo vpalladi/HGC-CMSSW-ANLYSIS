@@ -45,9 +45,9 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
         _chain->SetBranchAddress("cl_energy" , &_cl_energy );
         _chain->SetBranchAddress("cl_eta"    , &_cl_eta    );
         _chain->SetBranchAddress("cl_phi"    , &_cl_phi    );
-        /*_chain->SetBranchAddress("cl_x"      , &_cl_x      );
+        _chain->SetBranchAddress("cl_x"      , &_cl_x      );
         _chain->SetBranchAddress("cl_y"      , &_cl_y      );
-        _chain->SetBranchAddress("cl_z"      , &_cl_z      );*/
+        _chain->SetBranchAddress("cl_z"      , &_cl_z      );
         _chain->SetBranchAddress("cl_layer"  , &_cl_layer  );
         _chain->SetBranchAddress("cl_ncells" , &_cl_ncells );
         _chain->SetBranchAddress("cl_cells"  , &_cl_cells  );
@@ -68,7 +68,7 @@ unsigned HGC::getEvents(){
 
 }
 
-void HGC::getEvent(int evt){
+void HGC::getEvent( int evt ){
         
     /* clear detector */
     this->clear();
@@ -136,9 +136,8 @@ void HGC::getEvent(int evt){
         }
     }// end C2D
 
-
-
 }
+
 
 void HGC::addTC( HGCTC tc ) { 
 

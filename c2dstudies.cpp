@@ -140,6 +140,9 @@ int main(int argc, char **argv){
       TH2D* hhC2DcentresEtaPhi = new TH2D("C2DcentresEtaPhi", "C2DcentresEtaPhi", 
 					  100, 0, 5,
 					  100, 4, 4 );
+      TH2D* hhC2DminEtaVsmaxEta = new TH2D("C2DminEtaVsmaxEta", "C2DminEtaVsmaxEta", 
+					  100, 0, 5,
+					  100, 0, 5 );
       
       
       /* Store the pointers to object you wanna plot */
@@ -163,7 +166,8 @@ int main(int argc, char **argv){
 //        new histoContainer<TH2D> ( hhC2DcentreVsNcells         , TString("centre(????)"),   TString("N cells"),    TString("colz") ),
         new histoContainer<TH2D> ( hhC2Dcentres                , TString("X(cm)"),   TString("Y(cm)"),    TString("colz") ),
         new histoContainer<TH2D> ( hhC2DcentresEtaPhi          , TString("eta"),   TString("phi"),    TString("colz") ),
-    };
+        new histoContainer<TH2D> ( hhC2DminEtaVsmaxEta         , TString("minEta"),   TString("maxEta"),    TString("colz") )
+      };
 
 
     /* Loop Over Events */
@@ -272,11 +276,12 @@ int main(int argc, char **argv){
                 hhC2DptVsNcells->Fill( c2d.Pt(), c2d.ncells() );
                 
                 hHGCROCperC2D->Fill( c2d.HGCROCn() );
-                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.Centre().X()*c2d.Centre().X() + c2d.Centre().Y()*c2d.Centre().Y() ), c2d.ncells() );
+                hhC2DcentreVsNcells->Fill( TMath::Sqrt( c2d.centre().X()*c2d.centre().X() + c2d.centre().Y()*c2d.centre().Y() ), c2d.ncells() );
                 //c2d.print();
                 hhC2Dcentres->Fill(c2d.x(), c2d.y());
                 hhC2DcentresEtaPhi->Fill(c2d.Eta(), c2d.Phi());
-                
+                //hhC2DminEtaVsmaxEta->Fill(c2d.minEta(), c2d.maxEta());
+
                 /* loop over TC within the cluster */
                 for (unsigned itc=0; itc<c2d.cells().size(); itc++){
 		  HGCalDetId tcid( c2d.cells().at(itc) );
