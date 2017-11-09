@@ -219,8 +219,8 @@ int main(int argc, char **argv){
 
                 HGCROC roc = towerData.at(ihgcroc);
 
-                float HGCROCmipt = roc.getMipT();
-                float HGCROCenergy = roc.getEnergy();
+                float HGCROCmipt = roc.MipT();
+                float HGCROCenergy = roc.Energy();
                 int TCsN = roc.getTCsN();
                 
                 /* fill histos*/

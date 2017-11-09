@@ -20,7 +20,6 @@ Ntuplizer::Ntuplizer( HGC* detector, TString treename){
     _tree->Branch("cl_cl3d",     &_cl_cl3d);
   }
 
-
 }
 
 
@@ -39,11 +38,7 @@ void Ntuplizer::clear(){
 }
 
 
-
-
-void Ntuplizer::fillTree(int nEvt){
-
-  
+void Ntuplizer::fillTree(unsigned nEvt){
 
   for(int i=0; i<nEvt; i++){
 

@@ -91,25 +91,25 @@ void HGCROC::print(){
          << "wafer " << wafer << "; "
          << "third " << third << endl; 
     cout << "      Contains " << _tcs.size() << " TCs" << endl;
-    cout << "      Energy   " << getEnergy() << " GeV" << endl;
-    cout << "      Energy   " << getMipT()   << " MipT" << endl;
+    cout << "      Energy   " << Energy() << " GeV" << endl;
+    cout << "      Energy   " << MipT()   << " MipT" << endl;
     cout << "++++++++++++++++++++++++++++++++++++++++" << endl;
 
 }
 
 /* HGCROC energies */
-float HGCROC::getEnergy() {
+float HGCROC::Energy() {
         
     float ene=0;
 
     for(unsigned itc=0; itc<_tcs.size(); itc++)
-      ene += _tcs.at( itc ).energy();
+      ene += _tcs.at( itc ).Energy();
 
     return ene;
 
 }
 
-float HGCROC::getMipT() { 
+float HGCROC::MipT() { 
 
     float mipt=0;
 

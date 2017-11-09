@@ -29,7 +29,7 @@ class Ntuplizer {
   Ntuplizer(HGC* detector, TString treename);
   ~Ntuplizer();
   
-  void fillTree(int nEvt);
+  void fillTree(unsigned nEvt);
   TTree* getTree() {return _tree;}
 
   
