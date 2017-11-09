@@ -9,6 +9,7 @@
 
 /* ROOT */
 #include "TMath.h"
+#include "TLorentzVector.h"
 
 using namespace std;
 
@@ -51,10 +52,10 @@ class HGCTC {
     float y()         { return _z*sin(_phi)/sinh(_eta); }
     
     int correctedLayer();
-
     int third();
-
     float MipT();
+    TLorentzVector P4();
+    
 
     void print();
 

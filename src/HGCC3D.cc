@@ -6,6 +6,16 @@
 HGCC3D::HGCC3D() {};
 
 
+
+TLorentzVector HGCC3D::P4(){
+
+  TLorentzVector p4;
+  p4.SetPtEtaPhiE(_pt,_eta,_phi,_energy);
+  return p4;
+
+}
+
+
 void HGCC3D::print() {
 
     cout << "-------------" << endl;

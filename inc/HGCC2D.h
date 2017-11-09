@@ -12,6 +12,7 @@
 /* ROOT */
 #include "TMath.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
 
 
 using namespace std;
@@ -48,11 +49,10 @@ class HGCC2D {
     vector<unsigned int> cells()     { return _cells; }
 
     int correctedLayer();
-
     unsigned HGCROCn();
     TVector3 Centre();
-
     bool isTCcontained( HGCC2D tc );
+    TLorentzVector P4();
 
     void print();
 

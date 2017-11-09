@@ -70,9 +70,7 @@ void Ntuplizer::fillTree(unsigned nEvt){
       
       for( auto cl : cls ){	  
 
-	TLorentzVector C2D_tlv;
-	C2D_tlv.SetPtEtaPhiE(cl.Pt(),cl.Eta(),cl.Phi(),cl.Energy());
-
+	TLorentzVector C2D_tlv = cl.P4();
 	vector<unsigned int> TCs = cl.cells();	
 
 	HGCTC tc0 = _detector->getTC(TCs[0]);
@@ -81,8 +79,7 @@ void Ntuplizer::fillTree(unsigned nEvt){
 	for(auto tc : TCs){
 
 	  HGCTC TC = _detector->getTC(tc);
-	  TLorentzVector TC_tlv;
-	  TC_tlv.SetPtEtaPhiE(TC.Pt(),TC.Eta(),TC.Phi(),TC.Energy());
+	  TLorentzVector TC_tlv = TC.P4();
 
 	  int i_tc = _detector->getTC_index(tc);
 	  _tc_cl[i_tc] = _detector->getC2D_index(cl.id());
@@ -104,16 +101,14 @@ void Ntuplizer::fillTree(unsigned nEvt){
 
       for( auto c3d : c3ds ){	 
 
-	TLorentzVector C3D_tlv;
-	C3D_tlv.SetPtEtaPhiE(c3d.Pt(),c3d.Eta(),c3d.Phi(),c3d.Energy());
+	TLorentzVector C3D_tlv = c3d.P4();
 
 	vector<unsigned int> TCs = c3d.cells();
 
 	for(auto tc : TCs){
 
 	  HGCTC TC = _detector->getTC(tc);
-	  TLorentzVector TC_tlv;
-	  TC_tlv.SetPtEtaPhiE(TC.Pt(),TC.Eta(),TC.Phi(),TC.Energy());
+	  TLorentzVector TC_tlv = TC.P4();
 
 	  int i_tc = _detector->getTC_index(tc);
 	  _tc_c3d[i_tc] = _detector->getC3D_index(c3d.id());

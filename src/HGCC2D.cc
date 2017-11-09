@@ -49,6 +49,17 @@ TVector3 HGCC2D::Centre() {
 
 }
 
+
+
+TLorentzVector HGCC2D::P4(){
+
+  TLorentzVector p4;
+  p4.SetPtEtaPhiE(_pt,_eta,_phi,_energy);
+  return p4;
+
+}
+
+
 void HGCC2D::print() {
 
     cout << "-------------" << endl;

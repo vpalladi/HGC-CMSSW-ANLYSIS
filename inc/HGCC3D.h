@@ -12,7 +12,7 @@
 /* ROOT */
 #include "TMath.h"
 #include "TVector3.h"
-
+#include "TLorentzVector.h"
 
 using namespace std;
 
@@ -36,11 +36,14 @@ class HGCC3D {
     float Energy()    { return _energy; }
     float Eta()       { return _eta; }
     float Phi()       { return _phi; }
+
     unsigned int nclusters()    { return _clusters.size(); }
     vector<unsigned int> clusters()     { return _clusters; }
 
     unsigned int ncells()        { return _cells.size(); }
     vector<unsigned int> cells() { return _cells; }
+
+    TLorentzVector P4();
 
     void print();
 
