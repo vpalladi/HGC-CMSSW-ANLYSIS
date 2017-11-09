@@ -47,7 +47,9 @@ class HGCTC {
     float z()         { return _z; }    
     
     float Pt()        { return _energy/cosh(_eta); }
-
+    float x()         { return _z*cos(_phi)/sinh(_eta); }
+    float y()         { return _z*sin(_phi)/sinh(_eta); }
+    
     int correctedLayer();
 
     int third();

@@ -30,6 +30,7 @@ using namespace std;
 const int verboseLevel = 2;
 const bool flagTCs = true;
 const bool flagC2D = true;
+const bool flagC3D = true;
 const bool histos = false;
 const bool ntuple = true;
 
@@ -89,7 +90,7 @@ int main(int argc, char **argv){
       fList->Add( new TObjString(inputFileName) );
 
     /* build the detector */
-    HGC detector(fList, flagTCs, flagC2D, verboseLevel);
+    HGC detector(fList, flagTCs, flagC2D, flagC3D, verboseLevel);
 
     /* TApplication */
     TApplication app("app", &argc, argv);

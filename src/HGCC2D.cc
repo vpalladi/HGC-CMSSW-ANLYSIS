@@ -43,7 +43,7 @@ unsigned HGCC2D::HGCROCn() {
 TVector3 HGCC2D::Centre() {
 
     TVector3 vec;
-    vec.SetXYZ(_pt, _eta, _phi);
+    vec.SetXYZ(this->x(), this->y(), this->z());
 
     return vec;
 

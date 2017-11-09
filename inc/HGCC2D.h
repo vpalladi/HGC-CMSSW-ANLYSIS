@@ -29,8 +29,6 @@ class HGCC2D {
     void setEnergy(float energy)  { _energy = energy; }
     void setEta(float eta)      { _eta = eta; }
     void setPhi(float phi)      { _phi = phi; }
-    void setX(float x)          { _x = x; }
-    void setY(float y)          { _y = y; }
     void setZ(float z)          { _z = z; }
     void setLayer(int layer)    { _layer = layer; }
     void setCells(vector<unsigned int> cells)    { _cells = cells; }
@@ -42,8 +40,8 @@ class HGCC2D {
     float Energy()    { return _energy; }
     float Eta()       { return _eta; }
     float Phi()       { return _phi; }
-    float x()         { return _x; }
-    float y()         { return _y; }
+    float x()         { return _z*cos(_phi)/sinh(_eta); }
+    float y()         { return _z*sin(_phi)/sinh(_eta); }
     float z()         { return _z; }
     float layer()     { return _layer; }
     float ncells()    { return _cells.size(); }
@@ -66,8 +64,6 @@ class HGCC2D {
     float                _energy ;
     float                _eta    ;
     float                _phi    ;
-    float                _x    ;
-    float                _y    ;
     float                _z    ;
     int                  _layer  ;
     int                  _ncells ;
