@@ -20,8 +20,13 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
     _chain = new TChain("hgcalTriggerNtuplizer/HGCalTriggerNtuple");
     TIter next(fileList);
     while ( TObject *file = next() ){
-      _chain->Add( ((TObjString*)file)->GetString() );
+        if( _verboselevel >= 3 )
+            cout << " HGC >> Adding file '" << ((TObjString*)file)->GetString() << "' to the chain." << endl; 
+        _chain->Add( ((TObjString*)file)->GetString() );
     }
+    
+    if( _verboselevel >= 3 )
+        cout << " HGC >> Chain contains " << _chain->GetEntries() << " events." << endl; 
     
     if( _flagTCs ){
       //_chain->SetBranchAddress( "tc_n"        , &_tc_n         );
@@ -70,7 +75,7 @@ unsigned HGC::getEvents(){
 
 void HGC::getEvent( int evt ){
         
-    /* clear detector */
+    /* clear detector before getting the event */
     this->clear();
 
     /* Get Entry */
@@ -128,10 +133,8 @@ void HGC::getEvent( int evt ){
 	    }	
 	    c2d.setSubdet( subdet );
 	    
-
             /* fill the detector */
             this->addC2D( c2d );
-
             
         }
     }// end C2D
@@ -142,66 +145,84 @@ void HGC::getEvent( int evt ){
 void HGC::addTC( HGCTC tc ) { 
 
     const unsigned tcLayer = tc.correctedLayer();
-    _TC.emplace_back(tc);    
-    _TC_map[tc.id()] = _TC.size()-1;
-    _TC_layer[tcLayer].emplace_back( _TC.size()-1 );
+    
+    /* add tc to the map*/
+    _TCs[tc.id()] = tc;
+    
+    /* keep the pointer for easy access */
+    _TCtoStore.push_back( &_TCs[tc.id()] );
+    _TC_layer[tcLayer].push_back( &_TCs[tc.id()] );
 
-    HGCROC TD( tc );
-
-    /* add to the correct HGCROC */
-    bool found = false;
-    for(unsigned int ihgcroc=0; ihgcroc<_TD[tcLayer]->size(); ihgcroc++ ){ 
-        if( _TD[tcLayer]->at(ihgcroc).tcIsContained( tc ) ){
-            found = true;
-            _TD[tcLayer]->at(ihgcroc).addTC( tc );
-            break;
-        }
-    }
-
-    if( !found ) _TD[tcLayer]->push_back( TD );
+//    HGCROC TD( tc );
+//
+//    /* add to the correct HGCROC */
+//    bool found = false;
+//    for(unsigned int ihgcroc=0; ihgcroc<_TD[tcLayer]->size(); ihgcroc++ ){ 
+//        if( _TD[tcLayer]->at(ihgcroc).tcIsContained( tc ) ){
+//            found = true;
+//            _TD[tcLayer]->at(ihgcroc).addTC( tc );
+//            break;
+//        }
+//    }
+//
+//    if( !found ) _TD[tcLayer]->push_back( TD );
         
 }
 
 void HGC::addC2D(HGCC2D c2d) { 
-
-  _C2D.emplace_back(c2d);    
-  _C2D_map[c2d.id()] = _C2D.size()-1;
-  const unsigned c2dLayer = c2d.correctedLayer();
-  _C2D_layer[c2dLayer].emplace_back( _C2D.size()-1 );
-
-}
-
-
-HGCTC HGC::getTC(unsigned int ID){
-
-  return _TC[_TC_map[ID]];
-
-}
-
-HGCC2D HGC::getC2D(unsigned int ID){
-
-  return _C2D[_C2D_map[ID]];
+    
+    const unsigned c2dLayer = c2d.correctedLayer();
+    
+    /* add c2d to the map*/
+    _C2Ds[c2d.id()] = c2d;
+  
+    /* keep the pointer for easy access */
+    _C2DtoStore.push_back( &_C2Ds[c2d.id()] );    
+    _C2D_layer[c2dLayer].push_back( &_C2Ds[c2d.id()] );
 
 }
 
 
-vector<HGCTC>  HGC::getTC_layer(unsigned layer)  { 
+HGCTC HGC::getTC(unsigned ID){
 
-  vector<HGCTC> TCs;
-  for(auto i : _TC_layer[layer])
-    TCs.emplace_back(_TC[i]);
-  return TCs;  
+  return _TCs[ID];
 
 }
 
-vector<HGCC2D> HGC::getC2D_layer(unsigned layer) { 
+HGCC2D HGC::getC2D(unsigned ID){
 
-  vector<HGCC2D> C2Ds;
-  for(auto i : _C2D_layer[layer])
-    C2Ds.emplace_back(_C2D[i]);
-  return C2Ds;  
+  return _C2Ds[ID];
 
 }
+
+
+map<unsigned,HGCTC>  *HGC::getTCmap(){
+
+    return &_TCs;
+
+}
+
+
+map<unsigned,HGCC2D> *HGC::getC2Dmap(){
+
+    return &_C2Ds;
+
+}
+
+
+vector<HGCTC*>  HGC::getTC_layer(unsigned layer)  { 
+    
+    return _TC_layer[layer];
+
+}
+
+
+vector<HGCC2D*> HGC::getC2D_layer(unsigned layer) { 
+
+  return _C2D_layer[layer];  
+
+}
+
 
 vector<HGCROC> *HGC::getTD(unsigned layer) { 
     
@@ -209,15 +230,16 @@ vector<HGCROC> *HGC::getTD(unsigned layer) {
 
 }
 
-void HGC::getTCall( vector<HGCTC> &data ) {  
 
-  data = _TC;
+vector<HGCTC*> HGC::getTCall() {  
+
+    return _TCtoStore;
 
 }
 
-void HGC::getC2Dall( vector<HGCC2D> &data ) {  
+vector<HGCC2D*> HGC::getC2Dall() {  
 
-  data = _C2D;
+    return _C2DtoStore;
 
 }
 
@@ -230,17 +252,13 @@ void HGC::getTDall( vector<HGCROC> &data ) {
 
 void HGC::clear() {
 
-    for(unsigned i=0; i<Nlayers; i++){
-        _TD[i]->clear();
+    for(unsigned ilayer=0; ilayer<Nlayers; ilayer++){
+        _TC_layer[ilayer].clear();
+        _C2D_layer[ilayer].clear();
     }    
     
-    _TC.clear();
-    _C2D.clear();
-    _TC_map.clear();
-    _C2D_map.clear();
-    _TC_layer.clear();
-    _C2D_layer.clear();
-
+    _TCs.clear();
+    _C2Ds.clear();
 
 }
 

@@ -2,6 +2,7 @@
 /* include the .h */
 #include "HGCC2D.h"
 
+ClassImp(HGCC2D)
 
 HGCC2D::HGCC2D() {};
 
@@ -20,7 +21,7 @@ int HGCC2D::correctedLayer() {
 unsigned HGCC2D::HGCROCn() {
 
     vector<pair<int,int>> thirds;
-
+/* to be reviewed
     for( int itc=0; itc<_ncells; itc++ ) {
         bool found = false;
         HGCalDetId tcId( _cells.at(itc) );
@@ -32,7 +33,7 @@ unsigned HGCC2D::HGCROCn() {
         if( !found )
             thirds.push_back( newP );
     }
-
+*/
     return thirds.size();
 
 }

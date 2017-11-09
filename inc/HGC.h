@@ -32,21 +32,27 @@ public:
     bool areTCpresent()  { return _flagTCs; }
     bool areC2Dpresent() { return _flagC2D; }
 
+    /* access the events */
     unsigned getEvents();
-    void getEvent( int evt );
+    void     getEvent( int evt );
 
+    /* add */
     void addTC( HGCTC tc );
     void addC2D( HGCC2D c2d );
 
-    HGCTC getTC(unsigned ID);
+    /* get */
+    HGCTC  getTC(unsigned ID);
     HGCC2D getC2D(unsigned ID);
 
-    vector<HGCTC>  getTC_layer( unsigned layer );
-    vector<HGCC2D> getC2D_layer( unsigned layer );
+    map<unsigned,HGCTC>  *getTCmap();
+    map<unsigned,HGCC2D> *getC2Dmap();
+
+    vector<HGCTC*>  getTC_layer( unsigned layer );
+    vector<HGCC2D*> getC2D_layer( unsigned layer );
     vector<HGCROC> *getTD( unsigned layer );
 
-    void getTCall( vector<HGCTC> &data );
-    void getC2Dall( vector<HGCC2D> &data );
+    vector<HGCTC*> getTCall();
+    vector<HGCC2D*> getC2Dall();
     void getTDall( vector<HGCROC> &data );
 
     void clear();
@@ -90,13 +96,17 @@ private:
     vector<int>              *_cl_ncells = 0;
     vector<vector<unsigned>> *_cl_cells  = 0;
     
-    /* all events */
-    vector<HGCTC> _TC;
-    vector<HGCC2D> _C2D;
-    unordered_map<unsigned,unsigned> _TC_map;
-    unordered_map<unsigned,unsigned> _C2D_map;  
-    unordered_map<unsigned,vector<unsigned> >  _TC_layer;
-    unordered_map<unsigned,vector<unsigned> > _C2D_layer;
+    /* mapping all the GENPART TC C2D C3D */
+    map<unsigned,HGCTC>  _TCs;
+    map<unsigned,HGCC2D> _C2Ds;  
+
+    /* ordered preserved, needed fo storage purposes */
+    vector<HGCTC*>  _TCtoStore;
+    vector<HGCC2D*> _C2DtoStore;
+    
+    /* layer ordered */
+    vector<HGCTC*>  _TC_layer[Nlayers];
+    vector<HGCC2D*> _C2D_layer[Nlayers];
     vector<HGCROC> *_TD[Nlayers];
 
 };

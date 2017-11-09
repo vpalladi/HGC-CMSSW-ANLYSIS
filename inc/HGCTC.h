@@ -8,12 +8,13 @@
 #include "detId.h"
 
 /* ROOT */
+#include "TObject.h"
 #include "TMath.h"
 
 using namespace std;
 
 
-class HGCTC {
+class HGCTC : public TObject {
 
  public:
 
@@ -78,6 +79,8 @@ class HGCTC {
     float    _eta       ;
     float    _phi       ;
     float    _z         ;
+
+    ClassDef(HGCTC,1)
 
 };
 

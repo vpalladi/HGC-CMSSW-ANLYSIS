@@ -23,7 +23,7 @@ BIN_DIR = ./bin
 
 # root
 ROOT_CFLAGS = $(shell root-config --cflags)
-ROOT_LIBS  = $(shell root-config --libs)
+#ROOT_LIBS  = $(shell root-config --libs)
 ROOT_GLIBS = $(shell root-config --glibs)
 
 # Boost
@@ -52,13 +52,13 @@ SOURCES_CC  := $(wildcard $(SRC_DIR)/*.cc)
 OBJ         := $(SOURCES_CC:$(SRC_DIR)/%.cc=$(OBJ_DIR)/%.o)
 
 INCLUDES_HH := $(wildcard $(INC_DIR)/*.h)
-
+DICT_H = $(INC_DIR)/HGCC2D.h 
 
 all: $(EXE) 
 
 $(EXE): %.exe: %.cpp $(OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) -o bin/$(notdir $@) $< $(CXXFLAGS) $(CXXLIBS) -I$(INC_DIR) $(OBJ) 
+	$(CXX) -o bin/$(notdir $@) DictHGCC2D.cxx DictHGCTC.cxx $< $(CXXFLAGS) $(CXXLIBS) -I$(INC_DIR) $(OBJ) 
 
 $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.cc
 	@mkdir -p $(OBJ_DIR)
@@ -67,6 +67,15 @@ $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.cc
 clean:
 	rm -rf $(BIN_DIR)
 	rm -rf $(OBJ_DIR)
+
+init:
+	@mkdir -p $(INC_DIR)
+	@mkdir -p $(SRC_DIR)
+
+dict:
+	rootcint -f DictHGCTC.cxx -c inc/HGCTC.h HGCTClinkDef.h
+	rootcint -f DictHGCC2D.cxx -c inc/HGCC2D.h HGCC2DlinkDef.h
+
 echo:
 #	echo $(HEPMCFLAGS)
 	echo $(EXE)

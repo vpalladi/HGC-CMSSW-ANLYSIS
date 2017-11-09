@@ -10,6 +10,7 @@
 #include "detId.h"
 
 /* ROOT */
+#include "TObject.h"
 #include "TMath.h"
 #include "TVector3.h"
 
@@ -17,7 +18,7 @@
 using namespace std;
 
 
-class HGCC2D {
+class HGCC2D : public TObject {
 
  public:
 
@@ -80,6 +81,8 @@ class HGCC2D {
     int                  _layer  ;
     int                  _ncells ;
     vector<unsigned>     _cells  ; // vector of HGCDetId for all the TC 
+
+    ClassDef(HGCC2D, 1)
 
 };
 

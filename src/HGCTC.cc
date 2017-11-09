@@ -2,6 +2,8 @@
 /* incllude the .h */
 #include <HGCTC.h>
 
+ClassImp(HGCTC)
+
 HGCTC::HGCTC() {;}
 
 const float triggerCellLsbBeforeCompression = 100./1024.;
