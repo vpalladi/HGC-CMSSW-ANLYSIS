@@ -169,16 +169,18 @@ void HGC::addTC( HGCTC tc ) {
         
 }
 
-void HGC::addC2D(HGCC2D c2d) { 
+void HGC::addC2D( HGCC2D c2d ) { 
     
     const unsigned c2dLayer = c2d.correctedLayer();
     
-    /* add c2d to the map*/
+    /* add c2d to the map */
+    std::cout << c2d.id() << std::endl;
     _C2Ds[c2d.id()] = c2d;
   
     /* keep the pointer for easy access */
-    _C2DtoStore.push_back( &_C2Ds[c2d.id()] );    
-    _C2D_layer[c2dLayer].push_back( &_C2Ds[c2d.id()] );
+    _C2DtoStore.push_back( &_C2Ds[c2d.id()] );
+    std::cout << c2dLayer << std::endl;
+//    _C2D_layer[c2dLayer].push_back( &_C2Ds[c2d.id()] );
 
 }
 

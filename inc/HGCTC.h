@@ -3,6 +3,7 @@
 
 /* c/c++ */
 #include <iostream>
+#include <map>    // needed to generate the dict
 
 /* mylibs */
 #include "detId.h"
@@ -19,38 +20,39 @@ class HGCTC : public TObject {
  public:
 
     HGCTC();
+    ~HGCTC();
 
     /* set methods */
-    void setId(unsigned id)          { _id = id; }
-    void setSubdet(int subdet)       { _subdet = subdet; }
-    void setZSide(int zside)         { _zside = zside; }
-    void setLayer(int layer)         { _layer = layer; }
-    void setWafer(int wafer)         { _wafer = wafer; }
-    void setWaferType(int wafertype) { _wafertype = wafertype; }
-    void setCell(int cell)           { _cell = cell; }
-    void setData(int data)           { _data = data; }
-    void setEnergy(float energy)     { _energy = energy; }
-    void setEta(float eta)           { _eta = eta; }
-    void setPhi(float phi)           { _phi = phi; }
-    void setZ(float z)               { _z = z; }
+    void     setId(unsigned id)          ;
+    void     setSubdet(int subdet)       ;
+    void     setZSide(int zside)         ;
+    void     setLayer(int layer)         ;
+    void     setWafer(int wafer)         ;
+    void     setWaferType(int wafertype) ;
+    void     setCell(int cell)           ;
+    void     setData(int data)           ;
+    void     setEnergy(float energy)     ;
+    void     setEta(float eta)           ;
+    void     setPhi(float phi)           ;
+    void     setZ(float z)               ;
 
     /* get methods */
-    unsigned id()   { return _id; }
-    int subdet()    { return _subdet; }
-    int zside()     { return _zside; }
-    int layer()     { return _layer; }
-    int wafer()     { return _wafer; }
-    int waferyype() { return _wafertype; }
-    int cell()      { return _cell; }
-    unsigned data() { return _data; }
-    float Energy()  { return _energy; }
-    float Eta()     { return _eta; }
-    float Phi()     { return _phi; }
-    float z()       { return _z; }  
+    unsigned id()        ;
+    int      subdet()    ;
+    int      zside()     ;
+    int      layer()     ;
+    int      wafer()     ;
+    int      waferyype() ;
+    int      cell()      ;
+    unsigned data()      ;
+    float    Energy()    ;
+    float    Eta()       ;
+    float    Phi()       ;
+    float    z()         ;  
 
     /* get Pt and MipT */
-    float Pt()      { return _energy/cosh(_eta); }
-    float MipT();
+    float Pt()           ;
+    float MipT()         ;
 
     /* Layer is corrected using subdet, first layer id is 1 NOT 0 */
     int correctedLayer();
@@ -67,6 +69,8 @@ class HGCTC : public TObject {
 
  private:
 
+    float _MipT()         ;
+
     unsigned _id        ;
     int      _subdet    ;
     int      _zside     ;
@@ -79,6 +83,10 @@ class HGCTC : public TObject {
     float    _eta       ;
     float    _phi       ;
     float    _z         ;
+
+    /* derived */
+    float    _pt        ;
+    float    _mipt        ;
 
     ClassDef(HGCTC,1)
 

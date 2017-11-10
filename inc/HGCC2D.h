@@ -3,6 +3,7 @@
 
 /* c/c++ */
 #include <iostream>
+#include <map>     // needed to correctly genreate dictionary
 #include <vector>
 #include <utility> // pair
 
@@ -23,33 +24,34 @@ class HGCC2D : public TObject {
  public:
 
     HGCC2D();
+    ~HGCC2D();
 
     /* set C2D parameters */
-    void setId(unsigned id)                  { _id = id; }
-    void setSubdet(int subdet)               { _subdet = subdet; }
-    void setPt(float pt)                     { _pt = pt; }
-    void setEnergy(float energy)             { _energy = energy; }
-    void setEta(float eta)                   { _eta = eta; }
-    void setPhi(float phi)                   { _phi = phi; }
-    void setX(float x)                       { _x = x; }
-    void setY(float y)                       { _y = y; }
-    void setZ(float z)                       { _z = z; }
-    void setLayer(int layer)                 { _layer = layer; }
-    void setCells(vector<unsigned> cells)    { _cells = cells; }
-
-    /* get C2D parameters */
-    unsigned id()            { return _id; }
-    int      subdet()        { return _subdet; }
-    float    Pt()            { return _pt; }
-    float    Energy()        { return _energy; }
-    float    Eta()           { return _eta; }
-    float    Phi()           { return _phi; }
-    float    x()             { return _x; }
-    float    y()             { return _y; }
-    float    z()             { return _z; }
-    float    layer()         { return _layer; }
-    float    ncells()        { return _cells.size(); }
-    vector<unsigned> cells() { return _cells; }
+    void setId(unsigned id)               ;
+    void setSubdet(int subdet)            ;
+    void setPt(float pt)                  ;
+    void setEnergy(float energy)          ;
+    void setEta(float eta)                ;
+    void setPhi(float phi)                ;
+    void setX(float x)                    ;
+    void setY(float y)                    ;
+    void setZ(float z)                    ;
+    void setLayer(int layer)              ;
+    void setCells(vector<unsigned> cells) ;
+                                          
+    /* get C2D parameters */    
+    unsigned         id()                 ;
+    int              subdet()             ;
+    float            Pt()                 ;
+    float            Energy()             ;
+    float            Eta()                ;
+    float            Phi()                ;
+    float            x()                  ;
+    float            y()                  ;
+    float            z()                  ;
+    float            layer()              ;
+    unsigned         nCells()              ;
+    vector<unsigned> cells()              ;
 
     /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */
     int correctedLayer();
@@ -63,7 +65,6 @@ class HGCC2D : public TObject {
     void getEtaSpan( double &minEta, double &maxEta );
     void getPhiSpan( double &minPhi, double &maxPhi );
     
-
     /* print to stdout some useful info */
     void print();
 
@@ -79,7 +80,7 @@ class HGCC2D : public TObject {
     float                _y      ;
     float                _z      ;
     int                  _layer  ;
-    int                  _ncells ;
+    unsigned             _ncells ;
     vector<unsigned>     _cells  ; // vector of HGCDetId for all the TC 
 
     ClassDef(HGCC2D, 1)

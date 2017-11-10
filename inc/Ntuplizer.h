@@ -38,8 +38,6 @@ class Ntuplizer {
   HGCTC*  _tc;
   HGCC2D* _c2d;
 
-  void clear();
-
 };
 
 
