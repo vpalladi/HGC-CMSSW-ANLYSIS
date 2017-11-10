@@ -27,10 +27,10 @@
 using namespace std;
 
 const int verboselevel = 3;
-const bool flagTCs = false;
-const bool flagC2D = true;
+const bool flagTCs = true;
+const bool flagC2D = false;
 //const bool flagHistos = false;
-const bool flagNtuple = false;
+const bool flagNtuple = true;
 
 int main(int argc, char **argv){
 
