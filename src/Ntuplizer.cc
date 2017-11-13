@@ -1,68 +1,43 @@
 #include "Ntuplizer.h"
 #include <TLorentzVector.h>
 
-Ntuplizer::Ntuplizer( HGC* detector, TString treename){
+Ntuplizer::Ntuplizer( HGC* detector, TString treename ){
 
-  _tree = new TTree(treename,treename);
-  _detector = detector;
+    _fileOut = new TFile("test.root", "RECREATE");
+    _tree = new TTree(treename, treename);
+    _detector = detector;
 
   if(_detector->areTCpresent()){
-    _tree->Branch("tc_pt",     &_tc_pt);
-    _tree->Branch("tc_HGClayer",     &_tc_HGClayer);
-    _tree->Branch("tc_cl",      &_tc_cl);
-    _tree->Branch("tc_dR_cl",   &_tc_dR_cl);    
-    _tree->Branch("tc_c3d",     &_tc_c3d);
-    _tree->Branch("tc_dR_c3d",  &_tc_dR_c3d);
-  }
-
-  if(_detector->areC2Dpresent()){
-    _tree->Branch("cl_HGClayer",     &_cl_HGClayer);
-    _tree->Branch("cl_cl3d",     &_cl_cl3d);
-  }
-
-}
-
-
-void Ntuplizer::clear(){
-
-  _tc_pt.clear();
-  _tc_HGClayer.clear();
-  _tc_cl.clear();
-  _tc_dR_cl.clear();
-  _tc_c3d.clear();
-  _tc_dR_c3d.clear();
-
-  _cl_HGClayer.clear();
-  _cl_cl3d.clear();
-
-}
-
-
-void Ntuplizer::fillTree(unsigned nEvt){
-
-  for(int i=0; i<nEvt; i++){
-
-    this->clear();
-    _detector->getEvent(i);
-    
-    if(_detector->areTCpresent()){
-
-      vector<HGCTC> tcs;
-      _detector->getTCall( tcs );
-      
-      for( auto tc : tcs ){
-	  
-	_tc_pt.emplace_back(tc.Pt());
-	_tc_HGClayer.emplace_back(tc.correctedLayer());
-	
-      }      
-
+        _tree->Branch("TC", detector->getTCmap() );
     }
+  if(_detector->areC2Dpresent()){
+        _tree->Branch("C2D", detector->getC2Dmap() );
+    }
+  
+}
 
-    
-    if(_detector->areC2Dpresent()){
 
-      vector<HGCC2D> cls;
+Ntuplizer::~Ntuplizer(){
+
+}
+
+
+void Ntuplizer::fillTree(){
+
+  _tree->Fill();
+
+}
+
+
+void Ntuplizer::write(){
+
+    _tree->Print();
+    _tree->Write();
+    _fileOut->Close();
+
+}
+
+/*      vector<HGCC2D> cls;
       _detector->getC2Dall( cls );
 
       _tc_cl.resize(_tc_pt.size(),-1);
@@ -120,9 +95,6 @@ void Ntuplizer::fillTree(unsigned nEvt){
 
     }
     
-    _tree->Fill();
-
-  }
+*/
 
 
-}

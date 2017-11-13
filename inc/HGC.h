@@ -15,6 +15,7 @@
 /* ROOT */
 #include "TMath.h"
 #include "TChain.h"
+#include "TTree.h"
 #include "TCollection.h"
 #include "TList.h"
 
@@ -34,28 +35,31 @@ public:
     bool areC2Dpresent() { return _flagC2D; }
     bool areC3Dpresent() { return _flagC3D; }
 
+    /* access the events */
     unsigned getEvents();
-    void getEvent(int evt);
+    void     getEvent( int evt );
 
+    /* add */
     void addTC( HGCTC tc );
-    void addC2D(HGCC2D c2d);
+    void addC2D( HGCC2D c2d );
     void addC3D(HGCC3D c3d);
-
-    HGCTC getTC(unsigned int ID);
-    HGCC2D getC2D(unsigned int ID);
+  
+    /* get */
+    HGCTC  getTC(unsigned ID);
+    HGCC2D getC2D(unsigned ID);
     HGCC3D getC3D(unsigned int ID);
-    unsigned int getTC_index(unsigned int ID);
-    unsigned int getC2D_index(unsigned int ID);
-    unsigned int getC3D_index(unsigned int ID);
-    vector<HGCTC>  getTC_layer(unsigned layer);
-    vector<HGCC2D> getC2D_layer(unsigned layer);
 
-    vector<HGCROC> *getTD(unsigned layer);
-
-    void getTCall( vector<HGCTC> &data );
-    void getC2Dall( vector<HGCC2D> &data );
-    void getC3Dall( vector<HGCC3D> &data );
+    vector<HGCTC*> getTCall();
+    vector<HGCC2D*> getC2Dall();
     void getTDall( vector<HGCROC> &data );
+
+    vector<HGCTC*>  getTC_layer( unsigned layer );
+    vector<HGCC2D*> getC2D_layer( unsigned layer );
+    vector<HGCC3D*> getC3D_layer( unsigned layer );
+    vector<HGCROC> *getTD( unsigned layer );
+
+    map<unsigned,HGCTC>  *getTCmap();
+    map<unsigned,HGCC2D> *getC2Dmap();
 
     void clear();
 
@@ -70,45 +74,93 @@ private:
     int _evt;
 
     /* Branches */
+  
     // Trigger Cells
-    vector<unsigned int> *_tc_id        = 0;
-    vector<int         > *_tc_subdet    = 0;
-    vector<int         > *_tc_zside     = 0;
-    vector<int         > *_tc_layer     = 0;
-    vector<int         > *_tc_wafer     = 0;
-    vector<int         > *_tc_wafertype = 0;
-    vector<int         > *_tc_cell      = 0;
-    vector<unsigned int> *_tc_data      = 0;
-    vector<float       > *_tc_energy    = 0;
-    vector<float       > *_tc_eta       = 0;
-    vector<float       > *_tc_phi       = 0;
-    vector<float       > *_tc_z         = 0;
-    // C2D
-    vector<unsigned int>          *_cl_id     = 0;
-    vector<float>                 *_cl_pt     = 0;
-    vector<float>                 *_cl_energy = 0;
-    vector<float>                 *_cl_eta    = 0;
-    vector<float>                 *_cl_phi    = 0;
-    vector<int>                   *_cl_layer  = 0;
-    vector<vector<unsigned int> > *_cl_cells  = 0;
-    // C3D
-    vector<unsigned int>          *_cl3d_id     = 0;
-    vector<float>                 *_cl3d_pt     = 0;
-    vector<float>                 *_cl3d_energy = 0;
-    vector<float>                 *_cl3d_eta    = 0;
-    vector<float>                 *_cl3d_phi    = 0;      
-    vector<vector<unsigned int> > *_cl3d_clusters  = 0;
+    int                 _tc_n;
+    vector<unsigned>   *_tc_id        = 0;
+    vector<int>        *_tc_subdet    = 0;
+    vector<int>        *_tc_zside     = 0;
+    vector<int>        *_tc_layer     = 0;
+    vector<int>        *_tc_wafer     = 0;
+    vector<int>        *_tc_wafertype = 0;
+    vector<int>        *_tc_cell      = 0;
+    vector<unsigned>   *_tc_data      = 0;
+    vector<float>      *_tc_energy    = 0;
+    vector<float>      *_tc_eta       = 0;
+    vector<float>      *_tc_phi       = 0;
+    vector<float>      *_tc_z         = 0;
 
+    bool _missing__tc_n         ;
+    bool _missing__tc_id        ;
+    bool _missing__tc_subdet    ;
+    bool _missing__tc_zside     ;
+    bool _missing__tc_layer     ;
+    bool _missing__tc_wafer     ;
+    bool _missing__tc_wafertype ;
+    bool _missing__tc_cell      ;
+    bool _missing__tc_data      ;
+    bool _missing__tc_energy    ;
+    bool _missing__tc_eta       ;
+    bool _missing__tc_phi       ;
+    bool _missing__tc_z         ;
+  
+  
+    // C2D
+    int                       _cl_n            ;
+    vector<float>            *_cl_pt       = 0 ;
+    vector<float>            *_cl_energy   = 0 ;
+    vector<float>            *_cl_eta      = 0 ;
+    vector<float>            *_cl_phi      = 0 ;
+    vector<float>            *_cl_x        = 0 ;
+    vector<float>            *_cl_y        = 0 ;
+    vector<float>            *_cl_z        = 0 ;
+    vector<int>              *_cl_layer    = 0 ;
+    vector<int>              *_cl_cells_n  = 0 ;
+    vector<vector<unsigned>> *_cl_cells_id = 0 ;
+
+    bool _missing__cl_n        ;
+    bool _missing__cl_pt       ;
+    bool _missing__cl_energy   ;
+    bool _missing__cl_eta      ;
+    bool _missing__cl_phi      ;
+    bool _missing__cl_x        ;
+    bool _missing__cl_y        ;
+    bool _missing__cl_z        ;
+    bool _missing__cl_layer    ;
+    bool _missing__cl_cells_n  ;
+    bool _missing__cl_cells_id ;
+
+  
+    // C3D
+    vector<unsigned int>          *_cl3d_id       = 0;
+    vector<float>                 *_cl3d_pt       = 0;
+    vector<float>                 *_cl3d_energy   = 0;
+    vector<float>                 *_cl3d_eta      = 0;
+    vector<float>                 *_cl3d_phi      = 0;      
+    vector<vector<unsigned int> > *_cl3d_clusters = 0;
+
+    bool _missing__cl3d_id      ;
+    bool _missing__cl3d_pt      ;
+    bool _missing__cl3d_energy  ;
+    bool _missing__cl3d_eta     ;
+    bool _missing__cl3d_phi     ;      
+    bool _missing__cl3d_clusters;
+  
+  
+    /* mapping all the GENPART TC C2D C3D */
+    map<unsigned,HGCTC>  _TCs;
+    map<unsigned,HGCC2D> _C2Ds;  
+    map<unsigned,HGCC3D> _C3Ds;  
     
-    /* all events */
-    vector<HGCTC> _TC;
-    vector<HGCC2D> _C2D;
-    vector<HGCC3D> _C3D;
-    unordered_map<unsigned int,unsigned int> _TC_map;
-    unordered_map<unsigned int,unsigned int> _C2D_map; 
-    unordered_map<unsigned int,unsigned int> _C3D_map; 
-    unordered_map<unsigned int,vector<unsigned int> >  _TC_layer;
-    unordered_map<unsigned int,vector<unsigned int> > _C2D_layer;
+    /* ordered preserved, needed fo storage purposes */
+    vector<HGCTC*>  _TCtoStore;
+    vector<HGCC2D*> _C2DtoStore;
+    vector<HGCC3D*> _C2DtoStore;
+  
+    /* layer ordered */
+    vector<HGCTC*>  _TC_layer[Nlayers];
+    vector<HGCC2D*> _C2D_layer[Nlayers];
+  
     vector<HGCROC> *_TD[Nlayers];
 
 };
