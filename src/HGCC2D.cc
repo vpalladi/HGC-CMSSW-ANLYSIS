@@ -82,7 +82,7 @@ TVector3 HGCC2D::centre() {
 
 bool HGCC2D::isTCcontained( HGCC2D tc ){
 
-    for(int itc=0; itc<tc._ncells; itc++)
+    for(unsigned itc=0; itc<tc._ncells; itc++)
         if( find(_cells.begin(), _cells.end(), tc._cells.at(itc) ) == _cells.end() )
             return false;
 

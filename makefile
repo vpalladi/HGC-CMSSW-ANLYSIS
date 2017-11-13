@@ -1,9 +1,7 @@
 
 
-
 # THE compiler
 CXX = g++
-
 
 
 ####################
@@ -56,7 +54,7 @@ SOURCES_CC  := $(wildcard $(SRC_DIR)/*.cc)
 OBJ         := $(SOURCES_CC:$(SRC_DIR)/%.cc=$(OBJ_DIR)/%.o)
 
 # all the dictionaries 
-DICTS     = HGCC2D HGCTC ### add here the classes you wanna add to ROOT ###
+DICTS     = HGCC3D HGCC2D HGCTC ### add here the classes you wanna add to ROOT ###
 DICTS_CXX = $(DICTS:%=Dict%.cxx)
 DICTS_H   = $(DICTS:%=$(INC_DIR)/%.h)
 
@@ -77,7 +75,6 @@ $(OBJ): $(OBJ_DIR)%.o: $(SRC_DIR)%.cc
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -I$(INC_DIR) -c $< -o $@
 
-
 clean:
 	rm -rf $(BIN_DIR)
 	rm -rf $(OBJ_DIR)
@@ -86,7 +83,6 @@ clean:
 init:
 	@mkdir -p $(INC_DIR)
 	@mkdir -p $(SRC_DIR)
-
 
 dict: $(DICTS)
 	@echo ROOT dictionaries generated 

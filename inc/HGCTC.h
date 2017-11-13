@@ -35,6 +35,8 @@ class HGCTC : public TObject {
     void     setEnergy(float energy)     ;
     void     setEta(float eta)           ;
     void     setPhi(float phi)           ;
+    void     setX(float z)               ;
+    void     setY(float z)               ;
     void     setZ(float z)               ;
 
     /* get methods */
@@ -49,15 +51,13 @@ class HGCTC : public TObject {
     float    Energy()    ;
     float    Eta()       ;
     float    Phi()       ;
-    float    z()         ;  
-  
-    float Pt()        { return _energy/cosh(_eta); }
-    float x()         { return _z*cos(_phi)/sinh(_eta); } 
-    float y()         { return _z*sin(_phi)/sinh(_eta); }
+    float    z()         ;
+    float    x()         { return _z*cos(_phi)/sinh(_eta); }
+    float    y()         { return _z*sin(_phi)/sinh(_eta); }
   
     /* get Pt and MipT */
     float Pt()           ;
-    float MipT()         ;
+    //float MipT()         ;
 
     /* Layer is corrected using subdet, first layer id is 1 NOT 0 */
     int correctedLayer();
@@ -68,7 +68,6 @@ class HGCTC : public TObject {
     TLorentzVector P4();
   
     /* get some useful info printed on the stdout */
-
     void print();
     
     /* operators overloading */
@@ -77,7 +76,7 @@ class HGCTC : public TObject {
 
  private:
 
-    float _MipT()         ;
+    float _MipT()       ;
 
     unsigned _id        ;
     int      _subdet    ;
@@ -90,6 +89,8 @@ class HGCTC : public TObject {
     float    _energy    ;
     float    _eta       ;
     float    _phi       ;
+    float    _x         ;
+    float    _y         ;
     float    _z         ;
 
     /* derived */

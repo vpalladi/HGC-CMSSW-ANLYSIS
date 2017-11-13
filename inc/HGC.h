@@ -3,7 +3,7 @@
 
 /* c/c++ */
 #include <iostream>
-#include <unordered_map>
+#include <map>
 
 /* mylibs */
 #include "detId.h"
@@ -47,10 +47,11 @@ public:
     /* get */
     HGCTC  getTC(unsigned ID);
     HGCC2D getC2D(unsigned ID);
-    HGCC3D getC3D(unsigned int ID);
+    HGCC3D getC3D(unsigned ID);
 
     vector<HGCTC*> getTCall();
     vector<HGCC2D*> getC2Dall();
+    vector<HGCC3D*> getC3Dall();
     void getTDall( vector<HGCROC> &data );
 
     vector<HGCTC*>  getTC_layer( unsigned layer );
@@ -60,6 +61,7 @@ public:
 
     map<unsigned,HGCTC>  *getTCmap();
     map<unsigned,HGCC2D> *getC2Dmap();
+    map<unsigned,HGCC3D> *getC3Dmap();
 
     void clear();
 
@@ -106,17 +108,17 @@ private:
   
   
     // C2D
-    int                       _cl_n            ;
-    vector<float>            *_cl_pt       = 0 ;
-    vector<float>            *_cl_energy   = 0 ;
-    vector<float>            *_cl_eta      = 0 ;
-    vector<float>            *_cl_phi      = 0 ;
-    vector<float>            *_cl_x        = 0 ;
-    vector<float>            *_cl_y        = 0 ;
-    vector<float>            *_cl_z        = 0 ;
-    vector<int>              *_cl_layer    = 0 ;
-    vector<int>              *_cl_cells_n  = 0 ;
-    vector<vector<unsigned>> *_cl_cells_id = 0 ;
+    int                       _cl_n           ;
+    vector<float>            *_cl_pt       = 0;
+    vector<float>            *_cl_energy   = 0;
+    vector<float>            *_cl_eta      = 0;
+    vector<float>            *_cl_phi      = 0;
+    vector<float>            *_cl_x        = 0;
+    vector<float>            *_cl_y        = 0;
+    vector<float>            *_cl_z        = 0;
+    vector<int>              *_cl_layer    = 0;
+    vector<int>              *_cl_cells_n  = 0;
+    vector<vector<unsigned>> *_cl_cells_id = 0;
 
     bool _missing__cl_n        ;
     bool _missing__cl_pt       ;
@@ -132,12 +134,12 @@ private:
 
   
     // C3D
-    vector<unsigned int>          *_cl3d_id       = 0;
-    vector<float>                 *_cl3d_pt       = 0;
-    vector<float>                 *_cl3d_energy   = 0;
-    vector<float>                 *_cl3d_eta      = 0;
-    vector<float>                 *_cl3d_phi      = 0;      
-    vector<vector<unsigned int> > *_cl3d_clusters = 0;
+    vector<unsigned>         *_cl3d_id       = 0;
+    vector<float>            *_cl3d_pt       = 0;
+    vector<float>            *_cl3d_energy   = 0;
+    vector<float>            *_cl3d_eta      = 0;
+    vector<float>            *_cl3d_phi      = 0;      
+    vector<vector<unsigned>> *_cl3d_clusters = 0;
 
     bool _missing__cl3d_id      ;
     bool _missing__cl3d_pt      ;
@@ -146,21 +148,20 @@ private:
     bool _missing__cl3d_phi     ;      
     bool _missing__cl3d_clusters;
   
-  
+
     /* mapping all the GENPART TC C2D C3D */
     map<unsigned,HGCTC>  _TCs;
     map<unsigned,HGCC2D> _C2Ds;  
     map<unsigned,HGCC3D> _C3Ds;  
     
     /* ordered preserved, needed fo storage purposes */
-    vector<HGCTC*>  _TCtoStore;
-    vector<HGCC2D*> _C2DtoStore;
-    vector<HGCC3D*> _C2DtoStore;
+    vector<HGCTC*>  _TCvec;
+    vector<HGCC2D*> _C2Dvec;
+    vector<HGCC3D*> _C3Dvec;
   
     /* layer ordered */
     vector<HGCTC*>  _TC_layer[Nlayers];
     vector<HGCC2D*> _C2D_layer[Nlayers];
-  
     vector<HGCROC> *_TD[Nlayers];
 
 };

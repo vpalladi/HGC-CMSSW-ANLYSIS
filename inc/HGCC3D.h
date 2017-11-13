@@ -3,45 +3,47 @@
 
 /* c/c++ */
 #include <iostream>
+#include <map>     // needed to correctly genreate dictionary
 #include <vector>
-#include <utility> // pair
 
 /* mylibs */
 #include "detId.h"
 
 /* ROOT */
-#include "TMath.h"
-#include "TVector3.h"
+#include "TObject.h"
 #include "TLorentzVector.h"
 
 using namespace std;
 
 
-class HGCC3D {
+class HGCC3D : public TObject {
 
  public:
 
     HGCC3D();
+    ~HGCC3D();
 
-    void setId(unsigned int id) { _id = id; }   
-    void setPt(float pt)        { _pt = pt; }
-    void setEnergy(float energy)  { _energy = energy; }
-    void setEta(float eta)      { _eta = eta; }
-    void setPhi(float phi)      { _phi = phi; }
-    void setClusters(vector<unsigned int> clusters)    { _clusters = clusters; }
-    void setCells(vector<unsigned int> cells)    { _cells = cells; }
+    /* set methods*/
+    void setId(unsigned id)                     ;
+    void setPt(float pt)                        ;
+    void setEnergy(float energy)                ;
+    void setEta(float eta)                      ;
+    void setPhi(float phi)                      ;
+    void setClusters(vector<unsigned> clusters) ;
+    void setCells(vector<unsigned> cells)       ;
 
-    unsigned int id()        { return _id; }   
-    float Pt()        { return _pt; }
-    float Energy()    { return _energy; }
-    float Eta()       { return _eta; }
-    float Phi()       { return _phi; }
+    /* get methods */
+    unsigned id()  ;
+    float Pt()     ;
+    float Energy() ;
+    float Eta()    ;
+    float Phi()    ;
 
-    unsigned int nclusters()    { return _clusters.size(); }
-    vector<unsigned int> clusters()     { return _clusters; }
+    unsigned         nclusters() ;
+    vector<unsigned> clusters()  ;
 
-    unsigned int ncells()        { return _cells.size(); }
-    vector<unsigned int> cells() { return _cells; }
+    unsigned         ncells()    ;
+    vector<unsigned> cells()     ;
 
     TLorentzVector P4();
 
@@ -49,13 +51,15 @@ class HGCC3D {
 
  private:
 
-    unsigned int         _id     ;
-    float                _pt     ;
-    float                _energy ;
-    float                _eta    ;
-    float                _phi    ;
-    vector<unsigned int> _clusters  ; // vector of HGCDetId for all the C2D 
-    vector<unsigned int> _cells  ; // vector of HGCDetId for all the TC
+    unsigned         _id       ;
+    float            _pt       ;
+    float            _energy   ;
+    float            _eta      ;
+    float            _phi      ;
+    vector<unsigned> _clusters ; // vector of HGCDetId for all the C2D
+    vector<unsigned> _cells    ; // vector of HGCDetId for all the TC
+
+    ClassDef( HGCC3D,1 )
 
 };
 

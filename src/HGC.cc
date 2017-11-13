@@ -31,44 +31,44 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, bool flagC3D, int verbose
         cout << " HGC >> Chain contains " << _chain->GetEntries() << " events." << endl; 
     
     if( _flagTCs ){
-        _missing__tc_n         = ( _chain->SetBranchAddress( "tc_n"        , &_tc_n         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_id        = ( _chain->SetBranchAddress( "tc_id"       , &_tc_id        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_subdet    = ( _chain->SetBranchAddress( "tc_subdet"   , &_tc_subdet    ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_zside     = ( _chain->SetBranchAddress( "tc_zside"    , &_tc_zside     ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_layer     = ( _chain->SetBranchAddress( "tc_layer"    , &_tc_layer     ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_wafer     = ( _chain->SetBranchAddress( "tc_wafer"    , &_tc_wafer     ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_wafertype = ( _chain->SetBranchAddress( "tc_wafertype", &_tc_wafertype ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_cell      = ( _chain->SetBranchAddress( "tc_cell"     , &_tc_cell      ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_data      = ( _chain->SetBranchAddress( "tc_data"     , &_tc_data      ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_energy    = ( _chain->SetBranchAddress( "tc_energy"   , &_tc_energy    ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_eta       = ( _chain->SetBranchAddress( "tc_eta"      , &_tc_eta       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_phi       = ( _chain->SetBranchAddress( "tc_phi"      , &_tc_phi       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_z         = ( _chain->SetBranchAddress( "tc_z"        , &_tc_z         ) == TTree::kMissingBranch ) ? true : false ;
-    }
-
-    // C2D
-    if( _flagC2D ) {
-        _missing__cl_n         = ( _chain->SetBranchAddress("cl_n"         , &_cl_n         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_pt        = ( _chain->SetBranchAddress("cl_pt"        , &_cl_pt        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_energy    = ( _chain->SetBranchAddress("cl_energy"    , &_cl_energy    ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_eta       = ( _chain->SetBranchAddress("cl_eta"       , &_cl_eta       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_phi       = ( _chain->SetBranchAddress("cl_phi"       , &_cl_phi       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_x         = ( _chain->SetBranchAddress("cl_x"         , &_cl_x         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_y         = ( _chain->SetBranchAddress("cl_y"         , &_cl_y         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_z         = ( _chain->SetBranchAddress("cl_z"         , &_cl_z         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_layer     = ( _chain->SetBranchAddress("cl_layer"     , &_cl_layer     ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_cells_n   = ( _chain->SetBranchAddress("cl_cells_n"   , &_cl_cells_n   ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_cells_id  = ( _chain->SetBranchAddress("cl_cells_id"  , &_cl_cells_id  ) == TTree::kMissingBranch ) ? true : false ;
-    }
-  
+        _missing__tc_n         = ( _chain->SetBranchAddress( "tc_n"        , &_tc_n            ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_id        = ( _chain->SetBranchAddress( "tc_id"       , &_tc_id           ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_subdet    = ( _chain->SetBranchAddress( "tc_subdet"   , &_tc_subdet       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_zside     = ( _chain->SetBranchAddress( "tc_zside"    , &_tc_zside        ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_layer     = ( _chain->SetBranchAddress( "tc_layer"    , &_tc_layer        ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_wafer     = ( _chain->SetBranchAddress( "tc_wafer"    , &_tc_wafer        ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_wafertype = ( _chain->SetBranchAddress( "tc_wafertype", &_tc_wafertype    ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_cell      = ( _chain->SetBranchAddress( "tc_cell"     , &_tc_cell         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_data      = ( _chain->SetBranchAddress( "tc_data"     , &_tc_data         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_energy    = ( _chain->SetBranchAddress( "tc_energy"   , &_tc_energy       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_eta       = ( _chain->SetBranchAddress( "tc_eta"      , &_tc_eta          ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_phi       = ( _chain->SetBranchAddress( "tc_phi"      , &_tc_phi          ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_z         = ( _chain->SetBranchAddress( "tc_z"        , &_tc_z            ) == TTree::kMissingBranch ) ? true : false ;
+    }                                                                                          
+                                                                                               
+    // C2D                                                                                     
+    if( _flagC2D ) {                                                                           
+        _missing__cl_n         = ( _chain->SetBranchAddress("cl_n"         , &_cl_n            ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_pt        = ( _chain->SetBranchAddress("cl_pt"        , &_cl_pt           ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_energy    = ( _chain->SetBranchAddress("cl_energy"    , &_cl_energy       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_eta       = ( _chain->SetBranchAddress("cl_eta"       , &_cl_eta          ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_phi       = ( _chain->SetBranchAddress("cl_phi"       , &_cl_phi          ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_x         = ( _chain->SetBranchAddress("cl_x"         , &_cl_x            ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_y         = ( _chain->SetBranchAddress("cl_y"         , &_cl_y            ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_z         = ( _chain->SetBranchAddress("cl_z"         , &_cl_z            ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_layer     = ( _chain->SetBranchAddress("cl_layer"     , &_cl_layer        ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_cells_n   = ( _chain->SetBranchAddress("cl_cells_n"   , &_cl_cells_n      ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_cells_id  = ( _chain->SetBranchAddress("cl_cells_id"  , &_cl_cells_id     ) == TTree::kMissingBranch ) ? true : false ;
+    } 
+                                                                                               
     //C3D
     if( _flagC3D ) {       
-        _missing__cl3d_id       = ( _chain->SetBranchAddress("cl3d_id"       , &_cl3d_id        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_pt       = ( _chain->SetBranchAddress("cl3d_pt"       , &_cl3d_pt        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_energ    = ( _chain->SetBranchAddress("cl3d_energy"   , &_cl3d_energy    ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_eta      = ( _chain->SetBranchAddress("cl3d_eta"      , &_cl3d_eta       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_phi      = ( _chain->SetBranchAddress("cl3d_phi"      , &_cl3d_phi       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_clusters = ( _chain->SetBranchAddress("cl3d_clusters" , &_cl3d_clusters  ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl3d_id       = ( _chain->SetBranchAddress("cl3d_id"       , &_cl3d_id       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl3d_pt       = ( _chain->SetBranchAddress("cl3d_pt"       , &_cl3d_pt       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl3d_energy   = ( _chain->SetBranchAddress("cl3d_energy"   , &_cl3d_energy   ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl3d_eta      = ( _chain->SetBranchAddress("cl3d_eta"      , &_cl3d_eta      ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl3d_phi      = ( _chain->SetBranchAddress("cl3d_phi"      , &_cl3d_phi      ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl3d_clusters = ( _chain->SetBranchAddress("cl3d_clusters" , &_cl3d_clusters ) == TTree::kMissingBranch ) ? true : false ;
     }
 }
 
@@ -94,6 +94,7 @@ void HGC::getEvent( int evt ){
     /* Get Entry */
     _chain->GetEntry( evt );        
     
+    /********************/
     /* looping over TCs */
     if( _flagTCs ){
      
@@ -122,7 +123,7 @@ void HGC::getEvent( int evt ){
         
     }// end TCs
 
-            
+    /*****************/
     /* Loop over C2D */
     if( _flagC2D ) {
 
@@ -142,11 +143,10 @@ void HGC::getEvent( int evt ){
                 if( !_missing__cl_cells_id ) c2d.setCells  ( _cl_cells_id->at(iclu) );	    
                 
                 int subdet = -1;
-                float z = 0.;
+                
                 if( _flagTCs ){
                     HGCTC tc0 = this->getTC( c2d.cells()[0] );
                     subdet = tc0.subdet();
-                    z = tc0.z();
                 }	
                 c2d.setSubdet( subdet );
                 
@@ -158,38 +158,41 @@ void HGC::getEvent( int evt ){
         }
 
     }// end C2D
-  
-  /* Loop over C3D */
-  if( _flagC3D ) {
+
+
+    /*****************/
+    /* Loop over C3D */
+    if( _flagC3D ) {
+
         unsigned nc3d = _cl3d_id->size();                
-        for(unsigned int ic3d=0; ic3d<nc3d; ic3d++){
-
+        for(unsigned ic3d=0; ic3d<nc3d; ic3d++){
+            
             HGCC3D c3d;
-	    c3d.setId(       _cl3d_id->at(ic3d)     );
-      c3d.setPt(       _cl3d_pt->at(ic3d)     );
-	    c3d.setEnergy(   _cl3d_energy->at(ic3d) );
-	    c3d.setEta(      _cl3d_eta->at(ic3d)    );
-	    c3d.setPhi(      _cl3d_phi->at(ic3d)    );	   
-	    c3d.setClusters(    _cl3d_clusters->at(ic3d)  );	    
-
+	    if( !_missing__cl3d_id       ) c3d.setId(       _cl3d_id      ->at(ic3d) );
+            if( !_missing__cl3d_pt       ) c3d.setPt(       _cl3d_pt      ->at(ic3d) );
+	    if( !_missing__cl3d_energy   ) c3d.setEnergy(   _cl3d_energy  ->at(ic3d) );
+	    if( !_missing__cl3d_eta      ) c3d.setEta(      _cl3d_eta     ->at(ic3d) );
+	    if( !_missing__cl3d_phi      ) c3d.setPhi(      _cl3d_phi     ->at(ic3d) );	   
+	    if( !_missing__cl3d_clusters ) c3d.setClusters( _cl3d_clusters->at(ic3d) );	    
+            
 	    if(_flagC2D){
-
-	      vector<unsigned int> cl3d_cells;
-	      for(auto iclu : c3d.clusters()){
-		HGCC2D c2d = this->getC2D(iclu);
-		vector<unsigned int> TCs = c2d.cells();
-		cl3d_cells.insert( cl3d_cells.end(), TCs.begin(), TCs.end() );
-	      }
-	      c3d.setCells(cl3d_cells);
-	      
+                
+                vector<unsigned> cl3d_cells;
+                for(auto iclu : c3d.clusters()){
+                    HGCC2D c2d = this->getC2D(iclu);
+                    vector<unsigned> TCs = c2d.cells();
+                    cl3d_cells.insert( cl3d_cells.end(), TCs.begin(), TCs.end() );
+                }
+                c3d.setCells(cl3d_cells);
+                
 	    }
 	    
             /* fill the detector */
             this->addC3D( c3d );
             
         }
-    }// end C3D
 
+    }// end C3D
   
 }
 
@@ -202,14 +205,14 @@ void HGC::addTC( HGCTC tc ) {
     _TCs[tc.id()] = tc;
     
     /* keep the pointer for easy access */
-    _TCtoStore.push_back( &_TCs[tc.id()] );
+    _TCvec.push_back( &_TCs[tc.id()] );
     _TC_layer[tcLayer].push_back( &_TCs[tc.id()] );
 
 //    HGCROC TD( tc );
 //
 //    /* add to the correct HGCROC */
 //    bool found = false;
-//    for(unsigned int ihgcroc=0; ihgcroc<_TD[tcLayer]->size(); ihgcroc++ ){ 
+//    for(unsigned ihgcroc=0; ihgcroc<_TD[tcLayer]->size(); ihgcroc++ ){ 
 //        if( _TD[tcLayer]->at(ihgcroc).tcIsContained( tc ) ){
 //            found = true;
 //            _TD[tcLayer]->at(ihgcroc).addTC( tc );
@@ -221,120 +224,49 @@ void HGC::addTC( HGCTC tc ) {
         
 }
 
+
 void HGC::addC2D( HGCC2D c2d ) { 
     
-    const unsigned c2dLayer = c2d.correctedLayer();
+    //const unsigned c2dLayer = c2d.correctedLayer();
     
     /* add c2d to the map */
-    std::cout << c2d.id() << std::endl;
     _C2Ds[c2d.id()] = c2d;
   
     /* keep the pointer for easy access */
-    _C2DtoStore.push_back( &_C2Ds[c2d.id()] );
-    std::cout << c2dLayer << std::endl;
+    _C2Dvec.push_back( &_C2Ds[c2d.id()] );
 //    _C2D_layer[c2dLayer].push_back( &_C2Ds[c2d.id()] );
 
 }
 
 
-HGCTC HGC::getTC(unsigned ID){
+void HGC::addC3D(HGCC3D c3d)      {   
 
-  return _TCs[ID];
+    /* add c2d to the map */
+    _C3Ds[c3d.id()] = c3d;
 
-}
-
-HGCC2D HGC::getC2D(unsigned ID){
-
-  return _C2Ds[ID];
-
-}
-
-void HGC::addC3D(HGCC3D c3d) { 
-
-  _C3D.emplace_back(c3d);    
-  _C3D_map[c3d.id()] = _C3D.size()-1;
-
-}
-
-map<unsigned,HGCTC>  *HGC::getTCmap(){
-
-    return &_TCs;
+    /* keep the pointer for easy access */
+    _C3Dvec.push_back( &_C3Ds[c3d.id()] );
 
 }
 
 
-map<unsigned,HGCC2D> *HGC::getC2Dmap(){
+/* get objects by id */
+HGCTC                 HGC::getTC(unsigned ID)      { return _TCs[ID]          ; }
+HGCC2D                HGC::getC2D(unsigned ID)     { return _C2Ds[ID]         ; }
+HGCC3D                HGC::getC3D(unsigned ID)     { return _C3Ds[ID]         ; }
 
-    return &_C2Ds;
+map<unsigned,HGCTC>  *HGC::getTCmap()              { return &_TCs             ; }
+map<unsigned,HGCC2D> *HGC::getC2Dmap()             { return &_C2Ds            ; }
+map<unsigned,HGCC3D> *HGC::getC3Dmap()             { return &_C3Ds            ; }
 
-}
-
-
-HGCC3D HGC::getC3D(unsigned int ID){
-
-  return _C3D[_C3D_map[ID]];
-
-}
-
-
-unsigned int HGC::getTC_index(unsigned int ID){
-
-  return _TC_map[ID];
-
-}
-
-unsigned int HGC::getC2D_index(unsigned int ID){
-
-  return _C2D_map[ID];
-
-}
-
-unsigned int HGC::getC3D_index(unsigned int ID){
-
-  return _C3D_map[ID];
-
-}
+vector<HGCTC*>        HGC::getTC_layer(unsigned layer)   { return _TC_layer[layer]  ; }
+vector<HGCC2D*>       HGC::getC2D_layer(unsigned layer)  { return _C2D_layer[layer] ; }
+vector<HGCROC>       *HGC::getTD(unsigned layer)         { return _TD[layer]        ; }
 
 
-vector<HGCTC*>  HGC::getTC_layer(unsigned layer)  { 
-    
-    return _TC_layer[layer];
-
-}
-
-
-vector<HGCC2D*> HGC::getC2D_layer(unsigned layer) { 
-
-  return _C2D_layer[layer];  
-
-}
-
-
-vector<HGCROC> *HGC::getTD(unsigned layer) { 
-    
-    return _TD[layer];  
-
-}
-
-
-vector<HGCTC*> HGC::getTCall() {  
-
-    return _TCtoStore;
-
-}
-
-vector<HGCC2D*> HGC::getC2Dall() {  
-
-    return _C2DtoStore;
-
-}
-
-
-void HGC::getC3Dall( vector<HGCC3D> &data ) {  
-
-  data = _C3D;
-
-}
+vector<HGCTC*>        HGC::getTCall()                    { return _TCvec            ; }
+vector<HGCC2D*>       HGC::getC2Dall()                   { return _C2Dvec           ; }
+vector<HGCC3D*>       HGC::getC3Dall()                   { return _C3Dvec           ; }
 
 
 void HGC::getTDall( vector<HGCROC> &data ) {
@@ -346,19 +278,19 @@ void HGC::getTDall( vector<HGCROC> &data ) {
 
 void HGC::clear() {
 
-    for(unsigned ilayer=0; ilayer<Nlayers; ilayer++){
-        _TC_layer[ilayer].clear();
-        _C2D_layer[ilayer].clear();
-    }    
+//    for(unsigned ilayer=0; ilayer<Nlayers; ilayer++){
+//        _TC_layer[ilayer].clear();
+//        _C2D_layer[ilayer].clear();
+//    }    
     
-    _TC.clear();
-    _C2D.clear();
-    _C3D.clear();
-    _TC_map.clear();
-    _C2D_map.clear();
-    _C3D_map.clear();
-    _TC_layer.clear();
-    _C2D_layer.clear();
+//    _TC.clear();
+//    _C2D.clear();
+//    _C3D.clear();
+//    _TC_map.clear();
+//    _C2D_map.clear();
+//    _C3D_map.clear();
+//    _TC_layer.clear();
+//    _C2D_layer.clear();
 
 }
 
