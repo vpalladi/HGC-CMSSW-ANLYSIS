@@ -99,8 +99,7 @@ void HGC::getEvent( int evt ){
     if( _flagTCs ){
      
         /* LOOP */
-        unsigned nTC = _tc_id->size();
-        for( unsigned itc=0; itc<nTC; itc++ ){
+        for( unsigned itc=0; itc<_tc_n; itc++ ){
             
 	  HGCTC tc;
 	  if( !_missing__tc_id       ) tc.setId        ( _tc_id       ->at( itc ) );
@@ -206,7 +205,7 @@ void HGC::addTC( HGCTC tc ) {
     
     /* keep the pointer for easy access */
     _TCvec.push_back( &_TCs[tc.id()] );
-    _TC_layer[tcLayer].push_back( &_TCs[tc.id()] );
+    //_TC_layer[tcLayer].push_back( &_TCs[tc.id()] );
 
 //    HGCROC TD( tc );
 //
@@ -278,19 +277,21 @@ void HGC::getTDall( vector<HGCROC> &data ) {
 
 void HGC::clear() {
 
-//    for(unsigned ilayer=0; ilayer<Nlayers; ilayer++){
-//        _TC_layer[ilayer].clear();
-//        _C2D_layer[ilayer].clear();
-//    }    
+    for(unsigned ilayer=0; ilayer<Nlayers; ilayer++){
+        _TC_layer[ilayer].clear();
+        _C2D_layer[ilayer].clear();
+    }    
     
-//    _TC.clear();
-//    _C2D.clear();
-//    _C3D.clear();
-//    _TC_map.clear();
-//    _C2D_map.clear();
-//    _C3D_map.clear();
-//    _TC_layer.clear();
-//    _C2D_layer.clear();
+    _TCs.clear();
+    _C2Ds.clear();
+    _C3Ds.clear();
+    
+    _TCvec.clear();
+    _C2Dvec.clear();
+    _C3Dvec.clear();
+
+    
 
 }
+
 

@@ -13,6 +13,9 @@ Ntuplizer::Ntuplizer( HGC* detector, TString treename ){
   if(_detector->areC2Dpresent()){
         _tree->Branch("C2D", detector->getC2Dmap() );
     }
+  if(_detector->areC3Dpresent()){
+        _tree->Branch("C3D", detector->getC3Dmap() );
+    }
   
 }
 
