@@ -29,33 +29,33 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, int verboselevel ) {
         cout << " HGC >> Chain contains " << _chain->GetEntries() << " events." << endl; 
     
     if( _flagTCs ){
-      //_chain->SetBranchAddress( "tc_n"        , &_tc_n         );
-        _chain->SetBranchAddress( "tc_id"       , &_tc_id        );
-        _chain->SetBranchAddress( "tc_subdet"   , &_tc_subdet    );
-        _chain->SetBranchAddress( "tc_zside"    , &_tc_zside     );
-        _chain->SetBranchAddress( "tc_layer"    , &_tc_layer     );
-        _chain->SetBranchAddress( "tc_wafer"    , &_tc_wafer     );
-        _chain->SetBranchAddress( "tc_wafertype", &_tc_wafertype );
-        _chain->SetBranchAddress( "tc_cell"     , &_tc_cell      );
-        _chain->SetBranchAddress( "tc_data"     , &_tc_data      );
-        _chain->SetBranchAddress( "tc_energy"   , &_tc_energy    );
-        _chain->SetBranchAddress( "tc_eta"      , &_tc_eta       );
-        _chain->SetBranchAddress( "tc_phi"      , &_tc_phi       );
-        _chain->SetBranchAddress( "tc_z"        , &_tc_z         );
+        _missing__tc_n         = ( _chain->SetBranchAddress( "tc_n"        , &_tc_n         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_id        = ( _chain->SetBranchAddress( "tc_id"       , &_tc_id        ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_subdet    = ( _chain->SetBranchAddress( "tc_subdet"   , &_tc_subdet    ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_zside     = ( _chain->SetBranchAddress( "tc_zside"    , &_tc_zside     ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_layer     = ( _chain->SetBranchAddress( "tc_layer"    , &_tc_layer     ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_wafer     = ( _chain->SetBranchAddress( "tc_wafer"    , &_tc_wafer     ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_wafertype = ( _chain->SetBranchAddress( "tc_wafertype", &_tc_wafertype ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_cell      = ( _chain->SetBranchAddress( "tc_cell"     , &_tc_cell      ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_data      = ( _chain->SetBranchAddress( "tc_data"     , &_tc_data      ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_energy    = ( _chain->SetBranchAddress( "tc_energy"   , &_tc_energy    ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_eta       = ( _chain->SetBranchAddress( "tc_eta"      , &_tc_eta       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_phi       = ( _chain->SetBranchAddress( "tc_phi"      , &_tc_phi       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__tc_z         = ( _chain->SetBranchAddress( "tc_z"        , &_tc_z         ) == TTree::kMissingBranch ) ? true : false ;
     }
     // C2D
     if( _flagC2D ) {
-        _chain->SetBranchAddress("cl_n"      , &_cl_n      );
-        _chain->SetBranchAddress("cl_pt"     , &_cl_pt     );
-        _chain->SetBranchAddress("cl_energy" , &_cl_energy );
-        _chain->SetBranchAddress("cl_eta"    , &_cl_eta    );
-        _chain->SetBranchAddress("cl_phi"    , &_cl_phi    );
-        _chain->SetBranchAddress("cl_x"      , &_cl_x      );
-        _chain->SetBranchAddress("cl_y"      , &_cl_y      );
-        _chain->SetBranchAddress("cl_z"      , &_cl_z      );
-        _chain->SetBranchAddress("cl_layer"  , &_cl_layer  );
-        _chain->SetBranchAddress("cl_ncells" , &_cl_ncells );
-        _chain->SetBranchAddress("cl_cells"  , &_cl_cells  );
+        _missing__cl_n         = ( _chain->SetBranchAddress("cl_n"         , &_cl_n         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_pt        = ( _chain->SetBranchAddress("cl_pt"        , &_cl_pt        ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_energy    = ( _chain->SetBranchAddress("cl_energy"    , &_cl_energy    ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_eta       = ( _chain->SetBranchAddress("cl_eta"       , &_cl_eta       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_phi       = ( _chain->SetBranchAddress("cl_phi"       , &_cl_phi       ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_x         = ( _chain->SetBranchAddress("cl_x"         , &_cl_x         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_y         = ( _chain->SetBranchAddress("cl_y"         , &_cl_y         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_z         = ( _chain->SetBranchAddress("cl_z"         , &_cl_z         ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_layer     = ( _chain->SetBranchAddress("cl_layer"     , &_cl_layer     ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_cells_n   = ( _chain->SetBranchAddress("cl_cells_n"   , &_cl_cells_n   ) == TTree::kMissingBranch ) ? true : false ;
+        _missing__cl_cells_id  = ( _chain->SetBranchAddress("cl_cells_id"  , &_cl_cells_id  ) == TTree::kMissingBranch ) ? true : false ;
     }
 }
 
@@ -89,18 +89,18 @@ void HGC::getEvent( int evt ){
         for( unsigned itc=0; itc<nTC; itc++ ){
             
 	  HGCTC tc;
-	  tc.setId(         _tc_id->at( itc )       );
-	  tc.setSubdet(     _tc_subdet->at( itc )   );            
-	  tc.setZSide(      _tc_zside->at( itc )    );
-	  tc.setLayer(      _tc_layer->at( itc )    );
-	  tc.setWafer(      _tc_wafer->at( itc )    );
-	  tc.setWaferType(  _tc_wafertype->at( itc ));
-	  tc.setCell(       _tc_cell->at( itc )     );
-	  tc.setData(       _tc_data->at( itc )     );
-	  tc.setEnergy(     _tc_energy->at( itc )   );
-	  tc.setEta(        _tc_eta->at( itc )      );
-	  tc.setPhi(        _tc_phi->at( itc )      );
-	  tc.setZ(          _tc_z->at( itc )        );
+	  if( !_missing__tc_id       ) tc.setId        ( _tc_id       ->at( itc ) );
+	  if( !_missing__tc_subdet   ) tc.setSubdet    ( _tc_subdet   ->at( itc ) );            
+	  if( !_missing__tc_zside    ) tc.setZSide     ( _tc_zside    ->at( itc ) );
+	  if( !_missing__tc_layer    ) tc.setLayer     ( _tc_layer    ->at( itc ) );
+	  if( !_missing__tc_wafer    ) tc.setWafer     ( _tc_wafer    ->at( itc ) );
+	  if( !_missing__tc_wafertype) tc.setWaferType ( _tc_wafertype->at( itc ) );
+	  if( !_missing__tc_cell     ) tc.setCell      ( _tc_cell     ->at( itc ) );
+	  if( !_missing__tc_data     ) tc.setData      ( _tc_data     ->at( itc ) );
+	  if( !_missing__tc_energy   ) tc.setEnergy    ( _tc_energy   ->at( itc ) );
+	  if( !_missing__tc_eta      ) tc.setEta       ( _tc_eta      ->at( itc ) );
+	  if( !_missing__tc_phi      ) tc.setPhi       ( _tc_phi      ->at( itc ) );
+	  if( !_missing__tc_z        ) tc.setZ         ( _tc_z        ->at( itc ) );
           
 	  /* fill detector data */
 	  this->addTC( tc );
@@ -112,33 +112,37 @@ void HGC::getEvent( int evt ){
             
     /* Loop over C2D */
     if( _flagC2D ) {
+
+        if( !_missing__cl_n ){
+            cout << "_cl_n " << _cl_n << endl;
+            for(int iclu=0; iclu<_cl_n; iclu++){
                 
-        for(int iclu=0; iclu<_cl_n; iclu++){
-
-            HGCC2D c2d;
-            c2d.setPt(       _cl_pt->at(iclu)     );
-	    c2d.setEnergy(   _cl_energy->at(iclu) );
-	    c2d.setEta(      _cl_eta->at(iclu)    );
-	    c2d.setPhi(      _cl_phi->at(iclu)    );
-	    c2d.setLayer(    _cl_layer->at(iclu)  );
-	    c2d.setCells(    _cl_cells->at(iclu)  );	    
-	    /*c2d._x      =  _cl_x->at(iclu);
-            c2d._y      =  _cl_y->at(iclu);
-            c2d._z      =  _cl_z->at(iclu);*/
-
-	    int subdet = -1;
-	    if(_flagTCs){
-	      HGCTC tc0 = this->getTC(c2d.cells()[0]);
-	      subdet = tc0.subdet();
-	    }	
-	    c2d.setSubdet( subdet );
-	    
-            /* fill the detector */
-            this->addC2D( c2d );
-            
+                HGCC2D c2d;
+                if( !_missing__cl_pt       ) c2d.setPt     ( _cl_pt      ->at(iclu) );
+                if( !_missing__cl_energy   ) c2d.setEnergy ( _cl_energy  ->at(iclu) );
+                if( !_missing__cl_eta      ) c2d.setEta    ( _cl_eta     ->at(iclu) );
+                if( !_missing__cl_phi      ) c2d.setPhi    ( _cl_phi     ->at(iclu) );
+                if( !_missing__cl_x        ) c2d.setX      ( _cl_x       ->at(iclu) );
+                if( !_missing__cl_y        ) c2d.setY      ( _cl_y       ->at(iclu) );
+                if( !_missing__cl_z        ) c2d.setZ      ( _cl_z       ->at(iclu) );
+                if( !_missing__cl_layer    ) c2d.setLayer  ( _cl_layer   ->at(iclu) );
+                if( !_missing__cl_cells_id ) c2d.setCells  ( _cl_cells_id->at(iclu) );	    
+                
+                int subdet = -1;
+                if( _flagTCs ){
+                    HGCTC tc0 = this->getTC( c2d.cells()[0] );
+                    subdet = tc0.subdet();
+                }	
+                c2d.setSubdet( subdet );
+                
+                /* fill the detector */
+                this->addC2D( c2d );
+                
+            }
         }
-    }// end C2D
 
+    }// end C2D
+    
 }
 
 

@@ -27,10 +27,10 @@
 using namespace std;
 
 const int verboselevel = 3;
-const bool flagTCs = true;
-const bool flagC2D = false;
+const bool flagTCs = false;
+const bool flagC2D = true;
 //const bool flagHistos = false;
-const bool flagNtuple = true;
+const bool flagNtuple = false;
 
 int main(int argc, char **argv){
 
@@ -299,15 +299,14 @@ int main(int argc, char **argv){
         //detector.clear();
 
         /* ntuplizer if needed */
-        if( flagNtuple ){
+        if( flagNtuple )
             ntupl.fillTree();
-        }
-        
 
     }// end of evt loop
 
     /* write the tree into the output file */
-    ntupl.write();
+     if( flagNtuple )
+         ntupl.write();
 
 //    /* Draw ALL Histos */
 //    unsigned n_histos = histos.size();
@@ -322,6 +321,6 @@ int main(int argc, char **argv){
 
     return 0;
 
-}
+     }
 
 

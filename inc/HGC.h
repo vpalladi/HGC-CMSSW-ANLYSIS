@@ -14,6 +14,7 @@
 /* ROOT */
 #include "TMath.h"
 #include "TChain.h"
+#include "TTree.h"
 #include "TCollection.h"
 #include "TList.h"
 
@@ -77,24 +78,52 @@ private:
     vector<int>        *_tc_wafer     = 0;
     vector<int>        *_tc_wafertype = 0;
     vector<int>        *_tc_cell      = 0;
-    vector<unsigned>   *_tc_data        = 0;
+    vector<unsigned>   *_tc_data      = 0;
     vector<float>      *_tc_energy    = 0;
     vector<float>      *_tc_eta       = 0;
     vector<float>      *_tc_phi       = 0;
     vector<float>      *_tc_z         = 0;
-    
+
+    bool _missing__tc_n         ;
+    bool _missing__tc_id        ;
+    bool _missing__tc_subdet    ;
+    bool _missing__tc_zside     ;
+    bool _missing__tc_layer     ;
+    bool _missing__tc_wafer     ;
+    bool _missing__tc_wafertype ;
+    bool _missing__tc_cell      ;
+    bool _missing__tc_data      ;
+    bool _missing__tc_energy    ;
+    bool _missing__tc_eta       ;
+    bool _missing__tc_phi       ;
+    bool _missing__tc_z         ;
+        
+
     // C2D
-    int                       _cl_n         ;
-    vector<float>            *_cl_pt     = 0;
-    vector<float>            *_cl_energy = 0;
-    vector<float>            *_cl_eta    = 0;
-    vector<float>            *_cl_phi    = 0;
-    vector<float>            *_cl_x      = 0;
-    vector<float>            *_cl_y      = 0;
-    vector<float>            *_cl_z      = 0;
-    vector<int>              *_cl_layer  = 0;
-    vector<int>              *_cl_ncells = 0;
-    vector<vector<unsigned>> *_cl_cells  = 0;
+    int                       _cl_n            ;
+    vector<float>            *_cl_pt       = 0 ;
+    vector<float>            *_cl_energy   = 0 ;
+    vector<float>            *_cl_eta      = 0 ;
+    vector<float>            *_cl_phi      = 0 ;
+    vector<float>            *_cl_x        = 0 ;
+    vector<float>            *_cl_y        = 0 ;
+    vector<float>            *_cl_z        = 0 ;
+    vector<int>              *_cl_layer    = 0 ;
+    vector<int>              *_cl_cells_n  = 0 ;
+    vector<vector<unsigned>> *_cl_cells_id = 0 ;
+
+    bool _missing__cl_n        ;
+    bool _missing__cl_pt       ;
+    bool _missing__cl_energy   ;
+    bool _missing__cl_eta      ;
+    bool _missing__cl_phi      ;
+    bool _missing__cl_x        ;
+    bool _missing__cl_y        ;
+    bool _missing__cl_z        ;
+    bool _missing__cl_layer    ;
+    bool _missing__cl_cells_n  ;
+    bool _missing__cl_cells_id ;
+
     
     /* mapping all the GENPART TC C2D C3D */
     map<unsigned,HGCTC>  _TCs;
