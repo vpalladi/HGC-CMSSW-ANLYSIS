@@ -97,6 +97,14 @@ float HGCTC::_MipT() {
 }
 
 
+TLorentzVector HGCTC::P4(){
+
+  TLorentzVector p4;
+  p4.SetPtEtaPhiE(this->Pt(),_eta,_phi,_energy);
+  return p4;
+
+}
+
 
 void HGCTC::print(){
     

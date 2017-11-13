@@ -73,7 +73,7 @@ unsigned HGCC2D::HGCROCn() {
 TVector3 HGCC2D::centre() {
 
     TVector3 vec;
-    vec.SetXYZ(_pt, _eta, _phi);
+    vec.SetXYZ(this->x(), this->y(), this->z());
 
     return vec;
 
@@ -113,6 +113,15 @@ void HGCC2D::getPhiSpan( double &minPhi, double &maxPhi ){
 //        if( _cells[icell].Phi() > maxPhi ) maxPhi = _cells.Phi();
 //        if( _cells[icell].Phi() < minPhi ) minPhi = _cells.Phi1();
 //    }
+
+}
+
+
+TLorentzVector HGCC2D::P4(){
+
+  TLorentzVector p4;
+  p4.SetPtEtaPhiE(_pt,_eta,_phi,_energy);
+  return p4;
 
 }
 

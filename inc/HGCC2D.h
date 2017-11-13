@@ -14,6 +14,7 @@
 #include "TObject.h"
 #include "TMath.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
 
 
 using namespace std;
@@ -64,7 +65,8 @@ class HGCC2D : public TObject {
     bool isTCcontained( HGCC2D tc );
     void getEtaSpan( double &minEta, double &maxEta );
     void getPhiSpan( double &minPhi, double &maxPhi );
-    
+     TLorentzVector P4();
+  
     /* print to stdout some useful info */
     void print();
 

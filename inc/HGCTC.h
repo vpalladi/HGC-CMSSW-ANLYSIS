@@ -11,6 +11,7 @@
 /* ROOT */
 #include "TObject.h"
 #include "TMath.h"
+#include "TLorentzVector.h"
 
 using namespace std;
 
@@ -49,7 +50,11 @@ class HGCTC : public TObject {
     float    Eta()       ;
     float    Phi()       ;
     float    z()         ;  
-
+  
+    float Pt()        { return _energy/cosh(_eta); }
+    float x()         { return _z*cos(_phi)/sinh(_eta); } 
+    float y()         { return _z*sin(_phi)/sinh(_eta); }
+  
     /* get Pt and MipT */
     float Pt()           ;
     float MipT()         ;
@@ -59,8 +64,11 @@ class HGCTC : public TObject {
 
     /* get the diamond info */
     int third();
-
+    float MipT();
+    TLorentzVector P4();
+  
     /* get some useful info printed on the stdout */
+
     void print();
     
     /* operators overloading */

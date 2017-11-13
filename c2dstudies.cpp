@@ -29,8 +29,9 @@ using namespace std;
 const int verboselevel = 3;
 const bool flagTCs = false;
 const bool flagC2D = true;
-//const bool flagHistos = false;
+const bool flagHistos = false;
 const bool flagNtuple = false;
+const bool flagC3D = true;
 
 int main(int argc, char **argv){
 
@@ -88,9 +89,9 @@ int main(int argc, char **argv){
         fList->Add( new TObjString(inputFileName) );
 
     /* build the detector */
-    HGC detector(fList, flagTCs, flagC2D, verboselevel);
-    
-    /* implement the Ntuplizer */
+    HGC detector(fList, flagTCs, flagC2D, flagC3D, verboseLevel);    
+
+  /* implement the Ntuplizer */
     Ntuplizer ntupl( &detector, "myTree" );
 
     /* TApplication */
