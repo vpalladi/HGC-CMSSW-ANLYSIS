@@ -26,7 +26,7 @@
 
 using namespace std;
 
-const int verboselevel = 3;
+const int verboselevel = 1;
 const bool flagTCs = true;
 const bool flagC2D = true;
 const bool flagC3D = true;

@@ -26,49 +26,51 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, bool flagC3D, int verbose
         _chain->Add( ((TObjString*)file)->GetString() );
     }
     
-
     if( _verboselevel >= 3 )
         cout << " HGC >> Chain contains " << _chain->GetEntries() << " events." << endl; 
-    
+
+    // Trigger cells
     if( _flagTCs ){
-        _missing__tc_n         = ( _chain->SetBranchAddress( "tc_n"        , &_tc_n            ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_id        = ( _chain->SetBranchAddress( "tc_id"       , &_tc_id           ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_subdet    = ( _chain->SetBranchAddress( "tc_subdet"   , &_tc_subdet       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_zside     = ( _chain->SetBranchAddress( "tc_zside"    , &_tc_zside        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_layer     = ( _chain->SetBranchAddress( "tc_layer"    , &_tc_layer        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_wafer     = ( _chain->SetBranchAddress( "tc_wafer"    , &_tc_wafer        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_wafertype = ( _chain->SetBranchAddress( "tc_wafertype", &_tc_wafertype    ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_cell      = ( _chain->SetBranchAddress( "tc_cell"     , &_tc_cell         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_data      = ( _chain->SetBranchAddress( "tc_data"     , &_tc_data         ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_energy    = ( _chain->SetBranchAddress( "tc_energy"   , &_tc_energy       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_eta       = ( _chain->SetBranchAddress( "tc_eta"      , &_tc_eta          ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_phi       = ( _chain->SetBranchAddress( "tc_phi"      , &_tc_phi          ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__tc_z         = ( _chain->SetBranchAddress( "tc_z"        , &_tc_z            ) == TTree::kMissingBranch ) ? true : false ;
-    }                                                                                          
-                                                                                               
-    // C2D                                                                                     
-    if( _flagC2D ) {                                                                           
-        _missing__cl_n         = ( _chain->SetBranchAddress("cl_n"         , &_cl_n            ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_pt        = ( _chain->SetBranchAddress("cl_pt"        , &_cl_pt           ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_energy    = ( _chain->SetBranchAddress("cl_energy"    , &_cl_energy       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_eta       = ( _chain->SetBranchAddress("cl_eta"       , &_cl_eta          ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_phi       = ( _chain->SetBranchAddress("cl_phi"       , &_cl_phi          ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_x         = ( _chain->SetBranchAddress("cl_x"         , &_cl_x            ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_y         = ( _chain->SetBranchAddress("cl_y"         , &_cl_y            ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_z         = ( _chain->SetBranchAddress("cl_z"         , &_cl_z            ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_layer     = ( _chain->SetBranchAddress("cl_layer"     , &_cl_layer        ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_cells_n   = ( _chain->SetBranchAddress("cl_cells_n"   , &_cl_cells_n      ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl_cells_id  = ( _chain->SetBranchAddress("cl_cells_id"  , &_cl_cells_id     ) == TTree::kMissingBranch ) ? true : false ;
+        if( _chain->GetBranchStatus( "tc_n"         ) ) { _missing__tc_n          = false; _chain->SetBranchAddress( "tc_n"         , &_tc_n         ); } else { _missing__tc_n          = true; }
+        if( _chain->GetBranchStatus( "tc_id"        ) ) { _missing__tc_id         = false; _chain->SetBranchAddress( "tc_id"        , &_tc_id        ); } else { _missing__tc_id         = true; }
+        if( _chain->GetBranchStatus( "tc_subdet"    ) ) { _missing__tc_subdet     = false; _chain->SetBranchAddress( "tc_subdet"    , &_tc_subdet    ); } else { _missing__tc_subdet     = true; }
+        if( _chain->GetBranchStatus( "tc_zside"     ) ) { _missing__tc_zside      = false; _chain->SetBranchAddress( "tc_zside"     , &_tc_zside     ); } else { _missing__tc_zside      = true; }
+        if( _chain->GetBranchStatus( "tc_layer"     ) ) { _missing__tc_layer      = false; _chain->SetBranchAddress( "tc_layer"     , &_tc_layer     ); } else { _missing__tc_layer      = true; }
+        if( _chain->GetBranchStatus( "tc_wafer"     ) ) { _missing__tc_wafer      = false; _chain->SetBranchAddress( "tc_wafer"     , &_tc_wafer     ); } else { _missing__tc_wafer      = true; }
+        if( _chain->GetBranchStatus( "tc_wafertype" ) ) { _missing__tc_wafertype  = false; _chain->SetBranchAddress( "tc_wafertype" , &_tc_wafertype ); } else { _missing__tc_wafertype  = true; }
+        if( _chain->GetBranchStatus( "tc_cell"      ) ) { _missing__tc_cell       = false; _chain->SetBranchAddress( "tc_cell"      , &_tc_cell      ); } else { _missing__tc_cell       = true; }
+        if( _chain->GetBranchStatus( "tc_data"      ) ) { _missing__tc_data       = false; _chain->SetBranchAddress( "tc_data"      , &_tc_data      ); } else { _missing__tc_data       = true; }
+        if( _chain->GetBranchStatus( "tc_energy"    ) ) { _missing__tc_energy     = false; _chain->SetBranchAddress( "tc_energy"    , &_tc_energy    ); } else { _missing__tc_energy     = true; }
+        if( _chain->GetBranchStatus( "tc_eta"       ) ) { _missing__tc_eta        = false; _chain->SetBranchAddress( "tc_eta"       , &_tc_eta       ); } else { _missing__tc_eta        = true; }
+        if( _chain->GetBranchStatus( "tc_phi"       ) ) { _missing__tc_phi        = false; _chain->SetBranchAddress( "tc_phi"       , &_tc_phi       ); } else { _missing__tc_phi        = true; }
+        if( _chain->GetBranchStatus( "tc_z"         ) ) { _missing__tc_z          = false; _chain->SetBranchAddress( "tc_z"         , &_tc_z         ); } else { _missing__tc_z          = true; }
+                                                                                                                                                                                         
+    }                                                                                                                                                                                    
+                                                                                                                                                                                         
+    // C2D                                                                                                                                                                               
+    if( _flagC2D ) {                                                                                                                                                                     
+        if( _chain->GetBranchStatus( "cl_n"         ) ) { _missing__cl_n          = false; _chain->SetBranchAddress("cl_n"          , &_cl_n         ); } else { _missing__cl_n          = true; }
+        if( _chain->GetBranchStatus( "cl_pt"        ) ) { _missing__cl_pt         = false; _chain->SetBranchAddress("cl_pt"         , &_cl_pt        ); } else { _missing__cl_pt         = true; }                                                       
+        if( _chain->GetBranchStatus( "cl_energy"    ) ) { _missing__cl_energy     = false; _chain->SetBranchAddress("cl_energy"     , &_cl_energy    ); } else { _missing__cl_energy     = true; }
+        if( _chain->GetBranchStatus( "cl_eta"       ) ) { _missing__cl_eta        = false; _chain->SetBranchAddress("cl_eta"        , &_cl_eta       ); } else { _missing__cl_eta        = true; }                                                              
+        if( _chain->GetBranchStatus( "cl_phi"       ) ) { _missing__cl_phi        = false; _chain->SetBranchAddress("cl_phi"        , &_cl_phi       ); } else { _missing__cl_phi        = true; }
+        if( _chain->GetBranchStatus( "cl_x"         ) ) { _missing__cl_x          = false; _chain->SetBranchAddress("cl_x"          , &_cl_x         ); } else { _missing__cl_x          = true; }
+        if( _chain->GetBranchStatus( "cl_y"         ) ) { _missing__cl_y          = false; _chain->SetBranchAddress("cl_y"          , &_cl_y         ); } else { _missing__cl_y          = true; }
+        if( _chain->GetBranchStatus( "cl_z"         ) ) { _missing__cl_z          = false; _chain->SetBranchAddress("cl_z"          , &_cl_z         ); } else { _missing__cl_z          = true; }
+        if( _chain->GetBranchStatus( "cl_layer"     ) ) { _missing__cl_layer      = false; _chain->SetBranchAddress("cl_layer"      , &_cl_layer     ); } else { _missing__cl_layer      = true; }
+        if( _chain->GetBranchStatus( "cl_cells_n"   ) ) { _missing__cl_cells_n    = false; _chain->SetBranchAddress("cl_cells_n"    , &_cl_cells_n   ); } else { _missing__cl_cells_n    = true; }
+        if( _chain->GetBranchStatus( "cl_cells_id"  ) ) { _missing__cl_cells_id   = false; _chain->SetBranchAddress("cl_cells_id"   , &_cl_cells_id  ); } else { _missing__cl_cells_id   = true; }
+        
     } 
                                                                                                
     //C3D
     if( _flagC3D ) {       
-        _missing__cl3d_id       = ( _chain->SetBranchAddress("cl3d_id"       , &_cl3d_id       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_pt       = ( _chain->SetBranchAddress("cl3d_pt"       , &_cl3d_pt       ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_energy   = ( _chain->SetBranchAddress("cl3d_energy"   , &_cl3d_energy   ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_eta      = ( _chain->SetBranchAddress("cl3d_eta"      , &_cl3d_eta      ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_phi      = ( _chain->SetBranchAddress("cl3d_phi"      , &_cl3d_phi      ) == TTree::kMissingBranch ) ? true : false ;
-        _missing__cl3d_clusters = ( _chain->SetBranchAddress("cl3d_clusters" , &_cl3d_clusters ) == TTree::kMissingBranch ) ? true : false ;
+        if( _chain->GetBranchStatus( "cl3d_id"      ) ) { _missing__cl3d_id       = false ; _chain->SetBranchAddress("cl3d_id"      , &_cl3d_id      ); } else { _missing__cl3d_id       = true; }
+        if( _chain->GetBranchStatus( "cl3d_pt"      ) ) { _missing__cl3d_pt       = false ; _chain->SetBranchAddress("cl3d_pt"      , &_cl3d_pt      ); } else { _missing__cl3d_pt       = true; }
+        if( _chain->GetBranchStatus( "cl3d_energy"  ) ) { _missing__cl3d_energy   = false ; _chain->SetBranchAddress("cl3d_energy"  , &_cl3d_energy  ); } else { _missing__cl3d_energy   = true; }
+        if( _chain->GetBranchStatus( "cl3d_eta"     ) ) { _missing__cl3d_eta      = false ; _chain->SetBranchAddress("cl3d_eta"     , &_cl3d_eta     ); } else { _missing__cl3d_eta      = true; }
+        if( _chain->GetBranchStatus( "cl3d_phi"     ) ) { _missing__cl3d_phi      = false ; _chain->SetBranchAddress("cl3d_phi"     , &_cl3d_phi     ); } else { _missing__cl3d_phi      = true; }
+        if( _chain->GetBranchStatus( "cl3d_clusters") ) { _missing__cl3d_clusters = false ; _chain->SetBranchAddress("cl3d_clusters", &_cl3d_clusters); } else { _missing__cl3d_clusters = true; }
     }
 }
 
