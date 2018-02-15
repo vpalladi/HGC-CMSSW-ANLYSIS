@@ -49,8 +49,9 @@ class HGCC2D : public TObject {
     float            x()                  ;
     float            y()                  ;
     float            z()                  ;
-    float            layer()              ;
-    unsigned         nCells()              ;
+    float            r()                  ;
+    unsigned         layer()              ;
+    unsigned         nCells()             ;
     vector<unsigned> cells()              ;
 
     /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */
@@ -76,9 +77,10 @@ class HGCC2D : public TObject {
     float                _pt     ;
     float                _energy ;
     float                _eta    ;
+    float                _theta    ;
     float                _phi    ;
-    float                _x      ;
-    float                _y      ;
+//    float                _x      ;
+//    float                _y      ;
     float                _z      ;
     int                  _layer  ;
     unsigned             _ncells ;

@@ -12,15 +12,18 @@ void             HGCC2D::setId(unsigned id)               { _id = id         ; }
 void             HGCC2D::setSubdet(int subdet)            { _subdet = subdet ; }
 void             HGCC2D::setPt(float pt)                  { _pt = pt         ; }
 void             HGCC2D::setEnergy(float energy)          { _energy = energy ; }
-void             HGCC2D::setEta(float eta)                { _eta = eta       ; }
+void             HGCC2D::setEta(float eta)                { 
+    _eta = eta       ; 
+    _theta = 2 * TMath::ATan( TMath::Exp( -_eta ) ) ; 
+}
 void             HGCC2D::setPhi(float phi)                { _phi = phi       ; }
-void             HGCC2D::setX(float x)                    { _x = x           ; }
-void             HGCC2D::setY(float y)                    { _y = y           ; }
+//void             HGCC2D::setX(float x)                    { _x = x           ; }
+//void             HGCC2D::setY(float y)                    { _y = y           ; }
 void             HGCC2D::setZ(float z)                    { _z = z           ; }
 void             HGCC2D::setLayer(int layer)              { _layer = layer   ; }
 void             HGCC2D::setCells(vector<unsigned> cells) { 
-    _cells = cells;
-    _ncells = _cells.size();
+    _cells = cells ;
+    _ncells = _cells.size() ;
 }
         
 /* get C2D parameters */                      
@@ -30,10 +33,11 @@ float            HGCC2D::Pt()                             { return _pt       ; }
 float            HGCC2D::Energy()                         { return _energy   ; }
 float            HGCC2D::Eta()                            { return _eta      ; }
 float            HGCC2D::Phi()                            { return _phi      ; }
-float            HGCC2D::x()                              { return _x        ; }
-float            HGCC2D::y()                              { return _y        ; }
+float            HGCC2D::x()                              { return _z * TMath::Cos( _phi ) * TMath::Tan( _theta ) ; }
+float            HGCC2D::y()                              { return _z * TMath::Sin( _phi ) * TMath::Tan( _theta ) ; }
 float            HGCC2D::z()                              { return _z        ; }
-float            HGCC2D::layer()                          { return _layer    ; }
+float            HGCC2D::r()                              { return TMath::Sqrt( x()*x() + y()*y() ) ; }
+unsigned         HGCC2D::layer()                          { return _layer    ; }
 unsigned         HGCC2D::nCells()                         { return _ncells   ; }
 vector<unsigned> HGCC2D::cells()                          { return _cells    ; }
 

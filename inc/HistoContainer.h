@@ -46,11 +46,10 @@ public:
     }
 
     void Draw() {
-        _obj->SetXTitle(_Xlable);
-        _obj->SetYTitle(_Ylable);
+        _obj->GetXaxis()->SetTitle(_Xlable);
+        _obj->GetYaxis()->SetTitle(_Ylable);
         _obj->Draw(_opt);
     }
-
 
 private:
 

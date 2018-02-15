@@ -1,8 +1,6 @@
 
-
 # THE compiler
 CXX = g++
-
 
 ####################
 ### useful paths ###
@@ -54,7 +52,7 @@ SOURCES_CC  := $(wildcard $(SRC_DIR)/*.cc)
 OBJ         := $(SOURCES_CC:$(SRC_DIR)/%.cc=$(OBJ_DIR)/%.o)
 
 # all the dictionaries 
-DICTS     = HGCC3D HGCC2D HGCTC ### add here the classes you wanna add to ROOT ###
+DICTS     = HGCC3D HGCC2D HGCTC HGCgen HGCgenpart ### add here the classes you wanna add to ROOT ###
 DICTS_CXX = $(DICTS:%=Dict%.cxx)
 DICTS_H   = $(DICTS:%=$(INC_DIR)/%.h)
 

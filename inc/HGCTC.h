@@ -35,8 +35,8 @@ class HGCTC : public TObject {
     void     setEnergy(float energy)     ;
     void     setEta(float eta)           ;
     void     setPhi(float phi)           ;
-    void     setX(float z)               ;
-    void     setY(float z)               ;
+    void     setX(float x)               ;
+    void     setY(float y)               ;
     void     setZ(float z)               ;
 
     /* get methods */
@@ -45,16 +45,17 @@ class HGCTC : public TObject {
     int      zside()     ;
     int      layer()     ;
     int      wafer()     ;
-    int      waferyype() ;
+    int      wafertype() ;
     int      cell()      ;
     unsigned data()      ;
     float    Energy()    ;
     float    Eta()       ;
     float    Phi()       ;
     float    z()         ;
-    float    x()         { return _z*cos(_phi)/sinh(_eta); }
-    float    y()         { return _z*sin(_phi)/sinh(_eta); }
-  
+    float    x()         { return _x; }
+    float    y()         { return _y; }
+    float    r()         { return TMath::Sqrt( x()*x() + y()*y() ); }
+
     /* get Pt and MipT */
     float Pt()           ;
     //float MipT()         ;
@@ -89,9 +90,7 @@ class HGCTC : public TObject {
     float    _energy    ;
     float    _eta       ;
     float    _phi       ;
-    float    _x         ;
-    float    _y         ;
-    float    _z         ;
+    float    _x, _y, _z ;
 
     /* derived */
     float    _pt        ;

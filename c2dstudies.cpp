@@ -19,9 +19,6 @@
 /* myIncludes*/
 #include "HistoContainer.h"
 #include "HGC.h"
-#include "HGCTC.h"
-#include "HGCC2D.h"
-#include "HGCROC.h"
 #include "Ntuplizer.h"
 
 using namespace std;
@@ -30,6 +27,9 @@ const int verboselevel = 1;
 const bool flagTCs = true;
 const bool flagC2D = true;
 const bool flagC3D = true;
+const bool flagGen = true;
+const bool flagGenpart = true;
+
 //const bool flagHistos = false;
 const bool flagNtuple = true;
 
@@ -47,6 +47,12 @@ int main(int argc, char **argv){
         {
         case 'h':
             cout << "Help" << endl;
+            cout << " -h :\t shows this help" << endl; 
+            cout << " -f <files> :\t list of files to be processed" << endl; 
+            cout << " -i <ifile> :\t single file input" << endl; 
+            cout << " -o <ofile> :\t output file" << endl; 
+            cout << " -n <nEvt> :\t number of events to be processed" << endl;
+            return 0;
             break;
         case 'n':
             nEvt = atoi(optarg);
@@ -89,7 +95,14 @@ int main(int argc, char **argv){
         fList->Add( new TObjString(inputFileName) );
 
     /* build the detector */
-    HGC detector(fList, flagTCs, flagC2D, flagC3D, verboselevel);
+    HGC detector(fList, 
+                 flagTCs, 
+                 flagC2D, 
+                 flagC3D, 
+                 flagGen, 
+                 flagGenpart, 
+                 verboselevel
+        );
     
     /* implement the Ntuplizer */
     Ntuplizer ntupl( &detector, "myTree" );
@@ -184,6 +197,7 @@ int main(int argc, char **argv){
         if(verboselevel >= 1)
             cout << " MAIN >> Analyzing event No " << ievt << endl;
        
+        /********************/
         /* looping over TCs */
         if( detector.areTCpresent() ){
        
@@ -218,7 +232,7 @@ int main(int argc, char **argv){
             
 
             }// end TCs LOOP
-            
+
             /* get HGCROC info */
             vector<HGCROC> towerData;
             detector.getTDall( towerData );
@@ -250,6 +264,7 @@ int main(int argc, char **argv){
             }
             
         }// end TCs
+        
         
         /*****************/
         /* Loop over C2D */

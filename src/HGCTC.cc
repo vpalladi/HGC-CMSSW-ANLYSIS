@@ -25,7 +25,7 @@ void     HGCTC::setWaferType(int wafertype) { _wafertype = wafertype ; }
 void     HGCTC::setCell(int cell)           { _cell = cell           ; }
 void     HGCTC::setData(int data)           { 
     _data = data           ; 
-    _mipt = this->MipT()   ;
+    _mipt = this->_MipT()   ;
 }
 void     HGCTC::setEnergy(float energy)     { 
     _energy = energy         ; 
@@ -33,6 +33,8 @@ void     HGCTC::setEnergy(float energy)     {
 }
 void     HGCTC::setEta(float eta)           { _eta = eta             ; }
 void     HGCTC::setPhi(float phi)           { _phi = phi             ; }
+void     HGCTC::setX(float x)               { _x = x                 ; }
+void     HGCTC::setY(float y)               { _y = y                 ; }
 void     HGCTC::setZ(float z)               { _z = z                 ; }
 
 /* get methods */
@@ -41,7 +43,7 @@ int      HGCTC::subdet()                    { return _subdet         ; }
 int      HGCTC::zside()                     { return _zside          ; }
 int      HGCTC::layer()                     { return _layer          ; }
 int      HGCTC::wafer()                     { return _wafer          ; }
-int      HGCTC::waferyype()                 { return _wafertype      ; }
+int      HGCTC::wafertype()                 { return _wafertype      ; }
 int      HGCTC::cell()                      { return _cell           ; }
 unsigned HGCTC::data()                      { return _data           ; }
 float    HGCTC::Energy()                    { return _energy         ; }
@@ -90,7 +92,7 @@ float HGCTC::_MipT() {
   
   /* compute the transverse-mip */
   float trgCellMipPt = trgCellMipP/cosh( _eta ); 
-  
+ 
   /* setting pT [mip] */
   return trgCellMipPt;
     
