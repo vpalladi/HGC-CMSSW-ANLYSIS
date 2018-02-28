@@ -11,9 +11,11 @@
 #include <TGraph.h>
 
 /* myLibs */
-#include <HGC.h>
+//#include <HGC.h>
 
 using namespace std;
+
+//class HGCsubdet;
 
 class HGChoughBin{
 
@@ -51,23 +53,23 @@ public:
     vector<unsigned>  getIds()      { return _ids;      }
     float             getContent()  { return _content;  }
 
-    void getLongitudinalEnergyProfileC2D(HGC &det, TGraph &g){
-        
-        for( std::vector<unsigned>::iterator id=_ids.begin(); id!=_ids.end(); id++ )            
-            g.SetPoint( g.GetN(), det.getC2D( (*id) ).z(), det.getC2D( (*id) ).Energy() );
-        
-    }
-
-    void getLongitudinalPtProfileC2D(HGC &det, TGraph &g){
-        
-        for( std::vector<unsigned>::iterator id=_ids.begin(); id!=_ids.end(); id++ )            
-            g.SetPoint( g.GetN(), det.getC2D( (*id) ).z(), det.getC2D( (*id) ).Pt() );
-        
-    }
+//    void getLongitudinalEnergyProfileC2D(HGCsubdet *det, TGraph &g){
+//        
+//        for( std::vector<unsigned>::iterator id=_ids.begin(); id!=_ids.end(); id++ )            
+//            g.SetPoint( g.GetN(), det->getC2D( (*id) ).z(), det->getC2D( (*id) ).Energy() );
+//        
+//    }
+//
+//    void getLongitudinalPtProfileC2D(HGCsubdet *det, TGraph &g){
+//        
+//        for( std::vector<unsigned>::iterator id=_ids.begin(); id!=_ids.end(); id++ )            
+//            g.SetPoint( g.GetN(), det->getC2D( (*id) ).z(), det->getC2D( (*id) ).Pt() );
+//        
+//    }
 
     bool isAboveThr(double thr) { 
-        if( _content > thr ) return true; 
-        return false; 
+        if( _content < thr ) return false; 
+        return true; 
     }
 
 private:

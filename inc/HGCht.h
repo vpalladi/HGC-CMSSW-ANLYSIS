@@ -1,5 +1,5 @@
-#ifndef HGC_HT
-#define HGC_HT
+#ifndef HGCHT_H
+#define HGCHT_H
 
 // C++
 #include <iostream>
@@ -10,6 +10,8 @@
 // myClasses
 #include <HGCline.h>
 #include <HGChoughBin.h>
+
+// ROOT
 #include <TF1.h>
 #include <TH2D.h>
 
@@ -29,11 +31,14 @@ public:
 
     void addPointPhysicalSpace(float x, float y, int id, double w=1.);
     
-    vector<TF1>         getTF1s(float min, float max);
-    vector<HGChoughBin> getBinsAboveThr(double thr);
-    vector<HGChoughBin> getBinsLocalMaxima();
-    TH2D*               getTransformedHisto(TString name="houghTransform" );
-    TGraph              getXYgraph( TString Name );
+    vector<TF1>         getTF1s(float min, float max);  // the tranformed lines 
+    vector<HGChoughBin> getBinsAboveThr(double thr);    // all the bins above thr
+    vector<HGChoughBin> getBinsLocalMaxima(double thr); // get all local maxima bins
+    TH2D*               getTransformedHisto(TString name="houghTransform" ); // get the tranformed plane
+    TH2D*               getTransformedHistoThr(TString name="houghTransformThr", double Thr=0 ); // get the tranformed plane with a thr
+    TGraph              getXYgraph( TString Name );     // get the graph in physical space
+    
+    // clear the transform
     void clear();
 
 

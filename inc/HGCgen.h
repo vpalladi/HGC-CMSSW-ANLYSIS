@@ -50,12 +50,16 @@ public:
 
     ROOT::Math::RhoEtaPhiPoint getZprojection( double z );
 
+    // which endcap?
+    int getEndcapId();
+
     // return the phi sector of the projection in z
     int getPhiSectorProj(unsigned nPhi, double* minPhi, double* maxPhi, double z);
 
     // get hough transform func
-    TF1 getHT(double z, double zOffset);
+    TF1 getHT(double z, double zOffset, double zWeight=1);
 
+   
 private:
 
     int   _g4id  ;

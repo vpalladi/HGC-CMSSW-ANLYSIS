@@ -7,10 +7,7 @@
 
 /* mylibs */
 #include "detId.h"
-#include "HGCTC.h"
-#include "HGCC2D.h"
-#include "HGCC3D.h"
-#include "HGCROC.h"
+#include "HGCsubdet.h"
 #include "HGCgen.h"
 #include "HGCgenpart.h"
 
@@ -23,26 +20,18 @@
 
 using namespace std;
 
-const unsigned Nlayers = 53; // layers' name starts at 1 
-
+//const unsigned Nlayers = 53; // must be nlayers+1, layers' name starts at 1 
 
 class HGC {
 
 public:
 
-    HGC(TList *fileList, 
-        bool flagTCs=true, 
-        bool flagC2D=true, 
-        bool flagC3D=true, 
-        bool flagGen=true,
-        bool flagGenpart=true,
-        int  verboselevel=0
-        ); 
+    HGC( TList *fileList, bool flagTCs=true, bool flagC2D=true, bool flagC3D=true, bool flagGen=true, bool flagGenpart=true, bool triggerLayersOnly=true, int verboselevel=0 ); 
     ~HGC();
 
     bool areTCpresent()       { return _flagTCs; }
     bool areC2Dpresent()      { return _flagC2D; }
-    bool areC3Dpresent()      { return _flagC3D; 
+    bool areC3Dpresent()      { return _flagC3D; } 
     bool areGenpartPresent()  { return _flagGenpart; }
     bool areGenPresent()      { return _flagGen; }
 
@@ -50,44 +39,31 @@ public:
     unsigned getEvents();
     void     getEvent( int evt );
 
+    /* access the subdet */
+    // subdet : 0 positive z, 1 negative z; 
+    // section: 0 EE, 1 FH, 2 BH, 3 ALL. 
+    HGCsubdet* getSubdet(unsigned endcap, unsigned section) { return _subdet[endcap][section]; } 
+
     /* add */
-    void addTC     ( HGCTC  tc  );
-    void addC2D    ( HGCC2D c2d );
-    void addC3D    ( HGCC3D c3d );
     void addGen    ( HGCgen gen );
     void addGenpart( HGCgenpart genpart );
   
     /* get */
-    HGCTC  getTC(unsigned ID);
-    HGCC2D getC2D(unsigned ID);
-    HGCC3D getC3D(unsigned ID);
 
-    vector<HGCTC*> getTCall();
-    vector<HGCC2D*> getC2Dall();
-    vector<HGCC3D*> getC3Dall();
     vector<HGCgen*> getGenAll();
     vector<HGCgenpart*> getGenpartAll();
+
     void getTDall( vector<HGCROC> &data );
 
-    vector<HGCTC*>  getTCallInPhiRegion(double minPhi, double maxPhi);
-    vector<HGCC2D*> getC2DallInPhiRegion(double minPhi, double maxPhi);
-    
-    vector<HGCTC*>  getTCallInRphiRegion(double minR, double maxR, double minPhi, double maxPhi);
-    vector<HGCC2D*> getC2DallInRphiRegion(double minR, double maxR, double minPhi, double maxPhi);
-
-    vector<HGCTC*>  getTC_layer( unsigned layer );
-    vector<HGCC2D*> getC2D_layer( unsigned layer );
-    vector<HGCC3D*> getC3D_layer( unsigned layer );
-    vector<HGCROC> *getTD( unsigned layer );
-
-    map<unsigned,HGCTC>  *getTCmap();
-    map<unsigned,HGCC2D> *getC2Dmap();
-    map<unsigned,HGCC3D> *getC3Dmap();
+    vector<HGCgenpart*> getGenpartAllInPhiRegion(double minPhi, double maxPhi);
 
     void clear();
 
 private:
  
+    /* SUBDETS */
+    HGCsubdet* _subdet[2][4];
+
     /* flags and verbose */
     int _verboselevel;
     bool _flagTCs, _flagC2D, _flagC3D, _flagGen, _flagGenpart;
@@ -99,7 +75,6 @@ private:
     /* Branches */
   
     // Generated Particles (reco)
-
     int             _gen_n            ;
     vector<int>    *_gen_id        = 0;
     vector<int>    *_gen_status    = 0;
@@ -121,7 +96,6 @@ private:
     bool _missing__gen_TrueNumInt     ;
 
     // Generated Particles (tracks)
-
     vector<float> *_genpart_eta           = 0 ; // track momentum eta
     vector<float> *_genpart_phi           = 0 ; // track momentum phi
     vector<float> *_genpart_pt            = 0 ; // track momentum pt
@@ -240,31 +214,17 @@ private:
     bool _missing__cl3d_eta     ;
     bool _missing__cl3d_phi     ;      
     bool _missing__cl3d_clusters;
-  
 
-    /* mapping all the GENPART TC C2D C3D */
-    map<unsigned,HGCTC>      _TCs;
-    map<unsigned,HGCC2D>     _C2Ds;  
-    map<unsigned,HGCC3D>     _C3Ds;  
+    /* mapping all the GEN and GENPART */
     map<unsigned,HGCgen>     _gen;  
     map<unsigned,HGCgenpart> _genpart;  
     
     /* ordered preserved, needed fo storage purposes */
-    vector<HGCTC*>      _TCvec;
-    vector<HGCC2D*>     _C2Dvec;
-    vector<HGCC3D*>     _C3Dvec;
     vector<HGCgen*>     _genVec;
     vector<HGCgenpart*> _genpartVec;
-  
-    /* layer ordered */
-    vector<HGCTC*>  _TC_layer[Nlayers];
-    vector<HGCC2D*> _C2D_layer[Nlayers];
-    vector<HGCROC> *_TD[Nlayers];
 
     /* layers positions */
     double _layerZ[53]; // layer id starts at 1
-    
-
 
 };
 

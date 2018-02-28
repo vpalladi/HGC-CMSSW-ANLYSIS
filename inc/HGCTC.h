@@ -41,8 +41,8 @@ class HGCTC : public TObject {
 
     /* get methods */
     unsigned id()        ;
-    int      subdet()    ;
-    int      zside()     ;
+    int      subdet()    ; // 3=EE; 4=FH; 5=BH.
+    int      zside()     ; // -1 and 1
     int      layer()     ;
     int      wafer()     ;
     int      wafertype() ;

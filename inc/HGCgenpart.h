@@ -9,9 +9,12 @@
 
 /* mylibs */
 #include "detId.h"
+#include "HGChoughPoint.h"
 
 /* ROOT */
 #include "TObject.h"
+#include "TMath.h"
+#include "TF1.h"
 
 
 using namespace std;
@@ -24,6 +27,7 @@ public:
     HGCgenpart();
     ~HGCgenpart();
 
+    void setUniqueId     (int           UniqueId     ) ; // unique id
     void setEta          (float         Eta          ) ; // track momentum eta
     void setPhi          (float         Phi          ) ; // track momentum phi
     void setPt           (float         Pt           ) ; // track momentum pt
@@ -44,10 +48,12 @@ public:
     void setGen          (int           Gen          ) ; // gen part index
     void setReachedEE    (int           ReachedEE    ) ; // notReach = 0; outsideEESurface = 1; onEESurface = 2
     void setFromBeamPipe (bool          FromBeamPipe ) ; // ??? seems always true
-    void setPosx  (vector<float> Posx  ) ; // projection for different layers; filled only fir there is no end vertex
-    void setPosy  (vector<float> Posy  ) ; // projection for different layers; filled only fir there is no end vertex
-    void setPosz  (vector<float> Posz  ) ; // projection for different layers; filled only fir there is no end vertex
+    void setPosx  (vector<float> Posx  ) ; // projection for different layers; filled only if there is no end vertex
+    void setPosy  (vector<float> Posy  ) ; // projection for different layers; filled only if there is no end vertex
+    void setPosz  (vector<float> Posz  ) ; // projection for different layers; filled only if there is no end vertex
 
+
+    int           UniqueId     () ; 
     float         Eta          () ; 
     float         Phi          () ; 
     float         Pt           () ; 
@@ -72,9 +78,23 @@ public:
     vector<float> Posy  () ; 
     vector<float> Posz  () ; 
 
+    bool hasPos();
+
+    int           getEndcapId();
+
+    /* projection info */
+    double        getRhoProj(unsigned ilayer);        // !!!WARNING!!! layers starts from 1
+    double        getPhiProj(unsigned ilayer);        // !!!WARNING!!! layers starts from 1
+    int           getPhiSectorProj(unsigned ilayer, unsigned nPhi, double* minPhi, double* maxPhi);  // !!!WARNING!!! layers starts from 1
+
+    /* HT info */
+    HGChoughPoint getHTcoordinate(double zOffset=0);
+    TF1           getHT(unsigned ilayer, double zOffset, double zWeight=1); // !!!WARNING!!! layers starts from 1
+    
 
 private:
 
+    float         _UniqueId    ;
     float         _Eta         ;
     float         _Phi         ;
     float         _Pt          ;
@@ -98,7 +118,7 @@ private:
     vector<float> _Posx ;
     vector<float> _Posy ;
     vector<float> _Posz ;
-    
+
     ClassDef(HGCgenpart, 1);
 
 };

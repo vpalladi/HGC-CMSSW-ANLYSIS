@@ -4,7 +4,16 @@
 
 ClassImp(HGCC2D)
 
-HGCC2D::HGCC2D()  { ; }
+HGCC2D::HGCC2D()  { 
+    _sectionStart[0] = 320.755;
+    _sectionStart[1] = 356.335;
+    _sectionStart[2] = 421.0;
+    
+    _sectionEnd[0] = 350.405;
+    _sectionEnd[1] = 407.815;
+    _sectionEnd[2] = 421.0+9.0*11;
+     }
+
 HGCC2D::~HGCC2D() { ; }
 
 /* set C2D parameters */
@@ -40,6 +49,29 @@ float            HGCC2D::r()                              { return TMath::Sqrt( 
 unsigned         HGCC2D::layer()                          { return _layer    ; }
 unsigned         HGCC2D::nCells()                         { return _ncells   ; }
 vector<unsigned> HGCC2D::cells()                          { return _cells    ; }
+unsigned         HGCC2D::getEndcapId()                    { if (_eta>0) return 0; return 1; }
+
+unsigned         HGCC2D::getSectionId() {
+ 
+//    cout << " >>> HGCC2D: serching the correct section."<< endl;
+    for(int isection=0; isection<3; isection++) {
+//        cout << _sectionStart[isection] << " <= " << abs(_z) << " <= " << _sectionEnd[isection] << endl;
+        if( abs(_z)>(_sectionStart[isection]-0.01) && abs(_z)<(_sectionEnd[isection]+0.01) ){
+            if( isection == (this->subdet()-3) ){
+//                cout << " >> HGCC2D: section " << isection << endl;
+                return isection;
+            }
+            else {
+//                cout << " >>> HGCC2D: the calculated section ("<< isection << ") mismatches with the expected one ("<< this->subdet()-3 <<  ") "<< endl;
+            }
+        }
+    }
+    
+    cout << " >>> HGCC2D: uknown section detected! ( abs(z): " << abs(_z) << " )" << endl;
+    return 5; // unknown section
+
+}
+
 
 
 int HGCC2D::correctedLayer() { 

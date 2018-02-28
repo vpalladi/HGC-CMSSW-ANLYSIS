@@ -85,7 +85,7 @@ init:
 dict: $(DICTS)
 	@echo ROOT dictionaries generated 
 
-$(DICTS): 
+$(DICTS):
 	rootcint -f Dict$@.cxx -c $(CXXFLAGS) -p $(INC_DIR)/$@.h $(INC_DIR)/$@linkDef.h
 
 echo: 

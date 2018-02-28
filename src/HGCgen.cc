@@ -91,6 +91,14 @@ ROOT::Math::RhoEtaPhiPoint HGCgen::getZprojection(double z){
 }
 
 
+int HGCgen::getEndcapId(){ 
+
+    if (_Eta>0) return 0; 
+    return 1;
+
+}
+
+
 int HGCgen::getPhiSectorProj(unsigned nPhi, double* minPhi, double* maxPhi, double z){
     
     double phi = getZprojection( z ).Phi();
@@ -103,13 +111,12 @@ int HGCgen::getPhiSectorProj(unsigned nPhi, double* minPhi, double* maxPhi, doub
     
 }
 
-TF1 HGCgen::getHT(double z, double zOffset){
+TF1 HGCgen::getHT(double z, double zOffset, double zWeight){
     
     TF1 f("f", "[0]+[1]*x", -1, 1);
     f.SetParameter( 0, this->getZprojection( z ).Rho() );
-    f.SetParameter( 1, -(z-zOffset) );
-       
-    
+    f.SetParameter( 1, -zWeight*(z-zOffset) );
+
     return f;
 
 }

@@ -41,7 +41,7 @@ class HGCC2D : public TObject {
                                           
     /* get C2D parameters */    
     unsigned         id()                 ;
-    int              subdet()             ;
+    int              subdet()             ; // 3==EE; 4==FH; 5==BH.
     float            Pt()                 ;
     float            Energy()             ;
     float            Eta()                ;
@@ -53,6 +53,9 @@ class HGCC2D : public TObject {
     unsigned         layer()              ;
     unsigned         nCells()             ;
     vector<unsigned> cells()              ;
+    unsigned         getEndcapId()          ;
+    unsigned         getSectionId()         ;
+
 
     /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */
     int correctedLayer();
@@ -71,7 +74,9 @@ class HGCC2D : public TObject {
     void print();
 
  private:
-
+    double _sectionStart[3];
+    double _sectionEnd[3];
+    
     unsigned int         _id     ;
     int                  _subdet ;
     float                _pt     ;

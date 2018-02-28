@@ -87,7 +87,8 @@ void HGCht::addPointPhysicalSpace(float x, float y, int id, double w){
     }
 
 }
-    
+
+
 vector<TF1> HGCht::getTF1s(float min, float max){
         
     vector<TF1> funcs;
@@ -117,19 +118,27 @@ vector<HGChoughBin> HGCht::getBinsAboveThr(double thr){
 }
 
 
-vector<HGChoughBin> HGCht::getBinsLocalMaxima(){
+vector<HGChoughBin> HGCht::getBinsLocalMaxima(double thr){
     
     vector<HGChoughBin> retVec;
     
-//    for(unsigned icol=0; icol<_nX; icol++){
-//        for(unsigned irow=0; irow<_nY; irow++){
-//            bool isMaxima=false; // scan the grid!
-//            if( icol==0 || icol==(_nX-1) )
-//            if( _grid[icol][irow].isAboveThr( thr ) ){
-//                retVec.push_back( _grid[icol][irow] );
-//            }
-//        }
-//    }
+    for(unsigned icol=1; icol<_nX-1; icol++){
+        for(unsigned irow=1; irow<_nY-1; irow++){
+            bool isMaxima=false; // scan the grid!
+            if( !_grid[icol][irow].isAboveThr( thr ) ) continue;
+            if( _grid[icol][irow].getContent() > _grid[icol-1][irow-1].getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol-1][irow]  .getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol-1][irow+1].getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol][irow-1]  .getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol][irow+1]  .getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol+1][irow-1].getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol+1][irow]  .getContent() &&
+                _grid[icol][irow].getContent() > _grid[icol+1][irow+1].getContent()
+                ) {
+                retVec.push_back( _grid[icol][irow] );
+            }
+        }
+    }
     
     return retVec;
     
@@ -145,10 +154,37 @@ TH2D* HGCht::getTransformedHisto(TString name ){
 
     for(unsigned icol=0; icol<_nX; icol++){
         for(unsigned irow=0; irow<_nY; irow++){
-            histo->SetBinContent( icol+1, irow+1, _grid[icol][irow].getContent() );
+            histo->SetBinContent( _grid[icol][irow].getCentreId().first+1, 
+                                  _grid[icol][irow].getCentreId().second+1, 
+                                  _grid[icol][irow].getContent() 
+                );
         }
     }
         
+    return histo;
+
+}
+
+
+TH2D* HGCht::getTransformedHistoThr(TString name, double thr ){
+        
+    TH2D* histo = new TH2D(name, name, 
+                           _nX, _minX, _maxX,
+                           _nY, _minY, _maxY
+        );
+
+    vector<HGChoughBin> bins = this->getBinsAboveThr( thr );
+
+    for(int ibin=0; ibin<bins.size(); ibin++){
+        
+        histo->SetBinContent( bins.at(ibin).getCentreId().first+1, 
+                              bins.at(ibin).getCentreId().second+1, 
+                              bins.at(ibin).getContent() 
+            );
+
+    }
+    
+
     return histo;
 
 }
