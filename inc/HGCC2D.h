@@ -53,8 +53,8 @@ class HGCC2D : public TObject {
     unsigned         layer()              ;
     unsigned         nCells()             ;
     vector<unsigned> cells()              ;
-    unsigned         getEndcapId()          ;
-    unsigned         getSectionId()         ;
+    unsigned         getEndcapId()        ;
+    unsigned         getSectionId()       ; // 0==EE; 1==FH; 2==BH.
 
 
     /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */

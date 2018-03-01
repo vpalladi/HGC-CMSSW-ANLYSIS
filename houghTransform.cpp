@@ -22,6 +22,7 @@
 #include <TLine.h>
 
 /* myIncludes*/
+#include "HGCgeom.h"
 #include "HistoContainer.h"
 #include "HGC.h"
 #include "HGCTC.h"
@@ -52,6 +53,7 @@ const bool flagGenPart = true;
 const bool flagNtuple = false;
 
 
+
 bool isBit(unsigned word, unsigned bit) { 
     
     if( (word & bit) == bit )
@@ -63,8 +65,8 @@ bool isBit(unsigned word, unsigned bit) {
 
 int main(int argc, char **argv){
 
-    //unsigned nLayers=52;
-
+    /* get the geometry */
+    HGCgeom::initialise();
 
     /* PARSING THE COMMAND LINE ARGUMENTS */
     int opt;
@@ -77,7 +79,7 @@ int main(int argc, char **argv){
     int firstEvent=0;
     unsigned nPhiSectors=32; 
 
-    unsigned nEndcaps=2; 
+//    unsigned nEndcaps=2; 
 
     // hough transofrm
     //float zOffset=323; // cm
@@ -399,7 +401,7 @@ int main(int argc, char **argv){
             gGenpartProjXY[0].Write("genpart_xy_proj_endcap_0"); // save the graph
             gGenpartProjXY[1].Write("genpart_xy_proj_endcap_1"); // save the graph
 
-            for(unsigned iendcap=0; iendcap<2; iendcap++){
+            for(unsigned iendcap=0; iendcap<HGCgeom::kNendcaps; iendcap++){
                 for(unsigned isector=0; isector<nPhiSectors; isector++){
                     fileOut->cd( Form("event_%d/sector_%d/endcap_%d", ievt, isector, iendcap) );
                     
