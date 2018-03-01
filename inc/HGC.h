@@ -10,6 +10,7 @@
 #include "HGCsubdet.h"
 #include "HGCgen.h"
 #include "HGCgenpart.h"
+#include "HGCgeom.h"
 
 /* ROOT */
 #include "TMath.h"
@@ -222,9 +223,6 @@ private:
     /* ordered preserved, needed fo storage purposes */
     vector<HGCgen*>     _genVec;
     vector<HGCgenpart*> _genpartVec;
-
-    /* layers positions */
-    double _layerZ[53]; // layer id starts at 1
 
 };
 

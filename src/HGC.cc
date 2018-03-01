@@ -122,66 +122,6 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, bool flagC3D, bool flagGe
         if( _chain->GetBranchStatus( "cl3d_clusters") ) { _missing__cl3d_clusters = false ; _chain->SetBranchAddress("cl3d_clusters", &_cl3d_clusters); } else { _missing__cl3d_clusters = true; }
     }
 
-    /* Layers Z */    
-    _layerZ[ 0]= -1;
-    // EE
-    _layerZ[ 1]= 320.755;
-    _layerZ[ 2]= 321.505;
-    _layerZ[ 3]= 322.735;
-    _layerZ[ 4]= 323.485;
-    _layerZ[ 5]= 324.715;
-    _layerZ[ 6]= 325.465;
-    _layerZ[ 7]= 326.695;
-    _layerZ[ 8]= 327.445;
-    _layerZ[ 9]= 328.675;
-    _layerZ[10]= 329.425;
-    _layerZ[11]= 330.735;
-    _layerZ[12]= 331.605;
-    _layerZ[13]= 332.915;
-    _layerZ[14]= 333.785;
-    // middle EE 334.440;
-    _layerZ[15]= 335.095;
-    _layerZ[16]= 335.965;
-    _layerZ[17]= 337.275;
-    _layerZ[18]= 338.145;
-    _layerZ[19]= 339.455;
-    _layerZ[20]= 340.325;
-    _layerZ[21]= 341.775;
-    _layerZ[22]= 342.845;
-    _layerZ[23]= 344.295;
-    _layerZ[24]= 345.365;
-    _layerZ[25]= 346.815;
-    _layerZ[26]= 347.885;
-    _layerZ[27]= 349.335;
-    _layerZ[28]= 350.405;
-    //FH
-    _layerZ[29]= 356.335;
-    _layerZ[30]= 361.015;
-    _layerZ[31]= 365.695;
-    _layerZ[32]= 370.375;
-    _layerZ[33]= 375.055;
-    _layerZ[34]= 379.735;
-    _layerZ[35]= 384.415;
-    _layerZ[36]= 389.095;
-    _layerZ[37]= 393.775;
-    _layerZ[38]= 398.455;
-    _layerZ[39]= 403.135;
-    _layerZ[40]= 407.815;
-
-    // BH is not exact
-    _layerZ[41]= 421.0;
-    _layerZ[42]= 421.0+9.0*1;
-    _layerZ[43]= 421.0+9.0*2;
-    _layerZ[44]= 421.0+9.0*3;
-    _layerZ[45]= 421.0+9.0*4;
-    _layerZ[46]= 421.0+9.0*5;
-    _layerZ[47]= 421.0+9.0*6;
-    _layerZ[48]= 421.0+9.0*7;
-    _layerZ[49]= 421.0+9.0*8;
-    _layerZ[50]= 421.0+9.0*9;
-    _layerZ[51]= 421.0+9.0*10;
-    _layerZ[52]= 421.0+9.0*11;
-
 }
 
 HGC::~HGC() { };

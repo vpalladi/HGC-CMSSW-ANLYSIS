@@ -9,6 +9,7 @@
 
 /* mylibs */
 #include "detId.h"
+#include "HGCgeom.h"
 
 /* ROOT */
 #include "TObject.h"

@@ -5,14 +5,16 @@
 ClassImp(HGCC2D)
 
 HGCC2D::HGCC2D()  { 
-    _sectionStart[0] = 320.755;
-    _sectionStart[1] = 356.335;
-    _sectionStart[2] = 421.0;
+    _sectionStart[0] = HGCgeom::instance()->layerZ[1 ]; // EE
+    _sectionStart[1] = HGCgeom::instance()->layerZ[29]; // FH
+    _sectionStart[2] = HGCgeom::instance()->layerZ[41]; // BH
     
-    _sectionEnd[0] = 350.405;
-    _sectionEnd[1] = 407.815;
-    _sectionEnd[2] = 421.0+9.0*11;
-     }
+    _sectionEnd[0]   = HGCgeom::instance()->layerZ[28];
+    _sectionEnd[1]   = HGCgeom::instance()->layerZ[40];
+    _sectionEnd[2]   = HGCgeom::instance()->layerZ[52];
+     
+}
+
 
 HGCC2D::~HGCC2D() { ; }
 
@@ -53,16 +55,16 @@ unsigned         HGCC2D::getEndcapId()                    { if (_eta>0) return 0
 
 unsigned         HGCC2D::getSectionId() {
  
-//    cout << " >>> HGCC2D: serching the correct section."<< endl;
+    //cout << " >>> HGCC2D: serching the correct section."<< endl;
     for(int isection=0; isection<3; isection++) {
-//        cout << _sectionStart[isection] << " <= " << abs(_z) << " <= " << _sectionEnd[isection] << endl;
+        //cout << _sectionStart[isection] << " <= " << abs(_z) << " <= " << _sectionEnd[isection] << endl;
         if( abs(_z)>(_sectionStart[isection]-0.01) && abs(_z)<(_sectionEnd[isection]+0.01) ){
             if( isection == (this->subdet()-3) ){
-//                cout << " >> HGCC2D: section " << isection << endl;
+                //cout << " >> HGCC2D: section " << isection << endl;
                 return isection;
             }
             else {
-//                cout << " >>> HGCC2D: the calculated section ("<< isection << ") mismatches with the expected one ("<< this->subdet()-3 <<  ") "<< endl;
+                cout << " >>> HGCC2D: the calculated section ("<< isection << ") mismatches with the expected one ("<< this->subdet()-3 <<  ") "<< endl;
             }
         }
     }
