@@ -248,8 +248,8 @@ bool HGCsubdet::isPertinent(float z){
 
 
 HGCht HGCsubdet::getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
-                                       int nRowsRho, double rhoMin, double rhoMax, 
-                                       double zOffset, 
+                                       int nRowsRho,      double rhoMin,      double rhoMax, 
+                                       double zOffset,
                                        double minPhi, double maxPhi,
                                        bool weightPt  ) {
 
@@ -258,25 +258,18 @@ HGCht HGCsubdet::getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, do
 
     vector<HGCC2D*> c2ds = getC2DallInPhiRegion(minPhi, maxPhi);
 
-    //cout << "transform c2d " << c2ds.size() << endl;
-    //int sum=0;
     for(unsigned ic2d=0; ic2d<c2ds.size(); ic2d++){
         
         HGCC2D* c2d = c2ds.at(ic2d);
         
         double w = weightPt ? c2d->Pt() : 1;
-        //if( _validTriggerLayer[c2d->layer()] ){
-        //    sum++;
-            transform.addPointPhysicalSpace( ( c2d->z()-zOffset ), 
-                                             c2d->r(), 
-                                             c2d->id(), 
-                                             w
-                );
-            //}
-        
-    }
+        transform.addPointPhysicalSpace( ( c2d->z()-zOffset ), 
+                                         c2d->r(), 
+                                         c2d->id(), 
+                                         w
+            );
     
-    //cout << "transform c2d sum " << sum << endl;
+    }
     
     return transform;
                                          

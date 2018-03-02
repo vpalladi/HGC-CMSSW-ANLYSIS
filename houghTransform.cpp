@@ -398,7 +398,7 @@ int main(int argc, char **argv){
             gGenpartProjXY[0].Write("genpart_xy_proj_endcap_0"); // save the graph
             gGenpartProjXY[1].Write("genpart_xy_proj_endcap_1"); // save the graph
 
-            for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps; iendcap++){
+            for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++){
                 for(unsigned isector=0; isector<nPhiSectors; isector++){
                     fileOut->cd( Form("event_%d/sector_%d/endcap_%d", ievt, isector, iendcap) );
                     
@@ -419,7 +419,7 @@ int main(int argc, char **argv){
         /********************/
         /* looping over TCs */
         if( detector.areTCpresent() ){
-
+            
             if( isBit(verboselevel, VERBOSE_MAIN) )
                 cout << " MAIN >> TC analysis " << endl;
      

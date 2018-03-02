@@ -31,65 +31,65 @@ public:
 
     void initialise() {
 
-        nEndcaps  = 2 ;
-        nLayersEE = 28;
-        nLayersFH = 12;
-        nLayersBH = 12;
-        nLayers   = nLayersEE + nLayersFH + nLayersBH;
+        _nEndcaps  = 2 ;
+        _nLayersEE = 28;
+        _nLayersFH = 12;
+        _nLayersBH = 12;
+        _nLayers   = _nLayersEE + _nLayersFH + _nLayersBH;
 
-        layerZ         = new double[nLayers+1];
-        isTriggerLayer = new bool[nLayers+1];
+        _layerZ         = new double[_nLayers+1];
+        _isTriggerLayer = new bool[_nLayers+1];
         // no layer called 0 
-        layerZ[ 0]= 0      ;    isTriggerLayer[ 0] = false;
-        //EE
-        layerZ[ 1]= 320.755;    isTriggerLayer[ 1] = false;
-        layerZ[ 2]= 321.505;    isTriggerLayer[ 2] = true;
-        layerZ[ 3]= 322.735;    isTriggerLayer[ 3] = false;
-        layerZ[ 4]= 323.485;    isTriggerLayer[ 4] = true;
-        layerZ[ 5]= 324.715;    isTriggerLayer[ 5] = false;
-        layerZ[ 6]= 325.465;    isTriggerLayer[ 6] = true;
-        layerZ[ 7]= 326.695;    isTriggerLayer[ 7] = false;
-        layerZ[ 8]= 327.445;    isTriggerLayer[ 8] = true;
-        layerZ[ 9]= 328.675;    isTriggerLayer[ 9] = false;
-        layerZ[10]= 329.425;    isTriggerLayer[10] = true;
-        layerZ[11]= 330.735;    isTriggerLayer[11] = false;
-        layerZ[12]= 331.605;    isTriggerLayer[12] = true;
-        layerZ[13]= 332.915;    isTriggerLayer[13] = false;
-        layerZ[14]= 333.785;    isTriggerLayer[14] = true;
-        layerZ[15]= 335.095;    isTriggerLayer[15] = false;
-        layerZ[16]= 335.965;    isTriggerLayer[16] = true;
-        layerZ[17]= 337.275;    isTriggerLayer[17] = false;
-        layerZ[18]= 338.145;    isTriggerLayer[18] = true;
-        layerZ[19]= 339.455;    isTriggerLayer[19] = false;
-        layerZ[20]= 340.325;    isTriggerLayer[20] = true;
-        layerZ[21]= 341.775;    isTriggerLayer[21] = false;
-        layerZ[22]= 342.845;    isTriggerLayer[22] = true;
-        layerZ[23]= 344.295;    isTriggerLayer[23] = false;
-        layerZ[24]= 345.365;    isTriggerLayer[24] = true;
-        layerZ[25]= 346.815;    isTriggerLayer[25] = false;
-        layerZ[26]= 347.885;    isTriggerLayer[26] = true;
-        layerZ[27]= 349.335;    isTriggerLayer[27] = false;
-        layerZ[28]= 350.405;    isTriggerLayer[28] = true;
-        // FH                                          
-        layerZ[29]= 356.335;    isTriggerLayer[29] = true;
-        layerZ[30]= 361.015;    isTriggerLayer[30] = true;
-        layerZ[31]= 365.695;    isTriggerLayer[31] = true;
-        layerZ[32]= 370.375;    isTriggerLayer[32] = true;
-        layerZ[33]= 375.055;    isTriggerLayer[33] = true;
-        layerZ[34]= 379.735;    isTriggerLayer[34] = true;
-        layerZ[35]= 384.415;    isTriggerLayer[35] = true;
-        layerZ[36]= 389.095;    isTriggerLayer[36] = true;
-        layerZ[37]= 393.775;    isTriggerLayer[37] = true;
-        layerZ[38]= 398.455;    isTriggerLayer[38] = true;
-        layerZ[39]= 403.135;    isTriggerLayer[39] = true;
-        layerZ[40]= 407.815;    isTriggerLayer[40] = true; 
+        _layerZ[ 0]= 0      ;    _isTriggerLayer[ 0] = false;
+        //EE                    _
+        _layerZ[ 1]= 320.755;    _isTriggerLayer[ 1] = false;
+        _layerZ[ 2]= 321.505;    _isTriggerLayer[ 2] = true;
+        _layerZ[ 3]= 322.735;    _isTriggerLayer[ 3] = false;
+        _layerZ[ 4]= 323.485;    _isTriggerLayer[ 4] = true;
+        _layerZ[ 5]= 324.715;    _isTriggerLayer[ 5] = false;
+        _layerZ[ 6]= 325.465;    _isTriggerLayer[ 6] = true;
+        _layerZ[ 7]= 326.695;    _isTriggerLayer[ 7] = false;
+        _layerZ[ 8]= 327.445;    _isTriggerLayer[ 8] = true;
+        _layerZ[ 9]= 328.675;    _isTriggerLayer[ 9] = false;
+        _layerZ[10]= 329.425;    _isTriggerLayer[10] = true;
+        _layerZ[11]= 330.735;    _isTriggerLayer[11] = false;
+        _layerZ[12]= 331.605;    _isTriggerLayer[12] = true;
+        _layerZ[13]= 332.915;    _isTriggerLayer[13] = false;
+        _layerZ[14]= 333.785;    _isTriggerLayer[14] = true;
+        _layerZ[15]= 335.095;    _isTriggerLayer[15] = false;
+        _layerZ[16]= 335.965;    _isTriggerLayer[16] = true;
+        _layerZ[17]= 337.275;    _isTriggerLayer[17] = false;
+        _layerZ[18]= 338.145;    _isTriggerLayer[18] = true;
+        _layerZ[19]= 339.455;    _isTriggerLayer[19] = false;
+        _layerZ[20]= 340.325;    _isTriggerLayer[20] = true;
+        _layerZ[21]= 341.775;    _isTriggerLayer[21] = false;
+        _layerZ[22]= 342.845;    _isTriggerLayer[22] = true;
+        _layerZ[23]= 344.295;    _isTriggerLayer[23] = false;
+        _layerZ[24]= 345.365;    _isTriggerLayer[24] = true;
+        _layerZ[25]= 346.815;    _isTriggerLayer[25] = false;
+        _layerZ[26]= 347.885;    _isTriggerLayer[26] = true;
+        _layerZ[27]= 349.335;    _isTriggerLayer[27] = false;
+        _layerZ[28]= 350.405;    _isTriggerLayer[28] = true;
+        // FH                   _                       
+        _layerZ[29]= 356.335;    _isTriggerLayer[29] = true;
+        _layerZ[30]= 361.015;    _isTriggerLayer[30] = true;
+        _layerZ[31]= 365.695;    _isTriggerLayer[31] = true;
+        _layerZ[32]= 370.375;    _isTriggerLayer[32] = true;
+        _layerZ[33]= 375.055;    _isTriggerLayer[33] = true;
+        _layerZ[34]= 379.735;    _isTriggerLayer[34] = true;
+        _layerZ[35]= 384.415;    _isTriggerLayer[35] = true;
+        _layerZ[36]= 389.095;    _isTriggerLayer[36] = true;
+        _layerZ[37]= 393.775;    _isTriggerLayer[37] = true;
+        _layerZ[38]= 398.455;    _isTriggerLayer[38] = true;
+        _layerZ[39]= 403.135;    _isTriggerLayer[39] = true;
+        _layerZ[40]= 407.815;    _isTriggerLayer[40] = true; 
 
         // BH
-        unsigned fistBHlayer= (nLayersEE+nLayersFH+1);
-        for(unsigned ilayer=0; ilayer<nLayersBH; ilayer++) {
-            layerZ[ilayer+fistBHlayer] = 421.0 + 9.0*(ilayer);   // NOT EXACTLY CORRECT!!!
+        unsigned fistBHlayer= (_nLayersEE+_nLayersFH+1);
+        for(unsigned ilayer=0; ilayer<_nLayersBH; ilayer++) {
+            _layerZ[ilayer+fistBHlayer] = 421.0 + 9.0*(ilayer);   // NOT EXACTLY CORRECT!!!
             std::cout << ilayer << " " << ilayer+fistBHlayer << std::endl; 
-            isTriggerLayer[ilayer] = true;
+            _isTriggerLayer[ilayer] = true;
         }
 
         //std::cout << " *** GEOMETRY *** " << std::endl;
@@ -103,13 +103,102 @@ public:
    
     }
 
-    double  *layerZ;
-    bool    *isTriggerLayer;
-    unsigned nEndcaps;
-    unsigned nLayersEE;
-    unsigned nLayersFH;
-    unsigned nLayersBH;
-    unsigned nLayers;  
+    double getSectionStarts(int iendcap, int isection) {
+        if( iendcap == 0 ) {
+            if( isection == 0 ) {
+                return _layerZ[1]*endcapFactor(iendcap);            
+            }
+            else if( isection == 1 ) {
+                return _layerZ[29]*endcapFactor(iendcap);
+            }
+            else if( isection == 2 ) {
+                return _layerZ[41]*endcapFactor(iendcap);
+            }
+        }
+        else if( iendcap == 1 ) {
+            if( isection == 0 ) {
+                return _layerZ[28]*endcapFactor(iendcap);            
+            }
+            else if( isection == 1 ) {
+                return _layerZ[40]*endcapFactor(iendcap);
+            }
+            else if( isection == 2 ) {
+                return _layerZ[52]*endcapFactor(iendcap);
+            }
+        }
+        else {
+            std::cout << " HGCgeom >>> Endcap not recognised: " << iendcap << std::endl;
+        }
+        
+        return -1;
+            
+    }
+
+
+    double getSectionEnds(int iendcap, int isection) {
+
+         if( iendcap == 0 ) {
+            if( isection == 0 ) {
+                return _layerZ[28]*endcapFactor(iendcap);            
+            }
+            else if( isection == 1 ) {
+                return _layerZ[40]*endcapFactor(iendcap);
+            }
+            else if( isection == 2 ) {
+                return _layerZ[52]*endcapFactor(iendcap);
+            }
+        }
+        else if( iendcap == 1 ) {
+            if( isection == 0 ) {
+                return _layerZ[1]*endcapFactor(iendcap);            
+            }
+            else if( isection == 1 ) {
+                return _layerZ[29]*endcapFactor(iendcap);
+            }
+            else if( isection == 2 ) {
+                return _layerZ[41]*endcapFactor(iendcap);
+            }
+        }
+        else {
+            std::cout << " HGCgeom >>> Endcap not recognised: " << iendcap << std::endl;
+        }
+        
+        return -1;
+
+    }
+    
+
+    double layerZ( int iendcap, int ilayer ) {
+            
+        return _layerZ[ilayer]*endcapFactor(iendcap);
+
+    }
+
+    // returns the zside of for the endcap 0==positive 1=negative
+    int endcapFactor(int iendcap){
+        
+        if( iendcap == 0 )
+            return 1;
+        return -1;
+        
+    }
+
+    unsigned nEndcaps () { return _nEndcaps ; }
+    unsigned nLayersEE() { return _nLayersEE; }
+    unsigned nLayersFH() { return _nLayersFH; }
+    unsigned nLayersBH() { return _nLayersBH; }
+    unsigned nLayers  () { return _nLayers  ; }  
+
+private:
+    
+
+    double  *_layerZ;
+    bool    *_isTriggerLayer;
+    unsigned _nEndcaps;
+    unsigned _nLayersEE;
+    unsigned _nLayersFH;
+    unsigned _nLayersBH;
+    unsigned _nLayers;  
     
 };
 

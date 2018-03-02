@@ -122,23 +122,23 @@ vector<HGChoughBin> HGCht::getBinsLocalMaxima(double thr){
     
     vector<HGChoughBin> retVec;
     
-    for(unsigned icol=1; icol<_nX-1; icol++){
-        for(unsigned irow=1; irow<_nY-1; irow++){
-            bool isMaxima=false; // scan the grid!
-            if( !_grid[icol][irow].isAboveThr( thr ) ) continue;
-            if( _grid[icol][irow].getContent() > _grid[icol-1][irow-1].getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol-1][irow]  .getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol-1][irow+1].getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol][irow-1]  .getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol][irow+1]  .getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol+1][irow-1].getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol+1][irow]  .getContent() &&
-                _grid[icol][irow].getContent() > _grid[icol+1][irow+1].getContent()
-                ) {
-                retVec.push_back( _grid[icol][irow] );
-            }
-        }
-    }
+//    for(unsigned icol=1; icol<_nX-1; icol++){
+//        for(unsigned irow=1; irow<_nY-1; irow++){
+//            bool isMaxima=false; // scan the grid!
+//            if( !_grid[icol][irow].isAboveThr( thr ) ) continue;
+//            if( _grid[icol][irow].getContent() > _grid[icol-1][irow-1].getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol-1][irow]  .getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol-1][irow+1].getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol][irow-1]  .getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol][irow+1]  .getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol+1][irow-1].getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol+1][irow]  .getContent() &&
+//                _grid[icol][irow].getContent() > _grid[icol+1][irow+1].getContent()
+//                ) {
+//                retVec.push_back( _grid[icol][irow] );
+//            }
+//        }
+//    }
     
     return retVec;
     

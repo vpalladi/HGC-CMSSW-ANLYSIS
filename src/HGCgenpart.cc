@@ -103,7 +103,7 @@ int HGCgenpart::getPhiSectorProj(unsigned ilayer, unsigned nPhi, double* minPhi,
 
     double phi = getPhiProj(ilayer);
     
-    for(int isector=0; isector<nPhi; isector++){
+    for(unsigned isector=0; isector<nPhi; isector++){
         if(phi>=minPhi[isector] && phi<maxPhi[isector] )
             return isector;
     }
