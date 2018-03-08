@@ -26,7 +26,7 @@ public:
     ~HGCTC();
     
     /* set methods */
-    void     setZSide(int zside)         ;
+    void     setZside(int zside)         ;
     void     setWafer(int wafer)         ;
     void     setWaferType(int wafertype) ;
     void     setCell(int cell)           ;

@@ -4,7 +4,11 @@
 
 ClassImp(HGChit)
 
-HGChit::HGChit()  { }
+HGChit::HGChit()  { 
+    
+    _isTrigger=true; 
+
+}
 
 HGChit::~HGChit() { }
 
@@ -22,6 +26,7 @@ void             HGChit::setY(float y)                    { _y = y           ; }
 void             HGChit::setZ(float z)                    { _z = z           ; }
 void             HGChit::setLayer(int layer)              { _layer = layer   ; }
 void             HGChit::setPt(float pt)                  { _pt = pt         ; }
+void             HGChit::setIsTrigger(bool val)           { _isTrigger = val ; }
         
 /* get hit parameters */                      
 unsigned         HGChit::id()                             { return _id       ; }
@@ -34,24 +39,27 @@ float            HGChit::y()                              { return _z * TMath::S
 float            HGChit::z()                              { return _z        ; }
 float            HGChit::r()                              { return TMath::Sqrt( x()*x() + y()*y() ) ; }
 unsigned         HGChit::layer()                          { return _layer    ; }
-float            HGChit::Theta()                          { return _theta     ; }
+float            HGChit::Theta()                          { return _theta    ; }
+bool             HGChit::isTrigger()                      { return _isTrigger; }
+
 
 unsigned         HGChit::getEndcapId()                    { if (_eta>0) return 0; return 1; }
 unsigned         HGChit::getSectionId() {
  
 //    std::cout << " >>> HGChit: serching the correct section for endcap " << this->getEndcapId() << "."<< std::endl;
     for(int isection=0; isection<3; isection++) {
-        float sectionStarts = HGCgeom::instance()->getSectionStarts( this->getEndcapId(), isection);
-        float sectionEnds   = HGCgeom::instance()->getSectionEnds( this->getEndcapId(), isection);
+        float sectionStarts = HGCgeom::instance()->getSectionStart( this->getEndcapId(), isection);
+        float sectionEnds   = HGCgeom::instance()->getSectionEnd( this->getEndcapId(), isection);
 
-//        std::cout << sectionStarts << " <= " << _z << " <= " << sectionEnds << std::endl;
-        if( _z>sectionStarts-0.01 && _z<sectionEnds+0.01 ){
+//        std::cout << sectionStarts-0.01 << " <= " << _z << " <= " << sectionEnds+0.01 << std::endl;
+        if( _z>(sectionStarts-0.01) && _z<(sectionEnds+0.01) ){
             if( isection == (this->subdet()-3) ){
 //                std::cout << " >> HGChit: section " << isection << std::endl;
                 return isection;
             }
             else {
-                std::cout << " >>> HGChit: the calculated section ("<< isection << ") mismatches with the expected one ("<< this->subdet()-3 <<  ") "<< std::endl;
+                std::cout << " >>> !!! WARNING !!! HGChit: the calculated section ("<< isection << ") mismatches with the expected one ("<< this->subdet()-3 <<  ") "<< std::endl;
+                return isection;
             }
         }
     }
@@ -80,6 +88,13 @@ TVector3 HGChit::centre() {
     vec.SetXYZ(this->x(), this->y(), this->z());
 
     return vec;
+
+}
+
+
+double HGChit::distance( HGChit *hit ){
+
+    return TMath::Sqrt( TMath::Power( hit->x()-this->x(), 2) + TMath::Power( hit->y()-this->y(), 2) + TMath::Power( hit->z()-this->z(), 2) );
 
 }
 

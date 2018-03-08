@@ -64,7 +64,7 @@ ClassImp(HGCgen)
 HGCgen::HGCgen()  { ; }
 HGCgen::~HGCgen() { ; }
 
-void HGCgen::setG4Id  ( int g4id     ) { _g4id   = g4id    ; }
+void HGCgen::setPDGid ( int   PDGid  ) { _PDGid   = PDGid    ; }
 void HGCgen::setId    ( int   id     ) { _id     = id    ; }
 void HGCgen::setStatus( float Status ) { _Status = Status; }
 void HGCgen::setEnergy( float Energy ) { _Energy = Energy; }
@@ -72,7 +72,7 @@ void HGCgen::setPt    ( float Pt     ) { _Pt     = Pt    ; }
 void HGCgen::setEta   ( float Eta    ) { _Eta    = Eta   ; }
 void HGCgen::setPhi   ( float Phi    ) { _Phi    = Phi   ; }
 
-int   HGCgen::g4id  () { return _g4id  ; }
+int   HGCgen::PDGid  () { return _PDGid  ; }
 int   HGCgen::id    () { return _id    ; }
 float HGCgen::Status() { return _Status; }
 float HGCgen::Energy() { return _Energy; }
@@ -103,7 +103,7 @@ int HGCgen::getPhiSectorProj(unsigned nPhi, double* minPhi, double* maxPhi, doub
     
     double phi = getZprojection( z ).Phi();
     
-    for(int isector=0; isector<nPhi; isector++)
+    for(unsigned isector=0; isector<nPhi; isector++)
         if(phi>minPhi[isector] && phi<maxPhi[isector] )
             return isector;
     

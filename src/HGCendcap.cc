@@ -164,7 +164,7 @@ void HGCendcap::getEvent( int evt ){
 	  HGCTC tc;
 	  if( !_missing__tc_id       ) tc.setId        ( _tc_id       ->at( itc ) );
 	  if( !_missing__tc_subdet   ) tc.setSubdet    ( _tc_subdet   ->at( itc ) );            
-	  if( !_missing__tc_zside    ) tc.setZSide     ( _tc_zside    ->at( itc ) );
+	  if( !_missing__tc_zside    ) tc.setZside     ( _tc_zside    ->at( itc ) );
 	  if( !_missing__tc_layer    ) tc.setLayer     ( _tc_layer    ->at( itc ) );
 	  if( !_missing__tc_wafer    ) tc.setWafer     ( _tc_wafer    ->at( itc ) );
 	  if( !_missing__tc_wafertype) tc.setWaferType ( _tc_wafertype->at( itc ) );

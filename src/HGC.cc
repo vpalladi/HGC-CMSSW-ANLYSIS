@@ -13,6 +13,7 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, bool flagC3D, bool flagGe
     _flagC3D = flagC3D;
     _flagGen = flagGen;
     _flagGenpart = flagGenpart;
+    _triggerLayersOnly = triggerLayersOnly;
 
     /* Get the Chain */
     _chain = new TChain("hgcalTriggerNtuplizer/HGCalTriggerNtuple");
@@ -29,14 +30,14 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, bool flagC3D, bool flagGe
     /* initialize the subdets */
     // positive z
     _subdet[0][0] = new HGCsubdet(0, 0, _verboselevel ); // EE
-    _subdet[0][1] = new HGCsubdet(0, 1, triggerLayersOnly, _verboselevel ); // FH
-    _subdet[0][2] = new HGCsubdet(0, 2, triggerLayersOnly, _verboselevel ); // BH
-    _subdet[0][3] = new HGCsubdet(0, 3, triggerLayersOnly, _verboselevel ); // all
-    // negative z                        
-    _subdet[1][0] = new HGCsubdet(1, 0, triggerLayersOnly, _verboselevel ); // EE
-    _subdet[1][1] = new HGCsubdet(1, 1, triggerLayersOnly, _verboselevel ); // FH
-    _subdet[1][2] = new HGCsubdet(1, 2, triggerLayersOnly, _verboselevel ); // BH
-    _subdet[1][3] = new HGCsubdet(1, 3, triggerLayersOnly, _verboselevel ); // all
+    _subdet[0][1] = new HGCsubdet(0, 1, _verboselevel ); // FH
+    _subdet[0][2] = new HGCsubdet(0, 2, _verboselevel ); // BH
+    _subdet[0][3] = new HGCsubdet(0, 3, _verboselevel ); // all
+    // negative z                       
+    _subdet[1][0] = new HGCsubdet(1, 0, _verboselevel ); // EE
+    _subdet[1][1] = new HGCsubdet(1, 1, _verboselevel ); // FH
+    _subdet[1][2] = new HGCsubdet(1, 2, _verboselevel ); // BH
+    _subdet[1][3] = new HGCsubdet(1, 3, _verboselevel ); // all
 
     // Generated Particles (reco)
     if( _flagGen ){
@@ -126,12 +127,30 @@ HGC::HGC( TList *fileList, bool flagTCs, bool flagC2D, bool flagC3D, bool flagGe
 
 HGC::~HGC() { };
     
+
+HGCsubdet* HGC::getSubdet(unsigned endcap, unsigned section) { 
+
+    return _subdet[endcap][section]; 
+
+} 
+
+
+/* boolen vars */
+bool HGC::areTCpresent()       { return _flagTCs; }
+bool HGC::areC2Dpresent()      { return _flagC2D; }
+bool HGC::areC3Dpresent()      { return _flagC3D; } 
+bool HGC::areGenpartPresent()  { return _flagGenpart; }
+bool HGC::areGenPresent()      { return _flagGen; }
+
+/* get number of events */
 unsigned HGC::getEvents(){
 
     return _chain->GetEntries();
 
 }
 
+
+/* read the event evt in memeory */
 void HGC::getEvent( int evt ){
         
     /* clear detector before getting the event */
@@ -148,7 +167,7 @@ void HGC::getEvent( int evt ){
         for( int igen = 0; igen<_gen_n; igen++ ){
 
             gen.setId(igen);
-            if( !_missing__gen_id         ) { gen.setG4Id  (_gen_id     ->at(igen)   ); }
+            if( !_missing__gen_id         ) { gen.setPDGid (_gen_id     ->at(igen)   ); }
             if( !_missing__gen_status     ) { gen.setStatus(_gen_status ->at(igen)   ); }
             if( !_missing__gen_energy     ) { gen.setEnergy(_gen_energy ->at(igen)   ); }
             if( !_missing__gen_pt         ) { gen.setPt    (_gen_pt     ->at(igen)   ); }
@@ -216,7 +235,7 @@ void HGC::getEvent( int evt ){
 	  HGCTC tc;
 	  if( !_missing__tc_id       ) tc.setId        ( _tc_id       ->at( itc ) );
 	  if( !_missing__tc_subdet   ) tc.setSubdet    ( _tc_subdet   ->at( itc ) );            
-	  if( !_missing__tc_zside    ) tc.setZSide     ( _tc_zside    ->at( itc ) );
+	  if( !_missing__tc_zside    ) tc.setZside     ( _tc_zside    ->at( itc ) );
 	  if( !_missing__tc_layer    ) tc.setLayer     ( _tc_layer    ->at( itc ) );
 	  if( !_missing__tc_wafer    ) tc.setWafer     ( _tc_wafer    ->at( itc ) );
 	  if( !_missing__tc_wafertype) tc.setWaferType ( _tc_wafertype->at( itc ) );
@@ -229,12 +248,17 @@ void HGC::getEvent( int evt ){
           if( !_missing__tc_y        ) tc.setY         ( _tc_y        ->at( itc ) );
           if( !_missing__tc_z        ) tc.setZ         ( _tc_z        ->at( itc ) );
 
+
           /* fill detector data */
-          
           int isection = tc.subdet()-3; 
           int iendcap = tc.zside()==-1 ? 1 : 0;
+
+          /* if NOT trigger layer continue */
+          if( !( !_triggerLayersOnly || HGCgeom::instance()->layerZisTriggerLayer(iendcap, tc.layer()) ) )
+              continue;
+
           _subdet[iendcap][isection]->addTC( tc );
-          _subdet[iendcap][3]->addTC( tc );
+          _subdet[iendcap][3]->addTC( tc ); // always to No 3 -> full depth info
 
         }// end TCs LOOP
         
@@ -245,16 +269,23 @@ void HGC::getEvent( int evt ){
     if( _flagC2D ) {
 
         if( !_missing__cl_n ){
-            cout << "_cl_n " << _cl_n << endl;
+            
+            cout << " HGC >> There are " << _cl_n << " C2D." << endl;
+            
             for(int iclu=0; iclu<_cl_n; iclu++){
                 
                 HGCC2D c2d;
-                if( !_missing__cl_pt       ) c2d.setPt     ( _cl_pt      ->at(iclu) );
-                if( !_missing__cl_energy   ) c2d.setEnergy ( _cl_energy  ->at(iclu) );
-                if( !_missing__cl_eta      ) c2d.setEta    ( _cl_eta     ->at(iclu) );
-                if( !_missing__cl_phi      ) c2d.setPhi    ( _cl_phi     ->at(iclu) );
-                if( !_missing__cl_layer    ) c2d.setLayer  ( _cl_layer   ->at(iclu) );
-                if( !_missing__cl_cells_id ) c2d.setCells  ( _cl_cells_id->at(iclu) );	    
+                if( !_missing__cl_pt       ) c2d.setPt     ( _cl_pt      ->at(iclu) ); else cout << " HGC >> leaf 'pt      ' not found." << endl; 
+                if( !_missing__cl_energy   ) c2d.setEnergy ( _cl_energy  ->at(iclu) ); else cout << " HGC >> leaf 'energy  ' not found." << endl; 
+                if( !_missing__cl_eta      ) c2d.setEta    ( _cl_eta     ->at(iclu) ); else cout << " HGC >> leaf 'eta     ' not found." << endl; 
+                if( !_missing__cl_phi      ) c2d.setPhi    ( _cl_phi     ->at(iclu) ); else cout << " HGC >> leaf 'phi     ' not found." << endl; 
+                if( !_missing__cl_layer    ) c2d.setLayer  ( _cl_layer   ->at(iclu) ); else cout << " HGC >> leaf 'layer   ' not found." << endl; 
+                if( !_missing__cl_cells_id ) c2d.setCells  ( _cl_cells_id->at(iclu) ); else cout << " HGC >> leaf 'cells_id' not found." << endl; 	    
+
+                c2d.setZ( HGCgeom::instance()->layerZ(c2d.getEndcapId(), c2d.layer()) );
+
+                if( !( !_triggerLayersOnly || HGCgeom::instance()->layerZisTriggerLayer(c2d.getEndcapId(), c2d.layer()) ) )
+                    continue;
 
                 int subdet = -1;
                 
@@ -263,24 +294,17 @@ void HGC::getEvent( int evt ){
                     HGCTC tc0 = _subdet[c2d.getEndcapId()][3]->getTC( c2d.cells()[0] );
                     subdet = tc0.subdet();
                     c2d.setId( tc0.id() ) ;
-                    if( !_missing__cl_z        ) { 
-                        c2d.setZ( _cl_z       ->at(iclu) );
-                    }
-                    else{
-                        c2d.setZ( tc0.z() ) ;
-                    }    
-                }
-                else{
-                    cout << "Warning: TCs z coordinate not set!!! Load the cells to get it (src/HGCsubdet.cc)" << endl;
+                    
                 }
                 c2d.setSubdet( subdet );
                 
                 /* fill the detector */
                 int iendcap  = c2d.getEndcapId();
-                int isection = c2d.getSectionId();
                 
+                int isection = c2d.getSectionId();
+
                 _subdet[iendcap][isection]->addC2D( c2d );
-                _subdet[iendcap][3]->addC2D( c2d );
+                _subdet[iendcap][3]->addC2D( c2d ); // always to the number 3 -> all depth
                 
             }
 

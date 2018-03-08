@@ -8,7 +8,7 @@ HGCTC::HGCTC() {;}
 HGCTC::~HGCTC() {;}
 
 /* set methods */
-void     HGCTC::setZSide(int zside)         { _zside = zside         ; }
+void     HGCTC::setZside(int zside)         { _zside = zside         ; }
 void     HGCTC::setWafer(int wafer)         { _wafer = wafer         ; }
 void     HGCTC::setWaferType(int wafertype) { _wafertype = wafertype ; }
 void     HGCTC::setCell(int cell)           { _cell = cell           ; }
@@ -29,7 +29,7 @@ float HGCTC::MipT() {
     const float adcSaturationBH_MIP = 1024.;
     const int adcNbitsBH = 12;
     const float fCperMIP = 2.57;
-    const double thicknessCorrection = 1.092;
+    //const double thicknessCorrection = 1.092;
     
 
     float LSB_silicon_fC = triggerCellLsbBeforeCompression*(pow(2,triggerCellTruncationBits));

@@ -10,8 +10,23 @@ HGCht::HGCht( unsigned nX, float minX, float maxX,
 
     setParams( nX, minX, maxX,
                nY, minY, maxY );
-        
+
 }
+
+
+HGCht::~HGCht() { 
+    
+    //cout << "calling destructor" << endl;
+
+    for( unsigned ix=0; ix<_nX; ix++){
+
+        delete[] _grid[ix];
+        
+    }
+    
+    delete[] _grid;
+
+ }
 
 void HGCht::setParams( unsigned nX, float minX, float maxX,
                        unsigned nY, float minY, float maxY ){
@@ -28,9 +43,9 @@ void HGCht::setParams( unsigned nX, float minX, float maxX,
     _dX = (_maxX-_minX)/_nX;
     _dY = (_maxY-_minY)/_nY;
 
-    _grid = new HGChoughBin*[_nX];
+    _grid = new HGCbin*[_nX];
     for( unsigned ix=0; ix<_nX; ix++){
-        _grid[ix] = new HGChoughBin[_nY];
+        _grid[ix] = new HGCbin[_nY];
         for( unsigned iy=0; iy<_nY; iy++) {
             _grid[ix][iy].setCentre( _minX+_dX*ix-_dX/2, _minY+_dY*iy-_dY/2 );
             _grid[ix][iy].setCentreId( ix, iy );
@@ -40,6 +55,7 @@ void HGCht::setParams( unsigned nX, float minX, float maxX,
     this->clear();
 
 }
+
 
 void HGCht::addPointPhysicalSpace(float x, float y, int id, double w){
 
@@ -101,9 +117,9 @@ vector<TF1> HGCht::getTF1s(float min, float max){
 }
     
 
-vector<HGChoughBin> HGCht::getBinsAboveThr(double thr){
+vector<HGCbin> HGCht::getBinsAboveThr(double thr){
     
-    vector<HGChoughBin> retVec;
+    vector<HGCbin> retVec;
     
     for(unsigned icol=0; icol<_nX; icol++){
         for(unsigned irow=0; irow<_nY; irow++){
@@ -118,9 +134,9 @@ vector<HGChoughBin> HGCht::getBinsAboveThr(double thr){
 }
 
 
-vector<HGChoughBin> HGCht::getBinsLocalMaxima(double thr){
+vector<HGCbin> HGCht::getBinsLocalMaxima(double thr){
     
-    vector<HGChoughBin> retVec;
+    vector<HGCbin> retVec;
     
 //    for(unsigned icol=1; icol<_nX-1; icol++){
 //        for(unsigned irow=1; irow<_nY-1; irow++){
@@ -145,60 +161,32 @@ vector<HGChoughBin> HGCht::getBinsLocalMaxima(double thr){
 }
 
 
-TH2D* HGCht::getTransformedHisto(TString name ){
+void HGCht::getTransformedHisto(TH2D &histo, double thr ){
         
-    TH2D* histo = new TH2D(name, name, 
-                           _nX, _minX, _maxX,
-                           _nY, _minY, _maxY
+    histo.SetBins(_nX, _minX, _maxX,
+                  _nY, _minY, _maxY
         );
 
-    for(unsigned icol=0; icol<_nX; icol++){
-        for(unsigned irow=0; irow<_nY; irow++){
-            histo->SetBinContent( _grid[icol][irow].getCentreId().first+1, 
-                                  _grid[icol][irow].getCentreId().second+1, 
-                                  _grid[icol][irow].getContent() 
-                );
-        }
-    }
-        
-    return histo;
-
-}
-
-
-TH2D* HGCht::getTransformedHistoThr(TString name, double thr ){
-        
-    TH2D* histo = new TH2D(name, name, 
-                           _nX, _minX, _maxX,
-                           _nY, _minY, _maxY
-        );
-
-    vector<HGChoughBin> bins = this->getBinsAboveThr( thr );
+    vector<HGCbin> bins = this->getBinsAboveThr( thr );
 
     for(int ibin=0; ibin<bins.size(); ibin++){
         
-        histo->SetBinContent( bins.at(ibin).getCentreId().first+1, 
-                              bins.at(ibin).getCentreId().second+1, 
-                              bins.at(ibin).getContent() 
+        histo.SetBinContent( bins.at(ibin).getCentreId().first+1, 
+                             bins.at(ibin).getCentreId().second+1, 
+                             bins.at(ibin).getContent() 
             );
 
     }
-    
-
-    return histo;
 
 }
 
 
-TGraph HGCht::getXYgraph( TString name ) {
-        
-    TGraph g;
-    g.SetName( name );
+void HGCht::getXYgraph( TGraph &g ) {
+    
+    g.Set(0);
     for(vector<pair<float,float>>::iterator xy=_XY.begin(); xy!=_XY.end(); xy++){
         g.SetPoint( g.GetN(), xy->first, xy->second );
     }
-        
-    return g;
 
 }
 

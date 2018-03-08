@@ -38,6 +38,7 @@ class HGChit : public TObject {
     void setZ(float z)                    ;
     void setLayer(int layer)              ;    
     void setPt(float pt)                  ;
+    void setIsTrigger(bool var)           ;
 
     /* get hit parameters */    
     unsigned         id()                 ;
@@ -53,13 +54,15 @@ class HGChit : public TObject {
     unsigned         getEndcapId()        ;
     unsigned         getSectionId()       ; // 0==EE; 1==FH; 2==BH.
     float            Theta()              ;
-    
+    bool             isTrigger()  ;
 
     /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */
     int correctedLayer();
 
     /* info*/
     TVector3 centre();
+
+    double distance( HGChit *hit );
 
     /* get useful info */
 //    bool isTCcontained( HGChit::HGChit tc );
@@ -93,6 +96,7 @@ class HGChit : public TObject {
 
     /* derived */
     float                _theta  ;
+    bool                 _isTrigger;
 
     ClassDef(HGChit, 1)
 

@@ -10,6 +10,7 @@
 /* mylibs */
 #include "detId.h"
 #include "HGChoughPoint.h"
+#include "HGCgen.h"
 
 /* ROOT */
 #include "TObject.h"
@@ -19,7 +20,7 @@
 
 using namespace std;
 
-class HGCgenpart : public TObject {
+class HGCgenpart : public HGCgen {
 
 
 public:
@@ -28,10 +29,10 @@ public:
     ~HGCgenpart();
 
     void setUniqueId     (int           UniqueId     ) ; // unique id
-    void setEta          (float         Eta          ) ; // track momentum eta
-    void setPhi          (float         Phi          ) ; // track momentum phi
-    void setPt           (float         Pt           ) ; // track momentum pt
-    void setEnergy       (float         Energy       ) ; // track momentum energy
+//    void setEta          (float         Eta          ) ; // track momentum eta
+//    void setPhi          (float         Phi          ) ; // track momentum phi
+//    void setPt           (float         Pt           ) ; // track momentum pt
+//    void setEnergy       (float         Energy       ) ; // track momentum energy
     void setDvx          (float         Dvx          ) ; // track end (destination) x
     void setDvy          (float         Dvy          ) ; // track end (destination) y
     void setDvz          (float         Dvz          ) ; // track end (destination) z
@@ -44,7 +45,7 @@ public:
     void setExphi        (float         ExPhi        ) ; // hit the HGCal phi (layer 1)
     void setExeta        (float         ExEta        ) ; // hit the HGCal eta (layer 1)
     void setFbrem        (float         Fbrem        ) ; // percentage of bremstrahlung for photons
-    void setPDGid        (int           Pid          ) ; // PDG id
+//    void setPDGid        (int           Pid          ) ; // PDG id
     void setGen          (int           Gen          ) ; // gen part index
     void setReachedEE    (int           ReachedEE    ) ; // notReach = 0; outsideEESurface = 1; onEESurface = 2
     void setFromBeamPipe (bool          FromBeamPipe ) ; // ??? seems always true
@@ -54,10 +55,10 @@ public:
 
 
     int           UniqueId     () ; 
-    float         Eta          () ; 
-    float         Phi          () ; 
-    float         Pt           () ; 
-    float         Energy       () ; 
+//    float         Eta          () ; //
+//    float         Phi          () ; 
+//    float         Pt           () ; 
+//    float         Energy       () ; 
     float         Dvx          () ; 
     float         Dvy          () ; 
     float         Dvz          () ; 
@@ -70,7 +71,7 @@ public:
     float         Exphi        () ; 
     float         Exeta        () ; 
     float         Fbrem        () ; 
-    int           PDGid        () ; 
+//    int           PDGid        () ; 
     int           Gen          () ; 
     int           ReachedEE    () ; 
     bool          FromBeamPipe () ; 
@@ -80,7 +81,7 @@ public:
 
     bool hasPos();
 
-    int           getEndcapId();
+//    int           getEndcapId();
 
     /* projection info */
     double        getRhoProj(unsigned ilayer);        // !!!WARNING!!! layers starts from 1
@@ -95,10 +96,10 @@ public:
 private:
 
     float         _UniqueId    ;
-    float         _Eta         ;
-    float         _Phi         ;
-    float         _Pt          ;
-    float         _Energy      ;
+//    float         _Eta         ;
+//    float         _Phi         ;
+//    float         _Pt          ;
+//    float         _Energy      ;
     float         _Dvx         ;
     float         _Dvy         ;
     float         _Dvz         ;
@@ -111,7 +112,7 @@ private:
     float         _Exphi       ;
     float         _Exeta       ;
     float         _Fbrem       ;
-    int           _Pid         ;
+//    int           _Pid         ;
     int           _Gen         ;
     int           _ReachedEE   ;
     bool          _FromBeamPipe;

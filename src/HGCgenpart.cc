@@ -11,10 +11,10 @@ HGCgenpart::~HGCgenpart() { ; }
 
 
 void HGCgenpart::setUniqueId     (int           UniqueId     ) { _UniqueId    = UniqueId    ; }
-void HGCgenpart::setEta          (float         Eta          ) { _Eta         = Eta         ; }
-void HGCgenpart::setPhi          (float         Phi          ) { _Phi         = Phi         ; }
-void HGCgenpart::setPt           (float         Pt           ) { _Pt          = Pt          ; }
-void HGCgenpart::setEnergy       (float         Energy       ) { _Energy      = Energy      ; }
+//void HGCgenpart::setEta          (float         Eta          ) { _Eta         = Eta         ; }
+//void HGCgenpart::setPhi          (float         Phi          ) { _Phi         = Phi         ; }
+//void HGCgenpart::setPt           (float         Pt           ) { _Pt          = Pt          ; }
+//void HGCgenpart::setEnergy       (float         Energy       ) { _Energy      = Energy      ; }
 void HGCgenpart::setDvx          (float         Dvx          ) { _Dvx         = Dvx         ; }
 void HGCgenpart::setDvy          (float         Dvy          ) { _Dvy         = Dvy         ; }
 void HGCgenpart::setDvz          (float         Dvz          ) { _Dvz         = Dvz         ; }
@@ -27,7 +27,7 @@ void HGCgenpart::setMother       (int           Mother       ) { _Mother      = 
 void HGCgenpart::setExphi        (float         Exphi        ) { _Exphi       = Exphi       ; }
 void HGCgenpart::setExeta        (float         Exeta        ) { _Exeta       = Exeta       ; }
 void HGCgenpart::setFbrem        (float         Fbrem        ) { _Fbrem       = Fbrem       ; }
-void HGCgenpart::setPDGid        (int           Pid          ) { _Pid         = Pid         ; }
+//void HGCgenpart::setPDGid        (int           Pid          ) { _Pid         = Pid         ; }
 void HGCgenpart::setGen           (int           Gen          ) { _Gen         = Gen         ; }
 void HGCgenpart::setReachedEE    (int           ReachedEE    ) { _ReachedEE   = ReachedEE   ; }
 void HGCgenpart::setFromBeamPipe (bool          FromBeamPipe ) { _FromBeamPipe= FromBeamPipe; }
@@ -36,10 +36,10 @@ void HGCgenpart::setPosy  (vector<float> Posy  ) { _Posy = Posy ; }
 void HGCgenpart::setPosz  (vector<float> Posz  ) { _Posz = Posz ; }
 
 int           HGCgenpart::UniqueId     () { return _UniqueId    ; } 
-float         HGCgenpart::Eta          () { return _Eta         ; } 
-float         HGCgenpart::Phi          () { return _Phi         ; } 
-float         HGCgenpart::Pt           () { return _Pt          ; } 
-float         HGCgenpart::Energy       () { return _Energy      ; } 
+//float         HGCgenpart::Eta          () { return _Eta         ; } 
+//float         HGCgenpart::Phi          () { return _Phi         ; } 
+//float         HGCgenpart::Pt           () { return _Pt          ; } 
+//float         HGCgenpart::Energy       () { return _Energy      ; } 
 float         HGCgenpart::Dvx          () { return _Dvx         ; } 
 float         HGCgenpart::Dvy          () { return _Dvy         ; } 
 float         HGCgenpart::Dvz          () { return _Dvz         ; } 
@@ -52,7 +52,7 @@ int           HGCgenpart::Mother       () { return _Mother      ; }
 float         HGCgenpart::Exphi        () { return _Exphi       ; } 
 float         HGCgenpart::Exeta        () { return _Exeta       ; } 
 float         HGCgenpart::Fbrem        () { return _Fbrem       ; } 
-int           HGCgenpart::PDGid        () { return _Pid         ; } 
+//int           HGCgenpart::PDGid        () { return _Pid         ; } 
 int           HGCgenpart::Gen          () { return _Gen         ; } 
 int           HGCgenpart::ReachedEE    () { return _ReachedEE   ; } 
 bool          HGCgenpart::FromBeamPipe () { return _FromBeamPipe; } 
@@ -151,9 +151,9 @@ TF1 HGCgenpart::getHT(unsigned ilayer, double zOffset, double zWeight){
 }
 
 
-int HGCgenpart::getEndcapId(){ 
-
-    if (_Eta>0) return 0; 
-    return 1;
-
-}
+//int HGCgenpart::getEndcapId(){ 
+//
+//    if (_Eta>0) return 0; 
+//    return 1;
+//
+//}

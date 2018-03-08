@@ -46,7 +46,7 @@ const unsigned VERBOSE_C3D     = 0x80;
 const int verboselevel = VERBOSE_OPTIONS | VERBOSE_MAIN ;
 const bool flagTCs = true;
 const bool flagC2D = true;
-const bool flagC3D = false;
+const bool flagC3D = true;
 const bool flagGen = true;
 const bool flagGenPart = true;
 //const bool flagHistos = false;
@@ -75,13 +75,14 @@ int main(int argc, char **argv){
     int nEvt = -1;
     int firstEvent=0;
     unsigned nPhiSectors=32; 
-
+    unsigned nLongitudinalSections=4;
 //    unsigned nEndcaps=2; 
 
     // hough transofrm
     //float zOffset=323; // cm
     //float zOffset=420.387; // cm; middle of the detector
-    float    zOffset=334.440; // cm; middle of EE
+    float    zOffset[nLongitudinalSections] = { 334.440, 382.075, 708.000, 334.440 }; // cm; middle of EE
+    float    slopeCorrection[nLongitudinalSections] = { 32, 32, 32, 4 }; // cm; middle of EE
     double   houghThr=0;
     unsigned houghCols=32;
     unsigned houghRows=32;
@@ -98,7 +99,7 @@ int main(int argc, char **argv){
         {"firstEvent",   required_argument,  0, 'd'},
         {"nEvt",         required_argument,  0, 'n'},
         {"nPhiSectors",  required_argument,  0, 's'},
-        {"houghZoffset", required_argument,  0, 'z'},
+        //{"houghZoffset", required_argument,  0, 'z'},
         {"houghThr",     required_argument,  0, 't'},
         {"houghCols",    required_argument,  0, 'C'},
         {"houghRows",    required_argument,  0, 'R'},
@@ -121,7 +122,7 @@ int main(int argc, char **argv){
             cout << " -d(--firstEvent  ) <firstEvent> :\t first event to be processed (default: 0)" << endl;
             cout << " -n(--nEvt        ) <nEvt> :\t number of events to be processed (default: all)" << endl;
             cout << " -s(--nPhiSectors ) <nPhiSectors> :\t number of phi sectors for hough transform (default: 32)" << endl;
-            cout << " -z(--houghZoffset) <zOffset> :\t hough transform Zaxis offset (default: 323cm[~1st layer])" << endl;
+            //cout << " -z(--houghZoffset) <zOffset> :\t hough transform Zaxis offset (default: 323cm[~1st layer])" << endl;
             cout << " -t(--houghThr    ) <houghThr> :\t hough transform Threscold (default: 0)" << endl;
             cout << " -C(--houghCols   ) <houghCols> :\t hough transform number of cols (default: 32)" << endl;
             cout << " -R(--houghRows   ) <houghRows> :\t hough transform number of rows (default: 32)" << endl;
@@ -147,9 +148,9 @@ int main(int argc, char **argv){
         case 's':
             nPhiSectors = atoi( optarg );
             break;
-	case 'z':
-            zOffset = atof( optarg );
-            break;
+            //case 'z':
+            //zOffset = atof( optarg );
+            //break;
 	case 't':
             houghThr = atof( optarg );
             break;
@@ -181,7 +182,7 @@ int main(int argc, char **argv){
         cout << "  OutputFile: "     << outputFileName << endl;
         cout << "  InputFile: "      << inputFileName  << endl;
         cout << "  nPhiSectors: "    << nPhiSectors    << endl;
-        cout << "  zOffset: "        << zOffset        << endl;
+        //cout << "  zOffset: "        << zOffset        << endl;
         cout << "  houghThr: "       << houghThr       << endl;
         cout << "  houghCols: "      << houghCols      << endl;
         cout << "  houghRows: "      << houghRows      << endl;
@@ -212,6 +213,7 @@ int main(int argc, char **argv){
     /* build the detector */
     HGC detector( fList, 
                   flagTCs, flagC2D, flagC3D, flagGen, flagGenPart, 
+                  true,
                   verboselevel 
         );   
 
@@ -230,34 +232,31 @@ int main(int argc, char **argv){
     
     // triggercells
     
-
     // gen 
     vector<TGraph*> gGenProj;
-    TGraph gGenProjXY;
-    TGraph gNbinsVEvtNumber; 
+    TGraph gGenProjXY[HGCgeom::instance()->nEndcaps()][nLongitudinalSections][nPhiSectors];
     TGraph gNtotBinsVEvtNumber; 
 
     // genpart
-    vector<TGraph*> gGenpartProj;
-    TGraph gGenpartProjXY[2]; // per endcap
-    TGraph gGenpartHoughResults[2][nPhiSectors]; // per endcap per phi sector
-    
+    TGraph gGenpartProjXY[HGCgeom::instance()->nEndcaps()]; // per endcap
+    TGraph gGenpartHoughResults[HGCgeom::instance()->nEndcaps()][nPhiSectors]; // per endcap per phi sector
 
     // C2D
-    TGraph gC2Dxy[2]; // per endcap
 
     // C3D
+    double nC3D[nEvt][HGCgeom::instance()->nEndcaps()];
 
+    // hough transform
+    TGraph gNbinsVsEvtNumber[HGCgeom::instance()->nEndcaps()][nLongitudinalSections][nPhiSectors]; 
+    TH1D hNbinsVsEvtNumber[HGCgeom::instance()->nEndcaps()][nLongitudinalSections][nPhiSectors]; 
+    for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++) {
+        for(unsigned isection=0; isection<nLongitudinalSections; isection++) {
+            for(unsigned isector=0; isector<nPhiSectors; isector++) {
+                hNbinsVsEvtNumber[iendcap][isection][isector].SetBins(4000, 0, 3999);
+            }
+        }
+    }
 
-    /* HOUGH TRANSFORM declarations */
-//    HGCht transform[nEndcaps][nPhiSectors];
-   
-//    for(unsigned iendcap=0; iendcap<nEndcaps; iendcap++){
-//        for(unsigned isector=0; isector<nPhiSectors; isector++){
-//            transform[iendcap][isector].setParams( houghCols, -1, 1,
-//                                                   houghRows, 0, 200 );
-//        }
-//    }
 
     /***************/
     /* phi sectors */
@@ -291,16 +290,26 @@ int main(int argc, char **argv){
         if( isBit(verboselevel, VERBOSE_MAIN) )
             cout << " MAIN >> Analyzing event No " << ievt << endl;
 
+        /******BUILD DIR HIERARCHY******/
         /* make a directory for this event and the phi sector in iFile */
         TDirectory* eventDir = fileOut->mkdir( Form("event_%d", ievt) );
+
+        fileOut->mkdir( Form("event_%d/endcap_0/", ievt) );
+        fileOut->mkdir( Form("event_%d/endcap_1/", ievt) );
         
-        for(unsigned isector=0; isector<nPhiSectors; isector++){   
+        for(unsigned isection=0; isection<nLongitudinalSections; isection++){
             // new folder for phi sector
-            fileOut->cd();
-            fileOut->mkdir( Form("event_%d/sector_%d/endcap_0", ievt, isector) );
-            fileOut->mkdir( Form("event_%d/sector_%d/endcap_1", ievt, isector) );
+            fileOut->mkdir( Form("event_%d/endcap_0/section_%d/", ievt, isection) );
+            fileOut->mkdir( Form("event_%d/endcap_1/section_%d/", ievt, isection) );
+
+            for(unsigned isector=0; isector<nPhiSectors; isector++){   
+                fileOut->mkdir( Form("event_%d/endcap_0/section_%d/sector_%d/", ievt, isection, isector) );
+                fileOut->mkdir( Form("event_%d/endcap_1/section_%d/sector_%d/", ievt, isection, isector) );
+                
+            }
+
         }
-        
+
         eventDir->cd();
        
         /* Get Entry */
@@ -317,103 +326,125 @@ int main(int argc, char **argv){
 
                 HGCgen* gen = gens.at(igen);
 
-                if( !(gen->Eta() >1.5 && gen->Eta() <3) ) continue;
-                TGraph* g = new TGraph();
+                if( !( gen->Eta()>1.5 && gen->Eta()<3 ) ) continue;
+                //TGraph* g = new TGraph();
+                //
+                //g->SetPoint( 0, 
+                //             gen->getZprojection( zOffset[0] ).Phi(), 
+                //             gen->getZprojection( zOffset[0] ).Rho()       
+                //    );
+                //g->SetMarkerStyle(27);
+                //g->SetMarkerColor(8);
+                //g->SetMarkerSize( gen->Pt()/10 );
+                //gGenProj.push_back(g);
+
+                /* store the gen part into the correct section and phi sector */
+                for(unsigned isection=0; isection<nLongitudinalSections; isection++){
+                    
+//                    gen->getHT( 300, zOffset[isection], 1 ).Write( Form("gen_%d_%d_300", gen->PDGid(), gen->id() ) );
+//                    gen->getHT( 320, zOffset[isection], 1 ).Write( Form("gen_%d_%d_320", gen->PDGid(), gen->id() ) );
+                    
+                    unsigned iendcap = gen->getEndcapId();
+                    unsigned isector = gen->getPhiSectorProj( nPhiSectors, minPhis, maxPhis, zOffset[isection] );
+                    gGenProjXY[iendcap][isection][isector].SetPoint( gGenProjXY[iendcap][isection][isector].GetN(),
+                                                                     gen->getZprojection( zOffset[isection] ).X(), 
+                                                                     gen->getZprojection( zOffset[isection] ).Y() 
+                        );
+                    
+                }
                 
-                g->SetPoint( 0, 
-                             gen->getZprojection( zOffset ).Phi(), 
-                             gen->getZprojection( zOffset ).Rho()       
-                    );
-                g->SetMarkerStyle(27);
-                g->SetMarkerColor(8);
-                g->SetMarkerSize( gen->Pt()/10 );
-                gGenProj.push_back(g);
+            } // end gen loop
+            
+            for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++) {
+                for(unsigned isection=0; isection<nLongitudinalSections; isection++) {
+                    for(unsigned isector=0; isector<nPhiSectors; isector++){
+                        
+                        if( gGenProjXY[iendcap][isection][isector].GetN() == 0 ) continue;
 
-                /* store the gen part into the correct phi sector */
-                fileOut->cd( Form("event_%d/sector_%d/endcap_%d",
-                                  ievt, 
-                                  gen->getPhiSectorProj(nPhiSectors, minPhis, maxPhis, zOffset) ,
-                                  gen->getEndcapId() )
-                    );
-                gen->getHT( 300, zOffset, 1 ).Write( Form("gen_%d_%d_300", gen->g4id(), gen->id() ) );
-                gen->getHT( 320, zOffset, 1 ).Write( Form("gen_%d_%d_320", gen->g4id(), gen->id() ) );
-                gGenProjXY.SetPoint( gGenProjXY.GetN(),
-                                     gen->getZprojection(zOffset).X(), 
-                                     gen->getZprojection(zOffset).Y() 
-                    );
-
+                        fileOut->cd( Form("event_%d/endcap_%d/section_%d/sector_%d/",
+                                          ievt, 
+                                          iendcap,
+                                          isection,
+                                          isector )
+                            );
+                        gGenProjXY[iendcap][isection][isector].Write("gen_xy_proj"); // save the graph
+                        gGenProjXY[iendcap][isection][isector].Set(0); // clean the graph
+                    
+                    }
+                }
             }
-
-            fileOut->cd( Form("event_%d", ievt) ); // 
-            gGenProjXY.Write("gen_xy_proj"); // save the graph
-            gGenProjXY.Set(0); // clean the graph
-
+            
         }
 
 
         /************************/
         /* looping over the GENPART */
-        if( detector.areGenpartPresent() ){
-        
-            vector<HGCgenpart*> genparts = detector.getGenpartAll();
-
-            cout << "GENPART >>> N " << genparts.size() << endl;
-            
-            for(unsigned igenpart=0; igenpart<genparts.size(); igenpart++) {
-            
-                HGCgenpart* genpart = genparts.at(igenpart);
-
-                // continue if genpart is not reaching the EE
-                //if( !genpart->hasPos() || genpart->ReachedEE()!=2 ) continue; 
-                if( genpart->ReachedEE()!=2 ) continue; 
-                
-                // get phi sector and endcap
-                int isector      = genpart->getPhiSectorProj(1, nPhiSectors, minPhis, maxPhis );
-                unsigned iendcap = genpart->getEndcapId();
-                double zOffset_corrected = genpart->getEndcapId()==0 ? zOffset : -zOffset;
-                
-                // XY projection
-                gGenpartProjXY[iendcap].SetPoint(gGenpartProjXY[iendcap].GetN(), 
-                                                 genpart->Posx().at(0),
-                                                 genpart->Posy().at(0)
-                    );
-                gGenpartHoughResults[iendcap][isector].SetPoint( gGenpartHoughResults[iendcap][isector].GetN(), 
-                                                                 genpart->getHTcoordinate(zOffset_corrected).getX(),
-                                                                 genpart->getHTcoordinate(zOffset_corrected).getY()
-                    );
-                
-                // get to the correct folder
-                fileOut->cd( Form("event_%d/sector_%d/endcap_%d", 
-                                  ievt, 
-                                  isector,
-                                  iendcap )
-                    );
-                
-                genpart->getHT(1, zOffset_corrected ).Write( Form("genpart_%d_%d_layer_1", genpart->PDGid(), genpart->UniqueId() ) );
-                genpart->getHT(3, zOffset_corrected ).Write( Form("genpart_%d_%d_layer_3", genpart->PDGid(), genpart->UniqueId() ) );
-                
-            } // end loop genpart
-            
-            fileOut->cd( Form("event_%d", ievt) );
-            gGenpartProjXY[0].Write("genpart_xy_proj_endcap_0"); // save the graph
-            gGenpartProjXY[1].Write("genpart_xy_proj_endcap_1"); // save the graph
-
-            for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++){
-                for(unsigned isector=0; isector<nPhiSectors; isector++){
-                    fileOut->cd( Form("event_%d/sector_%d/endcap_%d", ievt, isector, iendcap) );
-                    
-                    if( gGenpartHoughResults[iendcap][isector].GetN() > 0 ){
-                        gGenpartHoughResults[iendcap][isector].Write("HTtruthResults");
-                        gGenpartHoughResults[iendcap][isector].Set(0);
-                    }
-                }
-            }
-
-
-            gGenpartProjXY[0].Set(0); // clean the graph
-            gGenpartProjXY[1].Set(0); // clean the graph
-
-        } // end genpart
+//TBD        if( detector.areGenpartPresent() ){
+//TBD        
+//TBD            vector<HGCgenpart*> genparts = detector.getGenpartAll();
+//TBD
+//TBD            cout << "GENPART >>> N " << genparts.size() << endl;
+//TBD            
+//TBD            for(unsigned igenpart=0; igenpart<genparts.size(); igenpart++) {
+//TBD            
+//TBD                HGCgenpart* genpart = genparts.at(igenpart);
+//TBD
+//TBD                // continue if genpart is not reaching the EE
+//TBD                //if( !genpart->hasPos() || genpart->ReachedEE()!=2 ) continue; 
+//TBD                if( genpart->ReachedEE()!=2 ) continue; 
+//TBD                
+//TBD                // get phi sector and endcap
+//TBD                int isector      = genpart->getPhiSectorProj(1, nPhiSectors, minPhis, maxPhis );
+//TBD                unsigned iendcap = genpart->getEndcapId();
+//TBD                double zOffset_corrected = genpart->getEndcapId()==0 ? zOffset : -zOffset;
+//TBD                
+//TBD                // XY projection
+//TBD                gGenpartProjXY[iendcap].SetPoint(gGenpartProjXY[iendcap].GetN(), 
+//TBD                                                 genpart->Posx().at(0),
+//TBD                                                 genpart->Posy().at(0)
+//TBD                    );
+//TBD                gGenpartHoughResults[iendcap][isector].SetPoint( gGenpartHoughResults[iendcap][isector].GetN(), 
+//TBD                                                                 genpart->getHTcoordinate(zOffset_corrected).getX(),
+//TBD                                                                 genpart->getHTcoordinate(zOffset_corrected).getY()
+//TBD                    );
+//TBD                
+//TBD                // get to the correct folder
+//TBD                for(unsigned isection=0; isection<nLongitudinalSections; isection++){
+//TBD
+//TBD                    fileOut->cd( Form("event_%d/endcap_%d/section_%d/sector_%d/", 
+//TBD                                      ievt, 
+//TBD                                      iendcap,
+//TBD                                      isection,
+//TBD                                      isector )
+//TBD                        );
+//TBD                    
+//TBD                    genpart->getHT(1, zOffset_corrected ).Write( Form("genpart_%d_%d_layer_1", genpart->PDGid(), genpart->UniqueId() ) );
+//TBD                    genpart->getHT(3, zOffset_corrected ).Write( Form("genpart_%d_%d_layer_3", genpart->PDGid(), genpart->UniqueId() ) );
+//TBD
+//TBD                }
+//TBD
+//TBD            } // end loop genpart
+//TBD            
+//TBD            fileOut->cd( Form("event_%d", ievt) );
+//TBD            gGenpartProjXY[0].Write("genpart_xy_proj_endcap_0"); // save the graph
+//TBD            gGenpartProjXY[1].Write("genpart_xy_proj_endcap_1"); // save the graph
+//TBD
+//TBD            for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++){
+//TBD                
+//TBD                for(unsigned isector=0; isector<nPhiSectors; isector++){
+//TBD                    fileOut->cd( Form("event_%d/endcap_%d/sector_%d/", ievt, iendcap, isector) );
+//TBD                    
+//TBD                    if( gGenpartHoughResults[iendcap][isector].GetN() > 0 ){
+//TBD                        gGenpartHoughResults[iendcap][isector].Write("HTtruthResults");
+//TBD                        gGenpartHoughResults[iendcap][isector].Set(0);
+//TBD                    }
+//TBD                }
+//TBD            }
+//TBD
+//TBD            gGenpartProjXY[0].Set(0); // clean the graph
+//TBD            gGenpartProjXY[1].Set(0); // clean the graph
+//TBD
+//TBD        } // end genpart
 
 
         /********************/
@@ -423,213 +454,197 @@ int main(int argc, char **argv){
             if( isBit(verboselevel, VERBOSE_MAIN) )
                 cout << " MAIN >> TC analysis " << endl;
      
-            for(int iendcap=0; iendcap<2; iendcap++) {
-                /* get the vector */
-                vector<HGCTC*> tcs = detector.getSubdet(iendcap,3)->getTCall();
+            /* endcap loop */
+            for(unsigned iendcap=0; iendcap<2; iendcap++) {
                 
-                /* LOOP */
-                unsigned nTC = tcs.size();
-                for( unsigned itc=0; itc<nTC; itc++ ){
-                    
-                    if( isBit(verboselevel, VERBOSE_TC) ) {
-                        float percent = 100.*(float)itc/(float)nTC; 
-                        if( itc%1000 == 0 )
-                            cout << " MAIN >> " << itc << " TC processed (" << percent << "%)" << endl;
-                    }
-                    
-                    /* get the trigger cell */
-                    HGCTC* tc = tcs.at(itc);
-                    
-                    /* DEBUG */
-                    if( isBit(verboselevel, VERBOSE_TC) ) {
-                        cout << " MAIN >> Energy (MipT) " << tc->MipT() << endl;
-                        cout << " MAIN >> HGROC id (third) " << tc->third() << endl;
-                    }
-                    
-                    /* Fill Histos and Graphs*/
-                    //hhTCetaPhi->Fill( tc->Eta(), tc->Phi() );
-                    //if( tc->MipT() > 5 ) { 
-                    //    gTCrVsPhi->SetPoint( gTCrVsPhi->GetN(), tc->Phi(), tc->r() );
-                    //    gTCrVsPhi_SL[tc->layer()].SetPoint( gTCrVsPhi_SL[tc->layer()].GetN(), tc->Phi(), tc->r() );
-                    //}
-                    //                hhLayerVsEnergy->Fill( tc->correctedLayer(), tc->Energy() );
-                    //hTCmipT->Fill( tc->MipT() );
+                /* section loop */
+                for(unsigned isection=0; isection<nLongitudinalSections; isection++) {
 
+                    /* get tcs vector */
+                    vector<HGCTC*> tcs = detector.getSubdet( iendcap, isection )->getTCall();
+                    
+                    /* LOOP */
+                    unsigned nTC = tcs.size();
+                    for( unsigned itc=0; itc<nTC; itc++ ){
+                        
+                        if( isBit(verboselevel, VERBOSE_TC) ) {
+                            float percent = 100.*(float)itc/(float)nTC; 
+                            if( itc%1000 == 0 )
+                                cout << " MAIN >> " << itc << " TC processed (" << percent << "%)" << endl;
+                        }
+                    
+                        /* get the trigger cell */
+                        HGCTC* tc = tcs.at(itc);
+                    
+                        /* DEBUG */
+                        if( isBit(verboselevel, VERBOSE_TC) ) {
+                            cout << " MAIN >> Energy (MipT) " << tc->MipT() << endl;
+                            cout << " MAIN >> HGROC id (third) " << tc->third() << endl;
+                        }
+                    
+                        /* Fill Histos and Graphs*/
+                        //hhTCetaPhi->Fill( tc->Eta(), tc->Phi() );
+                        //if( tc->MipT() > 5 ) { 
+                        //    gTCrVsPhi->SetPoint( gTCrVsPhi->GetN(), tc->Phi(), tc->r() );
+                        //    gTCrVsPhi_SL[tc->layer()].SetPoint( gTCrVsPhi_SL[tc->layer()].GetN(), tc->Phi(), tc->r() );
+                        //}
+                        //                hhLayerVsEnergy->Fill( tc->correctedLayer(), tc->Energy() );
+                        //hTCmipT->Fill( tc->MipT() );
+
+                    }// end sections loop
+                    
                 }// end encap loop
+                    
 
             }// end TCs LOOP
 
         }// end TCs
 
 
+
         /************************/
         /* looping over the C2D */
-
         if( detector.areC2Dpresent() ) {
 
             cout << " MAIN >>> C2D analysis." << endl;
 
-            for(int iendcap=0; iendcap<2; iendcap++) {
-                vector<HGCC2D*> C2Ds[nPhiSectors];
+            /* endcap loop */
+            for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++) {
 
-                // how many sectors
-                if( isBit(verboselevel, VERBOSE_HOUGH) )
-                    cout << " HOUGH >> The detector is divide into " << nPhiSectors << " phi sectors." << endl;
+                /* section loop */
+                for(unsigned isection=0; isection<nLongitudinalSections; isection++) {
 
-                // get the C2D in the phi sector
-                //cout << " det all       " << detector.getSubdet(iendcap,3)->getC2Dall().size() << endl;
-                //cout << "one phi sector " << detector.getSubdet(iendcap,3)->getC2DallInPhiRegion(-4, 4).size() << endl;
-                int totPhiSec =0;
-                for(unsigned isector=0; isector<nPhiSectors; isector++){
-                    C2Ds[isector] = detector.getSubdet(iendcap,3)->getC2DallInPhiRegion(minPhis[isector], maxPhis[isector]);
-                    totPhiSec+=C2Ds[isector].size();
-                    //cout << " endcap " << iendcap << " sector " << isector << " " << C2Ds[isector].size() << endl;
-                }
-                //cout << "sum phi sector " << totPhiSec << endl;
+                    if( isBit(verboselevel, VERBOSE_HOUGH) ) 
+                        cout << " >>> MAIN: Section " << isection << endl;
 
-                /* loop over ALL clusters */
-                for(unsigned iclu=0; iclu<detector.getSubdet(iendcap,3)->getC2Dall().size(); iclu++){
+                    /* point the correct location */
+                    fileOut->cd( Form("event_%d/endcap_%d/section_%d", ievt, iendcap, isection) );
+
+                    /* get subdetector */
+                    HGCsubdet* subdetector = detector.getSubdet(iendcap, isection);
                     
-                    double xClu = detector.getSubdet(iendcap,3)->getC2Dall().at(iclu)->x();
-                    double yClu = detector.getSubdet(iendcap,3)->getC2Dall().at(iclu)->y();
-                    //int cluEndcap = detector.getSubdet(iendcap,3)->getC2Dall().at(iclu)->getEndcapId();
+                    /* get C2Ds projection */
+                    TGraph gC2Dxy;
+                    subdetector->getC2DallInPhiRegion(-4, 4, gC2Dxy );
                     
-                    // XY projection (layer1)
-                    gC2Dxy[iendcap].SetPoint( gC2Dxy[iendcap].GetN(), xClu, yClu );
                     
-                }
-                
-                fileOut->cd( Form("event_%d", ievt) );
-                gC2Dxy[0].Write("C2D_xy_proj_endcap_0"); // save the graph
-                gC2Dxy[1].Write("C2D_xy_proj_endcap_1"); // save the graph
-                
-                gC2Dxy[0].Set(0); // clean the graph
-                gC2Dxy[1].Set(0); // clean the graph
-                
-                /*************************/
-                /* loop over PHI sectors */
-                for(unsigned isector=0; isector<nPhiSectors; isector++){
-                    
-                    // get the right folder
-                    fileOut->cd( Form("event_%d/sector_%d/endcap_%d", ievt, isector, iendcap) );
-                    
-                    if( isBit(verboselevel, VERBOSE_HOUGH) ) {
-                        cout << " >>> HOUGH: Phi sector " << isector << endl;
-                    }
-                    
-//                    // looping over clusers
-//                    for(unsigned iclu=0; iclu<C2Ds[isector].size(); iclu++){
-//                        
-//                        // get the C2D
-//                        HGCC2D* c2d = C2Ds[isector].at( iclu );
-//                        
-//                        if(c2d->z()<0 || c2d->z()>400) continue;
-//                        
-//                        /* HOUGH TRANFORM */
-//                        
-//                        
-//                        //float w = houghWeight ? c2d->Pt() : 1;
-//                        //if( isBit(verboselevel, VERBOSE_HOUGH) ) {
-//                        //    cout << " >>> HOUGH: Adding point "  << isector << endl;
-//                        //}
-//                        //transform[c2d->getEndcapId()][isector].addPointPhysicalSpace( (c2d->z()-zOffset), 
-//                        //                                                             c2d->r(), 
-//                        //                                                             c2d->id(), 
-//                        //                                                             w
-//                        //    );
-//                        
-//                    }// end clusters loop
+                    gC2Dxy.Write( Form("C2D_xy_proj_endcap_%d", iendcap) ); // save the graph
                     
 
-                    /*****************/
-                    /* HOUGH FOR C2D */
-                    double zOffset_corrected = iendcap==0 ? zOffset : -zOffset;
-                    double minTanTheta=-0.6, maxTanTheta=0.6;
-                    double minRho=0, maxRho=200;
-                    HGCht  transform = detector.getSubdet(iendcap, 3)->getRhoZtransform_C2D( houghCols, minTanTheta, maxTanTheta,
-                                                                                             houghRows, minRho, maxRho,
-                                                                                             zOffset_corrected,
-                                                                                             minPhis[isector], maxPhis[isector], 
-                                                                                             houghWeight );
+                    /* loop over PHI sectors */
                     
-                    // get the bins over thr
-                    vector<HGChoughBin> houghBins = transform.getBinsAboveThr( houghThr );
-                    nBinsOverThr += houghBins.size();
+                    /* get the C2D in the phi sector */
+                    //int totPhiSec =0;
+                    //for(unsigned isector=0; isector<nPhiSectors; isector++){
+                    //    C2Ds[isector] = subdetector->getC2DallInPhiRegion(minPhis[isector], maxPhis[isector]);
+                    //    totPhiSec+=C2Ds[isector].size();
+                    //}
                     
-                    // SOME HT histos and graphs
-                    
-                    transform.getTransformedHisto( Form("HT_%d", isector) )->Write();
-                    transform.getTransformedHistoThr( Form("HTthr_%d", isector), houghThr )->Write();
-                    transform.getXYgraph( Form("phiSectorTransverse_%d", isector) ).Write();
-                    
-                    // if there are bins over thr
-                    if ( houghBins.size() ) {
+                    for(unsigned isector=0; isector<nPhiSectors; isector++){
                         
-                        if( isBit(verboselevel, VERBOSE_HOUGH ) ) {
-                            cout << " >>> HOUGH: There are " << houghBins.size() << " bins over thr." << endl;
-                        }
+                        if( isBit(verboselevel, VERBOSE_HOUGH) ) 
+                            cout << " >>> MAIN: Phi sector " << isector << endl;
+
+                        /* get the right folder */
+                        fileOut->cd( Form("event_%d/endcap_%d/section_%d/sector_%d", ievt, iendcap, isection, isector) );
                         
-                        gNbinsVEvtNumber.SetPoint( gNbinsVEvtNumber.GetN(), 
-                                                   ievt, 
-                                                   houghBins.size() 
-                            );
+                        /*** C2Ds ***/
                         
-                        // loop over the bins from the HT 
-                        for( unsigned ibin=0; ibin<houghBins.size(); ibin++ ) {
-                            
-//                            TGraph gEne;
-//                            houghBins.at(ibin).getLongitudinalEnergyProfileC2D( detector.getSubdet(iendcap,3), gEne );
-//                            gEne.Write( Form( "longitudinalEnergyShape_phiSector_%d_xBin_%d_yBin_%d", 
-//                                              isector, 
-//                                              houghBins.at(ibin).getCentreId().first, 
-//                                              houghBins.at(ibin).getCentreId().second )
-//                                );
-                            
-                            
-//                            TGraph gPt;
-//                            houghBins.at(ibin).getLongitudinalPtProfileC2D( detector.getSubdet(iendcap,3), gPt );
-//                            gPt.Write( Form( "longitudinalPtShape_phiSector_%d_xBin_%d_yBin_%d", 
-//                                             isector,
-//                                             houghBins.at(ibin).getCentreId().first, 
-//                                             houghBins.at(ibin).getCentreId().second )
-//                                );
-                            
+                        /* c2d projection graphs */
+                        TGraph gC2DxyPhi;
+                        subdetector->getC2DallInPhiRegion( minPhis[isector], maxPhis[isector], gC2DxyPhi );
+                        gC2DxyPhi.Write( "C2D_xy_proj" ); // save the graph                        
+                       
+                        /*** HOUGH TRANSFORM ***/
+                        
+                        /* params */
+                        double zOffset_corrected = iendcap==0 ? zOffset[isection] : -zOffset[isection];
+                        double minTanTheta=-0.6, maxTanTheta=0.6;
+                        double minRho=0, maxRho=200;
+
+                        /* get the hough transofrm fro the subdetector */
+                        HGCht  transform = detector.getSubdet(iendcap, isection)->getRhoZtransform_C2D( houghCols, minTanTheta, maxTanTheta,
+                                                                                                        houghRows, minRho, maxRho,
+                                                                                                        zOffset_corrected, slopeCorrection[isection],
+                                                                                                        minPhis[isector], maxPhis[isector], 
+                                                                                                        houghWeight );
+                        
+                        /* get the bins over thr */
+                        vector<HGCbin> houghBins = transform.getBinsAboveThr( houghThr );
+                        nBinsOverThr += houghBins.size();
+                        
+                        /* histos and graphs */
+                        TH2D histo, histoThr;
+                        TGraph g;
+
+                        transform.getTransformedHisto( histo );
+                        transform.getTransformedHisto( histoThr, houghThr );                        
+                        transform.getXYgraph( g );
+                        
+                        histoThr.Write(Form("HTthr_%d",    isector));
+                        histo.Write(Form("HT_%d",    isector));
+                        g.Write( Form("phiSectorTransverse_%d", isector) );
+                        
+                        /* BINS */
+
+                        if ( houghBins.size() ) {
                             
                             if( isBit(verboselevel, VERBOSE_HOUGH ) ) {
-                                
-                                cout << "BIN " <<  houghBins.at(ibin).getCentreId().first << " " << houghBins.at(ibin).getCentreId().second 
-                                     << " contains " << houghBins.at(ibin).getIds().size() << " hits" << endl; 
-                                
-                                cout << "Is in sector "     << isector                   << endl 
-                                     << " centreIdx " << houghBins.at(ibin).getCentreId().first
-                                     << " centreIdy " << houghBins.at(ibin).getCentreId().second
-                                     << endl
-                                     << " content "   << houghBins.at(ibin).getContent()
-                                     << endl;
-                                
-//                                transform[iendcap][isector].setParams( houghCols, -0.5, 0.5,
-//                                                                       houghRows, 0,    200 
-//                                       );
-                                
-                                for( unsigned iid=0; iid<houghBins.at(ibin).getIds().size(); iid++) 
-                                    cout << iid << " - " << houghBins.at(ibin).getIds().at(iid) << endl;
-                                
+                                cout << " >>> HOUGH: There are " << houghBins.size() << " bins over thr." << endl;
                             }
                             
-                        } // end loop over bins
-                        
-                    }
-                    
-                    
+                            gNbinsVsEvtNumber[iendcap][isection][isector].SetPoint( gNbinsVsEvtNumber[iendcap][isection][isector].GetN(), 
+                                                                                    ievt, 
+                                                                                    houghBins.size() 
+                                );
+                                
+                            // loop over the bins from the HT 
+                            for( unsigned ibin=0; ibin<houghBins.size(); ibin++ ) {
+                                
+                                TGraph gEne;
+                                houghBins.at(ibin).getLongitudinalEnergyProfile( detector.getSubdet(iendcap,isection), gEne );
+                                gEne.Write( Form( "EnergyProfile_bin_x%d_y%d", 
+                                                  houghBins.at(ibin).getCentreId().first, 
+                                                  houghBins.at(ibin).getCentreId().second )
+                                    );
+                                
+                                
+                                TGraph gPt;
+                                houghBins.at(ibin).getLongitudinalPtProfile( detector.getSubdet(iendcap, isection), gPt );
+                                gPt.Write( Form( "PtProfile_x%d_y%d",
+                                                 houghBins.at(ibin).getCentreId().first, 
+                                                 houghBins.at(ibin).getCentreId().second )
+                                    );
+                            
+                            } // end loop over bins
 
-                } // end loop over sectors
-    
+                        } // hough bin if
+
+                    } // endl loop over sectors
+
+                } // end loop over sections  
+                    
             } // end loop over endcaps
-
+            
         } // end c2d
             
-        gNtotBinsVEvtNumber.SetPoint( gNtotBinsVEvtNumber.GetN(), ievt, nBinsOverThr );
+
+        /**********************/
+        /* Loooping over C3Ds */
+        if( detector.areC3Dpresent() ){
+            
+            int isubdet = 3;
+
+            for(unsigned iendcap=0; iendcap< HGCgeom::instance()->nEndcaps(); iendcap++ ){
+                vector<HGCC3D*> C3Ds;
+                
+                C3Ds = detector.getSubdet(iendcap, isubdet)->getC3Dall();
+                nC3D[nEvt][iendcap] =  C3Ds.size();
+                
+            } // endl loop over C3Ds
         
+        } // end C3Ds
+
         /**********save*************/
 
         //for(unsigned iendcap=0; iendcap<2; iendcap++){
@@ -661,19 +676,28 @@ int main(int argc, char **argv){
         if( isBit(verboselevel, VERBOSE_MAIN) )            
             cout << " MAIN >>> Event processed. " << endl; 
 
-    }// end of evt loop
-    
+    } // end of evt loop
+
+
+    for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++) {
+        for(unsigned isection=0; isection<nLongitudinalSections; isection++) {
+            for(unsigned isector=0; isector<nPhiSectors; isector++) {
+                fileOut->cd();
+                gNbinsVsEvtNumber[iendcap][isection][isector].Write( Form("HTbinsVsEvent_endcap%d_section%d_sector%d", iendcap, isection, isector) );
+            }
+        }
+    }
 
     if( isBit(verboselevel, VERBOSE_MAIN) )
         cout << " MAIN >>> The loop over events ended. " << endl;
 
     
-    TCanvas cHoughPoint("cHoughPoint", "cHoughPoint", 1);
-    gNbinsVEvtNumber.SetMarkerStyle(20);
-    gNbinsVEvtNumber.Draw("AP");
-    fileOut->cd();
-    gNbinsVEvtNumber.Write("NbinsOverThrPerEvent");
-    gNtotBinsVEvtNumber.Write("NtotBinsOverThrPerEvent");
+    //TCanvas cHoughPoint("cHoughPoint", "cHoughPoint", 1);
+    //gNbinsVEvtNumber.SetMarkerStyle(20);
+    //gNbinsVEvtNumber.Draw("AP");
+    //fileOut->cd();
+    //gNbinsVEvtNumber.Write("NbinsOverThrPerEvent");
+    //gNtotBinsVEvtNumber.Write("NtotBinsOverThrPerEvent");
     
     /* close the out file */
     fileOut->Close();

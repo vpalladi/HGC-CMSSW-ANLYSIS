@@ -21,29 +21,28 @@
 
 using namespace std;
 
-//const unsigned Nlayers = 53; // must be nlayers+1, layers' name starts at 1 
 
 class HGC {
 
 public:
 
-    HGC( TList *fileList, bool flagTCs=true, bool flagC2D=true, bool flagC3D=true, bool flagGen=true, bool flagGenpart=true, bool triggerLayersOnly=true, int verboselevel=0 ); 
+    HGC( TList *fileList, bool flagTCs=true, bool flagC2D=true, bool flagC3D=true, bool flagGen=true, bool flagGenpart=true, bool triggerLayersOnly=false, int verboselevel=0 ); 
     ~HGC();
-
-    bool areTCpresent()       { return _flagTCs; }
-    bool areC2Dpresent()      { return _flagC2D; }
-    bool areC3Dpresent()      { return _flagC3D; } 
-    bool areGenpartPresent()  { return _flagGenpart; }
-    bool areGenPresent()      { return _flagGen; }
-
-    /* access the events */
-    unsigned getEvents();
-    void     getEvent( int evt );
 
     /* access the subdet */
     // subdet : 0 positive z, 1 negative z; 
     // section: 0 EE, 1 FH, 2 BH, 3 ALL. 
-    HGCsubdet* getSubdet(unsigned endcap, unsigned section) { return _subdet[endcap][section]; } 
+    HGCsubdet* getSubdet(unsigned endcap, unsigned section);
+
+    bool areTCpresent()       ;
+    bool areC2Dpresent()      ;
+    bool areC3Dpresent()      ; 
+    bool areGenpartPresent()  ;
+    bool areGenPresent()      ;
+
+    /* access the events */
+    unsigned getEvents();
+    void     getEvent( int evt );
 
     /* add */
     void addGen    ( HGCgen gen );
@@ -68,6 +67,7 @@ private:
     /* flags and verbose */
     int _verboselevel;
     bool _flagTCs, _flagC2D, _flagC3D, _flagGen, _flagGenpart;
+    bool _triggerLayersOnly;
 
     /* TChain */
     TChain *_chain;

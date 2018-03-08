@@ -3,7 +3,7 @@
 #include "HGCsubdet.h"
 
 
-HGCsubdet::HGCsubdet( unsigned endcapId, unsigned sectionId, bool triggerLayersOnly, int verboselevel ) {
+HGCsubdet::HGCsubdet( unsigned endcapId, unsigned sectionId, int verboselevel ) {
     
     /* init */
     _endcapId = endcapId;
@@ -11,87 +11,9 @@ HGCsubdet::HGCsubdet( unsigned endcapId, unsigned sectionId, bool triggerLayersO
     _verboselevel = verboselevel;
     
     /* Layers Z */
-    
-    _validTriggerLayer[0] = false;
-    for(unsigned ilayer=1; ilayer<53; ilayer++){
-        if( triggerLayersOnly && ilayer<29 && (ilayer%2==1) )
-            _validTriggerLayer[ilayer] = false;
-        else
-            _validTriggerLayer[ilayer] = true;
+    for(unsigned ilayer; ilayer<HGCgeom::instance()->nLayers(); ilayer++){
+        _layerZ.push_back( HGCgeom::instance()->layerZ(endcapId, ilayer) );
     }
-
-    // first layer is never there
-    _layerZ.push_back(0);
-    // EE
-    if( _sectionId==0 || _sectionId==3 ){
-        if( !triggerLayersOnly ) _layerZ.push_back( 320.755 );
-        _layerZ.push_back( 321.505 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 322.735 );
-        _layerZ.push_back( 323.485 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 324.715 );
-        _layerZ.push_back( 325.465 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 326.695 );
-        _layerZ.push_back( 327.445 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 328.675 );
-        _layerZ.push_back( 329.425 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 330.735 );
-        _layerZ.push_back( 331.605 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 332.915 );
-        _layerZ.push_back( 333.785 );
-        // middle EE 334.440;
-        if( !triggerLayersOnly ) _layerZ.push_back( 335.095 );
-        _layerZ.push_back( 335.965 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 337.275 );
-        _layerZ.push_back( 338.145 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 339.455 );
-        _layerZ.push_back( 340.325 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 341.775 );
-        _layerZ.push_back( 342.845 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 344.295 );
-        _layerZ.push_back( 345.365 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 346.815 );
-        _layerZ.push_back( 347.885 );
-        if( !triggerLayersOnly ) _layerZ.push_back( 349.335 );
-        _layerZ.push_back( 350.405 );
-    }
-//FH
-    else if( _sectionId==1  || _sectionId==3 ) {
-        _layerZ.push_back( 356.335 );
-        _layerZ.push_back( 361.015 );
-        _layerZ.push_back( 365.695 );
-        _layerZ.push_back( 370.375 );
-        _layerZ.push_back( 375.055 );
-        _layerZ.push_back( 379.735 );
-        _layerZ.push_back( 384.415 );
-        _layerZ.push_back( 389.095 );
-        _layerZ.push_back( 393.775 );
-        _layerZ.push_back( 398.455 );
-        _layerZ.push_back( 403.135 );
-        _layerZ.push_back( 407.815 );
-    }
-        // BH is not exact
-    else if( _sectionId==2  || _sectionId==3 ) {
-        _layerZ.push_back( 421.0       );
-        _layerZ.push_back( 421.0+9.0*1 );
-        _layerZ.push_back( 421.0+9.0*2 );
-        _layerZ.push_back( 421.0+9.0*3 );
-        _layerZ.push_back( 421.0+9.0*4 );
-        _layerZ.push_back( 421.0+9.0*5 );
-        _layerZ.push_back( 421.0+9.0*6 );
-        _layerZ.push_back( 421.0+9.0*7 );
-        _layerZ.push_back( 421.0+9.0*8 );
-        _layerZ.push_back( 421.0+9.0*9 );
-        _layerZ.push_back( 421.0+9.0*10 );
-        _layerZ.push_back( 421.0+9.0*11 );
-    }
-    else{
-        exit(1);
-    }
-
-    // revert in case is negative z
-    if( _endcapId==1 )
-        for(unsigned ilayer=0; ilayer<this->nLayers(); ilayer++)
-            _layerZ[ilayer] = -_layerZ[ilayer];
 
     /* allocate the containers for the TC C2D and ROC */
     _TC_layer  = new vector<HGCTC*>[this->nLayers()];
@@ -101,7 +23,6 @@ HGCsubdet::HGCsubdet( unsigned endcapId, unsigned sectionId, bool triggerLayersO
         _TD[i]  = new vector<HGCROC> ;
         _TD[i] ->reserve(5000);
     }
-    
 
 }
 
@@ -127,10 +48,10 @@ void HGCsubdet::addTC( HGCTC tc ) {
 
 
 void HGCsubdet::addC2D( HGCC2D c2d ) { 
-    
+
     /* add c2d to the map */
     _C2Ds[c2d.id()] = c2d;
-  
+
     /* keep the pointer for easy access */
     _C2Dvec.push_back( &_C2Ds[c2d.id()] );
 
@@ -158,9 +79,9 @@ map<unsigned,HGCTC>  *HGCsubdet::getTCmap()              { return &_TCs         
 map<unsigned,HGCC2D> *HGCsubdet::getC2Dmap()             { return &_C2Ds            ; }
 map<unsigned,HGCC3D> *HGCsubdet::getC3Dmap()             { return &_C3Ds            ; }
 
-vector<HGCTC*>        HGCsubdet::getTC_layer(unsigned layer)   { return _TC_layer[layer]  ; }
-vector<HGCC2D*>       HGCsubdet::getC2D_layer(unsigned layer)  { return _C2D_layer[layer] ; }
-vector<HGCROC>       *HGCsubdet::getTD(unsigned layer)         { return _TD[layer]        ; }
+//vector<HGCTC*>        HGCsubdet::getTC_layer(unsigned layer)   { return _TC_layer[layer]  ; }
+//vector<HGCC2D*>       HGCsubdet::getC2D_layer(unsigned layer)  { return _C2D_layer[layer] ; }
+//vector<HGCROC>       *HGCsubdet::getTD(unsigned layer)         { return _TD[layer]        ; }
 
 
 vector<HGCTC*>        HGCsubdet::getTCall()                    { return _TCvec            ; }
@@ -249,7 +170,7 @@ bool HGCsubdet::isPertinent(float z){
 
 HGCht HGCsubdet::getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
                                        int nRowsRho,      double rhoMin,      double rhoMax, 
-                                       double zOffset,
+                                       double zOffset, double slopeCorrection,
                                        double minPhi, double maxPhi,
                                        bool weightPt  ) {
 
@@ -257,18 +178,18 @@ HGCht HGCsubdet::getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, do
                      nRowsRho, rhoMin, rhoMax );
 
     vector<HGCC2D*> c2ds = getC2DallInPhiRegion(minPhi, maxPhi);
-
+    
     for(unsigned ic2d=0; ic2d<c2ds.size(); ic2d++){
         
         HGCC2D* c2d = c2ds.at(ic2d);
         
         double w = weightPt ? c2d->Pt() : 1;
-        transform.addPointPhysicalSpace( ( c2d->z()-zOffset ), 
+        transform.addPointPhysicalSpace( ( c2d->z()-zOffset )*slopeCorrection, 
                                          c2d->r(), 
                                          c2d->id(), 
                                          w
             );
-    
+        
     }
     
     return transform;
@@ -276,6 +197,25 @@ HGCht HGCsubdet::getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, do
 }
 
 
+/* histos and graphs */
+void HGCsubdet::getC2DallInPhiRegion( double minPhi, double maxPhi, TGraph &graph ){
+
+    vector<HGCC2D*> c2ds = this->getC2DallInPhiRegion( minPhi, maxPhi );
+
+    for(unsigned iclu=0; iclu<c2ds.size(); iclu++){
+        
+        double xClu = c2ds.at(iclu)->x();
+        double yClu = c2ds.at(iclu)->y();
+        
+        /* XY projection (layer1) */
+        graph.SetPoint( graph.GetN(), xClu, yClu );
+        
+    }
+
+}
+    
+
+/* clear */
 void HGCsubdet::clear() {
 
     for(unsigned ilayer=0; ilayer<this->nLayers(); ilayer++){

@@ -28,7 +28,7 @@ class HGCsubdet {
 
 public:
 
-    HGCsubdet( unsigned endcap, unsigned section, bool triggerLayersOnly, int verboselevel=0 ); // EE=0; FH==1; BH==2; ALL=3
+    HGCsubdet( unsigned endcap, unsigned section, int verboselevel=0 ); // EE=0; FH==1; BH==2; ALL=3
     ~HGCsubdet();
 
     /* add */
@@ -37,7 +37,7 @@ public:
     void addC3D    ( HGCC3D c3d );
   
     /* get */
-    HGCTC  getTC(unsigned ID);
+    HGCTC  getTC (unsigned ID);
     HGCC2D getC2D(unsigned ID);
     HGCC3D getC3D(unsigned ID);
 
@@ -47,16 +47,16 @@ public:
 
     void getTDall( vector<HGCROC> &data );
 
-    vector<HGCTC*>  getTCallInPhiRegion(double minPhi, double maxPhi);
-    vector<HGCC2D*> getC2DallInPhiRegion(double minPhi, double maxPhi);
+    vector<HGCTC*>  getTCallInPhiRegion  (double minPhi, double maxPhi);
+    vector<HGCC2D*> getC2DallInPhiRegion (double minPhi, double maxPhi);
     
-    vector<HGCTC*>  getTCallInRphiRegion(double minR, double maxR, double minPhi, double maxPhi);
+    vector<HGCTC*>  getTCallInRphiRegion (double minR, double maxR, double minPhi, double maxPhi);
     vector<HGCC2D*> getC2DallInRphiRegion(double minR, double maxR, double minPhi, double maxPhi);
     
-    vector<HGCTC*>  getTC_layer( unsigned layer );
-    vector<HGCC2D*> getC2D_layer( unsigned layer );
-    vector<HGCC3D*> getC3D_layer( unsigned layer );
-    vector<HGCROC> *getTD( unsigned layer );
+//    vector<HGCTC*>  getTC_layer ( unsigned layer );
+//    vector<HGCC2D*> getC2D_layer( unsigned layer );
+//    vector<HGCC3D*> getC3D_layer( unsigned layer );
+//    vector<HGCROC> *getTD       ( unsigned layer );
 
     map<unsigned,HGCTC>  *getTCmap();
     map<unsigned,HGCC2D> *getC2Dmap();
@@ -68,22 +68,25 @@ public:
     /* HOUGH transform */
     HGCht getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
                                 int nRowsRho, double rhoMin, double rhoMax, 
-                                double zOffset, 
+                                double zOffset, double slopeCorrection=1, 
                                 double minPhi=0, double maxPhi=2*TMath::Pi(), 
                                 bool wheightPt=false  );
-    
-    void clear();
 
+    
+    /* histos and graphs */
+    void getC2DallInPhiRegion (double minPhi, double maxPhi, TGraph &graph);
+
+    /* clear */
+    void clear();
 
 private:
  
-    unsigned nLayers() { return _layerZ.size()-1; }
+    unsigned nLayers() { return _layerZ.size(); }
 
     /* flags and verbose */
     unsigned _endcapId, _sectionId;
     int _verboselevel;
-//    bool _flagTCs, _flagC2D, _flagC3D;
-
+    
     /* TChain */
     TChain *_chain;
     int _evt;
@@ -179,8 +182,7 @@ private:
 
     /* layers positions and valid */
     vector<double> _layerZ; // layer id starts at 1
-    bool           _validTriggerLayer[53];
-
+    
 
 };
 

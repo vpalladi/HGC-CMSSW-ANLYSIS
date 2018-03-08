@@ -31,7 +31,7 @@ public:
 
     static int charge(int i);
 
-    void setG4Id  ( int g4id     );
+    void setPDGid ( int PDGid     );
     void setId    ( int   id     );
     void setStatus( float Status );
     void setEnergy( float Energy );
@@ -39,8 +39,7 @@ public:
     void setEta   ( float Eta    );
     void setPhi   ( float Phi    );
 
-
-    int   g4id  ();
+    int   PDGid ();
     int   id    ();
     float Status();
     float Energy();
@@ -62,7 +61,7 @@ public:
    
 private:
 
-    int   _g4id  ;
+    int   _PDGid  ;
     int   _id    ;
     float _Status;
     float _Energy; // GeV
