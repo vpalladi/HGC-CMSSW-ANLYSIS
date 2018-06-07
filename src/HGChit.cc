@@ -27,24 +27,56 @@ void             HGChit::setZ(float z)                    { _z = z           ; }
 void             HGChit::setLayer(int layer)              { _layer = layer   ; }
 void             HGChit::setPt(float pt)                  { _pt = pt         ; }
 void             HGChit::setIsTrigger(bool val)           { _isTrigger = val ; }
-        
+
 /* get hit parameters */                      
-unsigned         HGChit::id()                             { return _id       ; }
-int              HGChit::subdet()                         { return _subdet   ; }
-float            HGChit::Energy()                         { return _energy   ; }
-float            HGChit::Eta()                            { return _eta      ; }
-float            HGChit::Phi()                            { return _phi      ; }
-float            HGChit::x()                              { return _z * TMath::Cos( _phi ) * TMath::Tan( _theta ) ; }
-float            HGChit::y()                              { return _z * TMath::Sin( _phi ) * TMath::Tan( _theta ) ; }
-float            HGChit::z()                              { return _z        ; }
-float            HGChit::r()                              { return TMath::Sqrt( x()*x() + y()*y() ) ; }
-unsigned         HGChit::layer()                          { return _layer    ; }
-float            HGChit::Theta()                          { return _theta    ; }
-bool             HGChit::isTrigger()                      { return _isTrigger; }
+unsigned         HGChit::id()    const                    { return _id       ; }
+int              HGChit::subdet()const                    { return _subdet   ; }
+float            HGChit::Energy()const                    { return _energy   ; }
+float            HGChit::Eta()   const                    { return _eta      ; }
+float            HGChit::Phi()   const                    { return _phi      ; }
+float            HGChit::x()     const                    { return _z * TMath::Cos( _phi ) * TMath::Tan( _theta ) ; }
+float            HGChit::xNorm() const                    { return ( this->x()/fabs(this->z()) );    }
+uint32_t         HGChit::xNormDAC(float min, float max, unsigned nbit) const { 
+    uint32_t ret = ( (this->xNorm()-min) / ((max-min)/pow(2,nbit)) );
+    return ret; }
+float            HGChit::y()     const                    { return _z * TMath::Sin( _phi ) * TMath::Tan( _theta ) ; }
+float            HGChit::yNorm() const                    { return ( this->y()/fabs(this->z()) );    }
+uint32_t         HGChit::yNormDAC(float min, float max, unsigned nbit) const { 
+    uint32_t ret = ( (this->yNorm()-min) / ((max-min)/pow(2,nbit)) );
+    return ret; }
+float            HGChit::z()     const                    { return _z        ; }
+float            HGChit::r()     const                    { return TMath::Sqrt( x()*x() + y()*y() ) ; }
+unsigned         HGChit::layer() const                    { return _layer    ; }
+float            HGChit::Theta() const                    { return _theta    ; }
+bool             HGChit::isTrigger() const                { return _isTrigger; }
 
 
-unsigned         HGChit::getEndcapId()                    { if (_eta>0) return 0; return 1; }
-unsigned         HGChit::getSectionId() {
+uint32_t         HGChit::distanceNormDAC( const HGChit* hit, float min, float max, unsigned nbit ) const {
+    
+    uint32_t dist, xHit, yHit, x, y;
+
+    xHit = hit->xNormDAC(min, max, nbit);
+    yHit = hit->yNormDAC(min, max, nbit);
+    x = this->xNormDAC(min, max, nbit);
+    y = this->yNormDAC(min, max, nbit);
+
+    dist = sqrt( pow(int(x-xHit), 2) + pow(int(y-yHit), 2) );
+
+    return dist;
+
+}
+
+
+unsigned         HGChit::getEndcapId() const { 
+    
+    if (_eta>0) 
+        return 0; 
+    return 1; 
+
+}
+
+
+unsigned         HGChit::getSectionId() const {
  
 //    std::cout << " >>> HGChit: serching the correct section for endcap " << this->getEndcapId() << "."<< std::endl;
     for(int isection=0; isection<3; isection++) {
@@ -71,7 +103,7 @@ unsigned         HGChit::getSectionId() {
 
 
 
-int HGChit::correctedLayer() { 
+int HGChit::correctedLayer() const { 
     
   if ( _subdet==3 )      return _layer;
   else if ( _subdet==4 ) return ( _layer + 28 );
@@ -82,7 +114,7 @@ int HGChit::correctedLayer() {
 }
 
 
-TVector3 HGChit::centre() {
+TVector3 HGChit::centre() const {
 
     TVector3 vec;
     vec.SetXYZ(this->x(), this->y(), this->z());
@@ -92,14 +124,14 @@ TVector3 HGChit::centre() {
 }
 
 
-double HGChit::distance( HGChit *hit ){
+double HGChit::distance( const HGChit *hit ) const {
 
     return TMath::Sqrt( TMath::Power( hit->x()-this->x(), 2) + TMath::Power( hit->y()-this->y(), 2) + TMath::Power( hit->z()-this->z(), 2) );
 
 }
 
 
-TLorentzVector HGChit::P4(){
+TLorentzVector HGChit::P4() const {
 
   TLorentzVector p4;
   p4.SetPtEtaPhiE(_pt,_eta,_phi,_energy);
@@ -108,7 +140,7 @@ TLorentzVector HGChit::P4(){
 }
 
 
-float HGChit::Pt(){
+float HGChit::Pt() const {
 
   return _pt;
 
@@ -136,3 +168,12 @@ bool HGChit::operator==( const HGChit &comp ){
     return ret;
 
 }
+
+//void GetKeys( const HGChit* ahit , uint32_t& aKey1 , uint32_t& aKey2 ) {
+//
+//    aKey1 = ahit->xNormDAC(-0.6, 0.6, 13);
+//    aKey2 = ahit->yNormDAC(-0.6, 0.6, 13);
+//
+//}
+
+

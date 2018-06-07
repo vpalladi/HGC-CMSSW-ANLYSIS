@@ -41,35 +41,41 @@ class HGChit : public TObject {
     void setIsTrigger(bool var)           ;
 
     /* get hit parameters */    
-    unsigned         id()                 ;
-    int              subdet()             ; // 3==EE; 4==FH; 5==BH.
-    float            Energy()             ;
-    float            Eta()                ;
-    float            Phi()                ;
-    float            x()                  ;
-    float            y()                  ;
-    float            z()                  ;
-    float            r()                  ;
-    unsigned         layer()              ;
-    unsigned         getEndcapId()        ;
-    unsigned         getSectionId()       ; // 0==EE; 1==FH; 2==BH.
-    float            Theta()              ;
-    bool             isTrigger()  ;
+    unsigned  id()       const     ;
+    int       subdet()   const     ; // 3==EE; 4==FH; 5==BH.
+    float     Energy()   const     ;
+    float     Eta()      const     ;
+    float     Phi()      const     ;
+    float     x()        const     ;
+    float     xNorm()    const     ;
+    uint32_t  xNormDAC(float min, float max, unsigned nbit) const;
+    float     y()        const     ;
+    float     yNorm()    const     ;
+    uint32_t  yNormDAC(float min, float max, unsigned nbit) const;
+    float     z()        const     ;
+    float     r()        const     ;
+    unsigned  layer()    const     ;
+    unsigned  getEndcapId()  const ;
+    unsigned  getSectionId() const ; // 0==EE; 1==FH; 2==BH.
+    float     Theta()        const ;
+    bool      isTrigger()    const ;
+
+    uint32_t distanceNormDAC( const HGChit* hit, float min, float max, unsigned nbit ) const;
 
     /* the layer is corrected using the subdet and is progressive STARTING form 1 and not 0 */
-    int correctedLayer();
+    int correctedLayer() const;
 
     /* info*/
-    TVector3 centre();
+    TVector3 centre() const;
 
-    double distance( HGChit *hit );
+    double distance( const HGChit *hit ) const;
 
     /* get useful info */
 //    bool isTCcontained( HGChit::HGChit tc );
 //    void getEtaSpan( double &minEta, double &maxEta );
 //    void getPhiSpan( double &minPhi, double &maxPhi );
-    TLorentzVector P4();
-    float          Pt();
+    TLorentzVector P4() const;
+    float          Pt() const;
   
     /* print to stdout some useful info */
     void print();
@@ -101,5 +107,7 @@ class HGChit : public TObject {
     ClassDef(HGChit, 1)
 
 };
+
+//void GetKeys( const HGChit* ahit , uint32_t& aKey1 , uint32_t& aKey2 );
 
 #endif 

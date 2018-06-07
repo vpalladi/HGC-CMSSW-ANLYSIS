@@ -10,6 +10,7 @@
 #pragma link C++ class std::vector<vector<unsigned int> >;
 #pragma link C++ class HGCC3D+;
 #pragma link C++ class std::vector<HGCC3D>+;
+#pragma link C++ class std::vector<HGCC3D*>+;
 #pragma link C++ class std::map<unsigned int,HGCC3D>+;
 
 #endif

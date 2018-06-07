@@ -15,14 +15,14 @@ void     HGCTC::setCell(int cell)           { _cell = cell           ; }
 void     HGCTC::setData(int data)           { _data = data           ; }
 
 /* get methods */
-int      HGCTC::zside()                     { return _zside          ; }
-int      HGCTC::wafer()                     { return _wafer          ; }
-int      HGCTC::wafertype()                 { return _wafertype      ; }
-int      HGCTC::cell()                      { return _cell           ; }
-unsigned HGCTC::data()                      { return _data           ; }
+int      HGCTC::zside()     const           { return _zside          ; }
+int      HGCTC::wafer()     const           { return _wafer          ; }
+int      HGCTC::wafertype() const           { return _wafertype      ; }
+int      HGCTC::cell()      const           { return _cell           ; }
+unsigned HGCTC::data()      const           { return _data           ; }
 
 /* transverse quantities */
-float HGCTC::MipT() {   
+float HGCTC::MipT() const {   
 
     const float triggerCellLsbBeforeCompression = 100./1024.;
     const int triggerCellTruncationBits = 0;
@@ -54,7 +54,7 @@ float HGCTC::MipT() {
 
 
 /* pseudo HGCROC id */
-int HGCTC::third() {
+int HGCTC::third() const {
 
     HGCalDetId id( this->id() );
     return id.thirdId();

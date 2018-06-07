@@ -1,63 +1,22 @@
 
 #include <HGCht.h>
 
-HGCht::HGCht() { ; }
-/*
-  X, Y = transformed variables 
-*/
-HGCht::HGCht( unsigned nX, float minX, float maxX,
-              unsigned nY, float minY, float maxY ){
 
-    setParams( nX, minX, maxX,
-               nY, minY, maxY );
-
+void HGCht::setZoffset(float zOffset){
+    _zOffset = zOffset;
 }
 
 
-HGCht::~HGCht() { 
-    
-    //cout << "calling destructor" << endl;
-
-    for( unsigned ix=0; ix<_nX; ix++){
-
-        delete[] _grid[ix];
-        
-    }
-    
-    delete[] _grid;
-
- }
-
-void HGCht::setParams( unsigned nX, float minX, float maxX,
-                       unsigned nY, float minY, float maxY ){
-
-    _nX   = nX  ;
-    _nY   = nY  ;
-       
-    _minX = minX; 
-    _minY = minY;
-       
-    _maxX = maxX;
-    _maxY = maxY;
-        
-    _dX = (_maxX-_minX)/_nX;
-    _dY = (_maxY-_minY)/_nY;
-
-    _grid = new HGCbin*[_nX];
-    for( unsigned ix=0; ix<_nX; ix++){
-        _grid[ix] = new HGCbin[_nY];
-        for( unsigned iy=0; iy<_nY; iy++) {
-            _grid[ix][iy].setCentre( _minX+_dX*ix-_dX/2, _minY+_dY*iy-_dY/2 );
-            _grid[ix][iy].setCentreId( ix, iy );
-        } 
-    }
-        
-    this->clear();
-
+void HGCht::setSlopeCorrection(float SC){
+    _slopeCorrection = SC;
 }
 
 
-void HGCht::addPointPhysicalSpace(float x, float y, int id, double w){
+void HGCht::addPoint(const HGChit* hit, double w){
+
+    float x = ( hit->z()+_zOffset )*_slopeCorrection;
+    float y = hit->r();
+    int  id = hit->id();
 
     pair<float,float> XY(x, y);
     _XY.push_back(XY);
@@ -115,70 +74,6 @@ vector<TF1> HGCht::getTF1s(float min, float max){
     return funcs;
 
 }
-    
-
-vector<HGCbin> HGCht::getBinsAboveThr(double thr){
-    
-    vector<HGCbin> retVec;
-    
-    for(unsigned icol=0; icol<_nX; icol++){
-        for(unsigned irow=0; irow<_nY; irow++){
-            if( _grid[icol][irow].isAboveThr( thr ) ){
-                retVec.push_back( _grid[icol][irow] );
-            }
-        }
-    }
-    
-    return retVec;
-    
-}
-
-
-vector<HGCbin> HGCht::getBinsLocalMaxima(double thr){
-    
-    vector<HGCbin> retVec;
-    
-//    for(unsigned icol=1; icol<_nX-1; icol++){
-//        for(unsigned irow=1; irow<_nY-1; irow++){
-//            bool isMaxima=false; // scan the grid!
-//            if( !_grid[icol][irow].isAboveThr( thr ) ) continue;
-//            if( _grid[icol][irow].getContent() > _grid[icol-1][irow-1].getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol-1][irow]  .getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol-1][irow+1].getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol][irow-1]  .getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol][irow+1]  .getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol+1][irow-1].getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol+1][irow]  .getContent() &&
-//                _grid[icol][irow].getContent() > _grid[icol+1][irow+1].getContent()
-//                ) {
-//                retVec.push_back( _grid[icol][irow] );
-//            }
-//        }
-//    }
-    
-    return retVec;
-    
-}
-
-
-void HGCht::getTransformedHisto(TH2D &histo, double thr ){
-        
-    histo.SetBins(_nX, _minX, _maxX,
-                  _nY, _minY, _maxY
-        );
-
-    vector<HGCbin> bins = this->getBinsAboveThr( thr );
-
-    for(int ibin=0; ibin<bins.size(); ibin++){
-        
-        histo.SetBinContent( bins.at(ibin).getCentreId().first+1, 
-                             bins.at(ibin).getCentreId().second+1, 
-                             bins.at(ibin).getContent() 
-            );
-
-    }
-
-}
 
 
 void HGCht::getXYgraph( TGraph &g ) {
@@ -192,14 +87,11 @@ void HGCht::getXYgraph( TGraph &g ) {
 
 
 void HGCht::clear(){
-        
+
+    HGCC3Dbuild::clear();
+
     _XY.clear();
-        
-    for(unsigned icol=0; icol<_nX; icol++){
-        for(unsigned irow=0; irow<_nY; irow++){
-            _grid[icol][irow].clear();
-        }
-    }
-        
+    _linesCollection.clear();
+
 }
 

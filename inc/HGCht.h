@@ -8,55 +8,46 @@
 #include <cmath>
 
 // myClasses
-#include <HGCline.h>
-#include <HGCbin.h>
+#include "HGCC3Dbuild.h"
+#include "HGCline.h"
+#include "HGChit.h"
 
 // ROOT
 #include <TF1.h>
 #include <TH2D.h>
+#include <TGraph.h>
 
-class HGCbin;
 
-class HGCht{
+class HGCht : public HGCC3Dbuild { 
 
 public:
+      
+    HGCht() : HGCC3Dbuild(), _zOffset(0.), _slopeCorrection(1.) { }
     
-    HGCht();
-    /*
-      X, Y = transformed variables 
-     */
-    HGCht( unsigned nX, float minX, float maxX,
-           unsigned nY, float minY, float maxY );
+    HGCht( unsigned nX, float minX, float maxX, unsigned nY, float minY, float maxY ) 
+        : HGCC3Dbuild( nX, minX, maxX, nY, minY, maxY ), _zOffset(0.), _slopeCorrection(1.) { }
 
-    ~HGCht();
 
-    void setParams( unsigned nX, float minX, float maxX,
-                    unsigned nY, float minY, float maxY );
+    void setZoffset(float zOffset);
+    void setSlopeCorrection(float SC);
 
-    void addPointPhysicalSpace(float x, float y, int id, double w=1.);
+    void addPoint(const HGChit* hit , double w=1.);
     
-    vector<TF1>         getTF1s(float min, float max);  // the tranformed lines 
-    vector<HGCbin> getBinsAboveThr(double thr);    // all the bins above thr
-    vector<HGCbin> getBinsLocalMaxima(double thr); // get all local maxima bins
-    void                getTransformedHisto(TH2D &histo, double Thr=0 ); // get the tranformed plane
-    void                getXYgraph( TGraph &g );        // get the graph in physical space
-    
-    // clear the transform
+    vector<TF1> getTF1s(float min, float max);  // the tranformed lines 
+    void        getXYgraph( TGraph &g );        // get the graph in physical space
+
     void clear();
-
 
 private:
 
-    vector<pair<float,float>> _XY; 
-    HGCbin** _grid;
-    unsigned _nX, _nY;
-    float _minX, _minY;
-    float _maxX, _maxY;
-    float _dX, _dY;
+    vector<pair<float,float>> _XY;
 
+    float _zOffset;
+    float _slopeCorrection;
+    
     vector<HGCline> _linesCollection;
     
+    
 };
-
 
 #endif

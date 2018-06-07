@@ -8,58 +8,74 @@
 
 /* mylibs */
 #include "detId.h"
+#include "HGChit.h"
+#include "HGCC2D.h"
+#include "HGCC3D.h"
+#include "HGCgen.h"
 
 /* ROOT */
-#include "TObject.h"
 #include "TLorentzVector.h"
+#include "Math/Point3D.h"
 
 using namespace std;
 
-
-class HGCC3D : public TObject {
+class HGCC3D : public HGChit {
 
  public:
 
     HGCC3D();
     ~HGCC3D();
 
+    /* add */
+    void addC2D( const HGCC2D* c2d);
+
     /* set methods*/
-    void setId(unsigned id)                     ;
-    void setPt(float pt)                        ;
-    void setEnergy(float energy)                ;
-    void setEta(float eta)                      ;
-    void setPhi(float phi)                      ;
     void setClusters(vector<unsigned> clusters) ;
     void setCells(vector<unsigned> cells)       ;
+    void setNearestGen(HGCgen &gen)             ;
+    void setNearestGen(vector<HGCgen*> gens)    ;
+    void setXnorm(float xNorm) ;
+    void setYnorm(float yNorm) ;
+    void setFirstLayer(float firstLayer);
+    void setMaxLayer(float maxLayer);
 
     /* get methods */
-    unsigned id()  ;
-    float Pt()     ;
-    float Energy() ;
-    float Eta()    ;
-    float Phi()    ;
+    unsigned         nclusters() const;
+    vector<unsigned> clusters() const;
 
-    unsigned         nclusters() ;
-    vector<unsigned> clusters()  ;
+    unsigned         ncells() const;
+    vector<unsigned> cells() const;
 
-    unsigned         ncells()    ;
-    vector<unsigned> cells()     ;
+    TLorentzVector P4() const;
 
-    TLorentzVector P4();
+    unsigned getFirstLayer() const;
+    unsigned getMaxLayer() const;
+
+    ROOT::Math::RhoEtaPhiPoint getZprojection( double z );
+
+    float xNorm() const ;
+    float yNorm() const ;
+
+    HGCgen getNearestGen() const;
+
+//    bool isGolden(int maxHoleLayers, int minNumberOfLayers);
 
     void print();
 
  private:
 
-    unsigned         _id       ;
-    float            _pt       ;
-    float            _energy   ;
-    float            _eta      ;
-    float            _phi      ;
+    unsigned _firstLayer;
+    unsigned _maxLayer;
+
     vector<unsigned> _clusters ; // vector of HGCDetId for all the C2D
     vector<unsigned> _cells    ; // vector of HGCDetId for all the TC
 
-    ClassDef( HGCC3D,1 )
+    HGCgen _nearestGen;
+
+    float _xNorm, _yNorm;
+  
+
+    ClassDef( HGCC3D,2 )
 
 };
 

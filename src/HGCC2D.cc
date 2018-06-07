@@ -87,5 +87,9 @@ void HGCC2D::getPhiSpan( double &minPhi, double &maxPhi ){
 }
 
 
+void GetKeys( const HGCC2D &ahit , uint32_t& aKey1 , uint32_t& aKey2 ) {
 
+    aKey1 = ahit.xNormDAC(-0.6, 0.6, 13);
+    aKey2 = ahit.yNormDAC(-0.6, 0.6, 13);
 
+}

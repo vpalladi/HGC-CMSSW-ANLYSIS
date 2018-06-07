@@ -1,7 +1,7 @@
 #ifndef HGCsubdet_H
 #define HGCsubdet_H 1
 
-/* c/c++ */
+/* c++ */
 #include <iostream>
 #include <map>
 
@@ -12,14 +12,16 @@
 #include "HGCC3D.h"
 #include "HGCROC.h"
 #include "HGCht.h"
+#include "HGCnorm.h"
+#include "HGCforest.h"
+#include "HGCsingleC3D.h"
 
 /* ROOT */
 #include "TMath.h"
 #include "TChain.h"
 #include "TTree.h"
 #include "TCollection.h"
-
-class HGCht;
+#include "TFile.h"
 
 using namespace std;
 
@@ -32,38 +34,54 @@ public:
     ~HGCsubdet();
 
     /* add */
-    void addTC     ( HGCTC  tc  );
-    void addC2D    ( HGCC2D c2d );
-    void addC3D    ( HGCC3D c3d );
-  
-    /* get */
-    HGCTC  getTC (unsigned ID);
-    HGCC2D getC2D(unsigned ID);
-    HGCC3D getC3D(unsigned ID);
+    template<class T>
+    void add     ( T t );
+    void addGen    ( HGCgen gen );
 
-    vector<HGCTC*>  getTCall();
-    vector<HGCC2D*> getC2Dall();
-    vector<HGCC3D*> getC3Dall();
+    /* get */
+    template<class T>
+    int get (unsigned ID, T &t);
+    vector<HGCgen*> getGenAll();
+
+    template<class T> 
+    vector<const T*> getAll();
+
+//    template<class T> 
+//    vector<T*> getAllPtOrdered();
+
+    template<class T> 
+    map<unsigned,T> *getMap();
 
     void getTDall( vector<HGCROC> &data );
 
-    vector<HGCTC*>  getTCallInPhiRegion  (double minPhi, double maxPhi);
-    vector<HGCC2D*> getC2DallInPhiRegion (double minPhi, double maxPhi);
+    template<class T>
+    vector<const T*>  getAllInRegion (double minR, double maxR, double minPhi, double maxPhi);
     
-    vector<HGCTC*>  getTCallInRphiRegion (double minR, double maxR, double minPhi, double maxPhi);
-    vector<HGCC2D*> getC2DallInRphiRegion(double minR, double maxR, double minPhi, double maxPhi);
-    
-//    vector<HGCTC*>  getTC_layer ( unsigned layer );
-//    vector<HGCC2D*> getC2D_layer( unsigned layer );
-//    vector<HGCC3D*> getC3D_layer( unsigned layer );
-//    vector<HGCROC> *getTD       ( unsigned layer );
-
-    map<unsigned,HGCTC>  *getTCmap();
-    map<unsigned,HGCC2D> *getC2Dmap();
-    map<unsigned,HGCC3D> *getC3Dmap();
-
     /* isPertinent */
     bool isPertinent(float z);
+
+    /* NORM COO */
+    HGCnorm getNormTransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
+                                  int nRowsRho, double rhoMin, double rhoMax, 
+                                  double minPhi=0, double maxPhi=2*TMath::Pi(), 
+                                  bool wheightPt=false  
+        );
+    
+    HGCnorm getNormTransform_C3D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
+                                  int nRowsRho, double rhoMin, double rhoMax, 
+                                  double minPhi=0, double maxPhi=2*TMath::Pi(), 
+                                  bool wheightPt=false
+//                                  unsigned nNeighboursSearch=9, float radius=0.1, vector<HGCgen*> gens=vector<HGCgen*>()
+        );
+
+    HGCforest getNormTransform_C3Dforest( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
+                                          int nRowsRho, double rhoMin, double rhoMax, 
+                                          double minPhi=0, double maxPhi=2*TMath::Pi(), 
+                                          bool wheightPt=false 
+        );
+    
+    HGCsingleC3D getSingleC3D();
+    
 
     /* HOUGH transform */
     HGCht getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
@@ -71,10 +89,13 @@ public:
                                 double zOffset, double slopeCorrection=1, 
                                 double minPhi=0, double maxPhi=2*TMath::Pi(), 
                                 bool wheightPt=false  );
-
     
     /* histos and graphs */
     void getC2DallInPhiRegion (double minPhi, double maxPhi, TGraph &graph);
+
+    /* fill and save tree */
+//    void fillTree();    
+//    void saveTree(TFile* f);
 
     /* clear */
     void clear();
@@ -169,20 +190,27 @@ private:
     map<unsigned,HGCTC>      _TCs;
     map<unsigned,HGCC2D>     _C2Ds;  
     map<unsigned,HGCC3D>     _C3Ds;  
-    
+    map<unsigned,HGCgen>     _gen;  
+    vector<HGCgen*>          _genVec;
+
     /* ordered preserved, needed fo storage purposes */
-    vector<HGCTC*>      _TCvec;
-    vector<HGCC2D*>     _C2Dvec;
-    vector<HGCC3D*>     _C3Dvec;
-  
+    vector<const HGCTC*>      _TCvec;
+    vector<const HGCC2D*>     _C2Dvec;
+    vector<const HGCC3D*>     _C3Dvec;
+
     /* layer ordered */
-    vector<HGCTC*>  *_TC_layer;
-    vector<HGCC2D*> *_C2D_layer;
+    vector<const HGCTC*>  *_TC_layer;
+    vector<const HGCC2D*> *_C2D_layer;
     vector<HGCROC>  **_TD;
 
     /* layers positions and valid */
     vector<double> _layerZ; // layer id starts at 1
-    
+  
+    /* subdet trees: fill as you wish */
+//    TTree* _tree;
+//    vector<HGCC3D> _vC3Dforest;
+//    vector<HGCC3D> _vC3Dnorm;
+//    vector<HGCC3D> _vC3DnormNN;
 
 };
 

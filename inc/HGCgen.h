@@ -21,6 +21,7 @@
 
 using namespace std;
 
+
 class HGCgen : public TObject {
 
 
@@ -46,6 +47,8 @@ public:
     float Pt    ();
     float Eta   ();
     float Phi   ();
+    float xNorm ();
+    float yNorm ();
 
     ROOT::Math::RhoEtaPhiPoint getZprojection( double z );
 

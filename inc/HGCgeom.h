@@ -89,7 +89,7 @@ public:
         for(unsigned ilayer=0; ilayer<_nLayersBH; ilayer++) {
             _layerZ[ilayer+fistBHlayer] = 421.0 + 9.0*(ilayer);   // NOT EXACTLY CORRECT!!!
             std::cout << ilayer << " " << ilayer+fistBHlayer << " " << _layerZ[ilayer+fistBHlayer] << std::endl; 
-            _isTriggerLayer[ilayer] = true;
+            _isTriggerLayer[ilayer+fistBHlayer] = true;
         }
 
         //std::cout << " *** GEOMETRY *** " << std::endl;
@@ -175,7 +175,10 @@ public:
     }
 
     
-    bool layerZisTriggerLayer( int iendcap, int ilayer ){
+    bool layerZisTriggerLayer( unsigned iendcap, unsigned ilayer ){
+
+        if( ilayer>_nLayers )
+            return false;
 
         return _isTriggerLayer[ilayer];
 

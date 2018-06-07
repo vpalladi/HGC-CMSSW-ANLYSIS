@@ -33,17 +33,17 @@ public:
     void     setData(int data)           ;
     
     /* get methods */
-    int      zside()     ; // -1 and 1
-    int      wafer()     ;
-    int      wafertype() ;
-    int      cell()      ;
-    unsigned data()      ;
+    int      zside()    const  ; // -1 and 1
+    int      wafer()    const  ;
+    int      wafertype() const ;
+    int      cell()     const  ;
+    unsigned data()     const  ;
     
     /* get Pt and MipT */
-    float MipT();
+    float MipT() const ;
     
     /* get the diamond info */
-    int third();
+    int third() const ;
     
 private:
     

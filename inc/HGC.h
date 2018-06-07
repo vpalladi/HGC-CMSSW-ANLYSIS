@@ -13,6 +13,7 @@
 #include "HGCgeom.h"
 
 /* ROOT */
+#include "TObject.h"
 #include "TMath.h"
 #include "TChain.h"
 #include "TTree.h"
@@ -21,12 +22,14 @@
 
 using namespace std;
 
-
-class HGC {
+class HGC : public TObject {
 
 public:
 
-    HGC( TList *fileList, bool flagTCs=true, bool flagC2D=true, bool flagC3D=true, bool flagGen=true, bool flagGenpart=true, bool triggerLayersOnly=false, int verboselevel=0 ); 
+    HGC( TList *fileList, 
+         bool flagTCs=true, bool flagC2D=true, bool flagC3D=true, bool flagGen=true, bool flagGenpart=true, 
+         bool triggerLayersOnly=false, 
+         int verboselevel=0 ); 
     ~HGC();
 
     /* access the subdet */
@@ -49,7 +52,6 @@ public:
     void addGenpart( HGCgenpart genpart );
   
     /* get */
-
     vector<HGCgen*> getGenAll();
     vector<HGCgenpart*> getGenpartAll();
 
@@ -117,33 +119,33 @@ private:
     vector<int>   *_genpart_gen           = 0 ; // gen part index
     vector<int>   *_genpart_reachedEE     = 0 ; // notReach = 0; outsideEESurface = 1; onEESurface = 2
     vector<bool>  *_genpart_fromBeamPipe  = 0 ; // ??? seems always true
-    vector<vector<float>> *_genpart_posx  = 0; // projection for different layers; filled only fir there is no end vertex
-    vector<vector<float>> *_genpart_posy  = 0; // projection for different layers; filled only fir there is no end vertex
-    vector<vector<float>> *_genpart_posz  = 0; // projection for different layers; filled only fir there is no end vertex
+    vector<vector<float>> *_genpart_posx  = 0 ; // projection for different layers; filled only fir there is no end vertex
+    vector<vector<float>> *_genpart_posy  = 0 ; // projection for different layers; filled only fir there is no end vertex
+    vector<vector<float>> *_genpart_posz  = 0 ; // projection for different layers; filled only fir there is no end vertex
 
-    bool missing__genpart_eta ; 
-    bool missing__genpart_phi ; 
-    bool missing__genpart_pt  ; 
-    bool missing__genpart_energy; 
-    bool missing__genpart_dvx ; 
-    bool missing__genpart_dvy ; 
-    bool missing__genpart_dvz ; 
-    bool missing__genpart_ovx ; 
-    bool missing__genpart_ovy ; 
-    bool missing__genpart_ovz ; 
-    bool missing__genpart_exx ; 
-    bool missing__genpart_exy ; 
-    bool missing__genpart_mother; 
-    bool missing__genpart_exphi; 
-    bool missing__genpart_exeta; 
-    bool missing__genpart_fbrem; 
-    bool missing__genpart_pid ; 
-    bool missing__genpart_gen ;   
-    bool missing__genpart_reachedEE;   
-    bool missing__genpart_fromBeamPipe;
-    bool missing__genpart_posx; 
-    bool missing__genpart_posy; 
-    bool missing__genpart_posz; 
+    bool _missing__genpart_eta ; 
+    bool _missing__genpart_phi ; 
+    bool _missing__genpart_pt  ; 
+    bool _missing__genpart_energy; 
+    bool _missing__genpart_dvx ; 
+    bool _missing__genpart_dvy ; 
+    bool _missing__genpart_dvz ; 
+    bool _missing__genpart_ovx ; 
+    bool _missing__genpart_ovy ; 
+    bool _missing__genpart_ovz ; 
+    bool _missing__genpart_exx ; 
+    bool _missing__genpart_exy ; 
+    bool _missing__genpart_mother; 
+    bool _missing__genpart_exphi; 
+    bool _missing__genpart_exeta; 
+    bool _missing__genpart_fbrem; 
+    bool _missing__genpart_pid ; 
+    bool _missing__genpart_gen ;   
+    bool _missing__genpart_reachedEE;   
+    bool _missing__genpart_fromBeamPipe;
+    bool _missing__genpart_posx; 
+    bool _missing__genpart_posy; 
+    bool _missing__genpart_posz; 
 
     // Trigger Cells
     int                 _tc_n;
@@ -180,6 +182,7 @@ private:
 
     // C2D
     int                       _cl_n           ;
+    vector<unsigned>         *_cl_id       = 0;
     vector<float>            *_cl_pt       = 0;
     vector<float>            *_cl_energy   = 0;
     vector<float>            *_cl_eta      = 0;
@@ -192,6 +195,7 @@ private:
     vector<vector<unsigned>> *_cl_cells_id = 0;
 
     bool _missing__cl_n        ;
+    bool _missing__cl_id       ;
     bool _missing__cl_pt       ;
     bool _missing__cl_energy   ;
     bool _missing__cl_eta      ;
@@ -208,6 +212,8 @@ private:
     vector<float>            *_cl3d_eta      = 0;
     vector<float>            *_cl3d_phi      = 0;      
     vector<vector<unsigned>> *_cl3d_clusters = 0;
+    vector<float>            *_cl3d_firstlayer = 0;      
+    vector<float>            *_cl3d_maxlayer = 0;      
 
     bool _missing__cl3d_id      ;
     bool _missing__cl3d_pt      ;
@@ -215,14 +221,18 @@ private:
     bool _missing__cl3d_eta     ;
     bool _missing__cl3d_phi     ;      
     bool _missing__cl3d_clusters;
+    bool _missing__cl3d_firstlayer;
+    bool _missing__cl3d_maxlayer;
 
     /* mapping all the GEN and GENPART */
-    map<unsigned,HGCgen>     _gen;  
+    map<unsigned,HGCgen>     _gen;
     map<unsigned,HGCgenpart> _genpart;  
     
     /* ordered preserved, needed fo storage purposes */
     vector<HGCgen*>     _genVec;
     vector<HGCgenpart*> _genpartVec;
+
+    ClassDef(HGC, 1);
 
 };
 

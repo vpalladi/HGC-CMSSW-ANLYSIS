@@ -52,4 +52,6 @@ class HGCC2D : public HGChit {
 
 };
 
+void GetKeys( const HGCC2D &ahit , uint32_t& aKey1 , uint32_t& aKey2 );
+
 #endif 
