@@ -31,13 +31,16 @@ public:
     void     setWaferType(int wafertype) ;
     void     setCell(int cell)           ;
     void     setData(int data)           ;
+    void     setMipPt(float mipPt)           ;
     
+
     /* get methods */
     int      zside()    const  ; // -1 and 1
     int      wafer()    const  ;
     int      wafertype() const ;
     int      cell()     const  ;
     unsigned data()     const  ;
+    float    mipPt()    const  ;
     
     /* get Pt and MipT */
     float MipT() const ;
@@ -52,6 +55,7 @@ private:
     int      _wafertype ;
     int      _cell      ;
     unsigned _data      ;
+    float    _mipPt     ;
 
     ClassDef(HGCTC,1)
 

@@ -3,10 +3,13 @@
 #include "HGCbin.h"
 
 
-HGCbin::HGCbin() { ; }
+HGCbin::HGCbin() { 
+    _content = 0.;
+}
 
 HGCbin::HGCbin(float x, float y) { 
     this->setCentre(x, y); 
+    _content = 0.;
 }
 HGCbin::~HGCbin() { ; }
 

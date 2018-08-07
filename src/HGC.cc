@@ -95,12 +95,13 @@ HGC::HGC( TList *fileList,
         if( _chain->GetBranchStatus( "tc_cell"         ) ) { _missing__tc_cell       = false; _chain->SetBranchAddress("tc_cell"       , &_tc_cell        ); } else { _missing__tc_cell       = true; cout << " HGC >> leaf TC 'cell     ' not found." << endl; }
         if( _chain->GetBranchStatus( "tc_data"         ) ) { _missing__tc_data       = false; _chain->SetBranchAddress("tc_data"       , &_tc_data        ); } else { _missing__tc_data       = true; cout << " HGC >> leaf TC 'data     ' not found." << endl; }
         if( _chain->GetBranchStatus( "tc_energy"       ) ) { _missing__tc_energy     = false; _chain->SetBranchAddress("tc_energy"     , &_tc_energy      ); } else { _missing__tc_energy     = true; cout << " HGC >> leaf TC 'energy   ' not found." << endl; }
+        if( _chain->GetBranchStatus( "tc_pt"           ) ) { _missing__tc_pt         = false; _chain->SetBranchAddress("tc_pt"         , &_tc_pt          ); } else { _missing__tc_pt         = true; cout << " HGC >> leaf TC 'pt       ' not found." << endl; }
+        if( _chain->GetBranchStatus( "tc_mipPt"        ) ) { _missing__tc_mipPt      = false; _chain->SetBranchAddress("tc_mipPt"      , &_tc_mipPt       ); } else { _missing__tc_mipPt      = true; cout << " HGC >> leaf TC 'mipPt    ' not found." << endl; }
         if( _chain->GetBranchStatus( "tc_eta"          ) ) { _missing__tc_eta        = false; _chain->SetBranchAddress("tc_eta"        , &_tc_eta         ); } else { _missing__tc_eta        = true; cout << " HGC >> leaf TC 'eta      ' not found." << endl; }
         if( _chain->GetBranchStatus( "tc_phi"          ) ) { _missing__tc_phi        = false; _chain->SetBranchAddress("tc_phi"        , &_tc_phi         ); } else { _missing__tc_phi        = true; cout << " HGC >> leaf TC 'phi      ' not found." << endl; }
         if( _chain->GetBranchStatus( "tc_x"            ) ) { _missing__tc_x          = false; _chain->SetBranchAddress("tc_x"          , &_tc_x           ); } else { _missing__tc_x          = true; cout << " HGC >> leaf TC 'x        ' not found." << endl; }
         if( _chain->GetBranchStatus( "tc_y"            ) ) { _missing__tc_y          = false; _chain->SetBranchAddress("tc_y"          , &_tc_y           ); } else { _missing__tc_y          = true; cout << " HGC >> leaf TC 'y        ' not found." << endl; }
-        if( _chain->GetBranchStatus( "tc_z"            ) ) { _missing__tc_z          = false; _chain->SetBranchAddress("tc_z"          , &_tc_z           ); } else { _missing__tc_z          = true; cout << " HGC >> leaf TC 'z        ' not found." << endl; }
-                                                                                                                                                                                         
+        if( _chain->GetBranchStatus( "tc_z"            ) ) { _missing__tc_z          = false; _chain->SetBranchAddress("tc_z"          , &_tc_z           ); } else { _missing__tc_z          = true; cout << " HGC >> leaf TC 'z        ' not found." << endl; }                                                                                                                                                                      
     }
 
     // C2D                                                                                                                                                                               
@@ -120,14 +121,15 @@ HGC::HGC( TList *fileList,
                                                                     
     //C3D
     if( _flagC3D ) {       
-        if( _chain->GetBranchStatus( "cl3d_id"         ) ) { _missing__cl3d_id       = false; _chain->SetBranchAddress("cl3d_id"        , &_cl3d_id       ); } else { _missing__cl3d_id       = true; cout << " HGC >> leaf C3D 'id      ' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_pt"         ) ) { _missing__cl3d_pt       = false; _chain->SetBranchAddress("cl3d_pt"        , &_cl3d_pt       ); } else { _missing__cl3d_pt       = true; cout << " HGC >> leaf C3D 'pt      ' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_energy"     ) ) { _missing__cl3d_energy   = false; _chain->SetBranchAddress("cl3d_energy"    , &_cl3d_energy   ); } else { _missing__cl3d_energy   = true; cout << " HGC >> leaf C3D 'energy  ' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_eta"        ) ) { _missing__cl3d_eta      = false; _chain->SetBranchAddress("cl3d_eta"       , &_cl3d_eta      ); } else { _missing__cl3d_eta      = true; cout << " HGC >> leaf C3D 'eta     ' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_phi"        ) ) { _missing__cl3d_phi      = false; _chain->SetBranchAddress("cl3d_phi"       , &_cl3d_phi      ); } else { _missing__cl3d_phi      = true; cout << " HGC >> leaf C3D 'phi     ' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_clusters_id") ) { _missing__cl3d_clusters = false; _chain->SetBranchAddress("cl3d_clusters_id", &_cl3d_clusters); } else { _missing__cl3d_clusters = true; cout << " HGC >> leaf C3D 'clusters' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_firstlayer" ) ) { _missing__cl3d_firstlayer= false; _chain->SetBranchAddress("cl3d_firstlayer", &_cl3d_firstlayer); } else { _missing__cl3d_firstlayer = true; cout << " HGC >> leaf C3D 'firstlayer' not found." << endl; }
-        if( _chain->GetBranchStatus( "cl3d_maxlayer"   ) ) { _missing__cl3d_maxlayer = false; _chain->SetBranchAddress("cl3d_maxlayer"  , &_cl3d_maxlayer ); } else { _missing__cl3d_maxlayer = true; cout << " HGC >> leaf C3D 'maxlayer' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_id"         ) ) { _missing__cl3d_id           = false; _chain->SetBranchAddress("cl3d_id"        , &_cl3d_id       ); } else { _missing__cl3d_id       = true; cout << " HGC >> leaf C3D 'id      ' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_pt"         ) ) { _missing__cl3d_pt           = false; _chain->SetBranchAddress("cl3d_pt"        , &_cl3d_pt       ); } else { _missing__cl3d_pt       = true; cout << " HGC >> leaf C3D 'pt      ' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_energy"     ) ) { _missing__cl3d_energy       = false; _chain->SetBranchAddress("cl3d_energy"    , &_cl3d_energy   ); } else { _missing__cl3d_energy   = true; cout << " HGC >> leaf C3D 'energy  ' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_eta"        ) ) { _missing__cl3d_eta          = false; _chain->SetBranchAddress("cl3d_eta"       , &_cl3d_eta      ); } else { _missing__cl3d_eta      = true; cout << " HGC >> leaf C3D 'eta     ' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_phi"        ) ) { _missing__cl3d_phi          = false; _chain->SetBranchAddress("cl3d_phi"       , &_cl3d_phi      ); } else { _missing__cl3d_phi      = true; cout << " HGC >> leaf C3D 'phi     ' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_clusters_id") ) { _missing__cl3d_clusters     = false; _chain->SetBranchAddress("cl3d_clusters_id", &_cl3d_clusters); } else { _missing__cl3d_clusters = true; cout << " HGC >> leaf C3D 'clusters' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_firstlayer" ) ) { _missing__cl3d_firstlayer   = false; _chain->SetBranchAddress("cl3d_firstlayer", &_cl3d_firstlayer);} else { _missing__cl3d_firstlayer = true; cout << " HGC >> leaf C3D 'firstlayer' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_maxlayer"   ) ) { _missing__cl3d_maxlayer     = false; _chain->SetBranchAddress("cl3d_maxlayer"  , &_cl3d_maxlayer ); } else { _missing__cl3d_maxlayer = true; cout << " HGC >> leaf C3D 'maxlayer' not found." << endl; }
+        if( _chain->GetBranchStatus( "cl3d_showerlength")) { _missing__cl3d_showerlength = false; _chain->SetBranchAddress("cl3d_showerlength" , &_cl3d_showerlength ); } else { _missing__cl3d_showerlength = true; cout << " HGC >> leaf C3D 'showerlength' not found." << endl; }
     }
 
 }
@@ -265,6 +267,8 @@ void HGC::getEvent( int evt ){
 	  if( !_missing__tc_cell     ) tc.setCell      ( _tc_cell     ->at( itc ) );
 	  if( !_missing__tc_data     ) tc.setData      ( _tc_data     ->at( itc ) );
 	  if( !_missing__tc_energy   ) tc.setEnergy    ( _tc_energy   ->at( itc ) );
+	  if( !_missing__tc_pt       ) tc.setPt        ( _tc_pt       ->at( itc ) );
+	  if( !_missing__tc_mipPt    ) tc.setMipPt     ( _tc_mipPt    ->at( itc ) );
 	  if( !_missing__tc_eta      ) tc.setEta       ( _tc_eta      ->at( itc ) );
 	  if( !_missing__tc_phi      ) tc.setPhi       ( _tc_phi      ->at( itc ) );
 	  if( !_missing__tc_x        ) tc.setX         ( _tc_x        ->at( itc ) );
@@ -368,6 +372,7 @@ void HGC::getEvent( int evt ){
 	    if( !_missing__cl3d_clusters  ) c3d.setClusters( _cl3d_clusters->at(ic3d) ); 
             if( !_missing__cl3d_firstlayer) c3d.setFirstLayer( _cl3d_firstlayer->at(ic3d) ); 
             if( !_missing__cl3d_maxlayer  ) c3d.setMaxLayer( _cl3d_maxlayer->at(ic3d) ); 
+            if( !_missing__cl3d_showerlength  ) c3d.setShowerLength( _cl3d_showerlength->at(ic3d) ); 
 
             double layerZ = HGCgeom::instance()->layerZ( c3d.getEndcapId(), 1 );
             double projX =  c3d.getZprojection( layerZ ).X() / c3d.getZprojection( layerZ ).Z();
@@ -377,17 +382,23 @@ void HGC::getEvent( int evt ){
             c3d.setYnorm( projY );
             
 	    if(_flagC2D){
-                
-            //temporary_comment     vector<unsigned> cl3d_cells;
-            //temporary_comment     for(auto iclu : c3d.clusters()){
-            //temporary_comment         HGCC2D c2d = this->getC2D(iclu);
-            //temporary_comment         vector<unsigned> TCs = c2d.cells();
-            //temporary_comment         cl3d_cells.insert( cl3d_cells.end(), TCs.begin(), TCs.end() );
-            //temporary_comment     }
-            //temporary_comment     c3d.setCells(cl3d_cells);
-                
+                unsigned lastLayer=0;
+                vector<unsigned> cl3d_c2d;
+                for(auto iclu : c3d.clusters()){
+                    HGCC2D c2d;
+                    this->getSubdet( c3d.getEndcapId(), 3)->get<HGCC2D>( iclu, c2d );
+                    if( lastLayer < c2d.layer() )
+                        lastLayer = c2d.layer() ;
+//         vector<unsigned> TCs = c2d.cells();
+//         temporary_comment         cl3d_cells.insert( cl3d_cells.end(), TCs.begin(), TCs.end() );
+                     }
+//                c3d.setLastLayer( lastLayer );
+//         temporary_comment     c3d.setCells(cl3d_cells);
+                     
 	    }
 	    
+                
+
             /* fill the detector */
             if( c3d.Eta() > 0 )
                 for(unsigned isection=0; isection<4; isection++)      

@@ -156,8 +156,10 @@ private:
     vector<int>        *_tc_wafer     = 0;
     vector<int>        *_tc_wafertype = 0;
     vector<int>        *_tc_cell      = 0;
-    vector<unsigned>   *_tc_data      = 0;
+    vector<unsigned>   *_tc_data      = 0; 
     vector<float>      *_tc_energy    = 0;
+    vector<float>      *_tc_pt        = 0;
+    vector<float>      *_tc_mipPt     = 0;
     vector<float>      *_tc_eta       = 0;
     vector<float>      *_tc_phi       = 0;
     vector<float>      *_tc_x         = 0;
@@ -173,6 +175,8 @@ private:
     bool _missing__tc_wafertype ;
     bool _missing__tc_cell      ;
     bool _missing__tc_data      ;
+    bool _missing__tc_pt        ;
+    bool _missing__tc_mipPt     ;
     bool _missing__tc_energy    ;
     bool _missing__tc_eta       ;
     bool _missing__tc_phi       ;
@@ -214,6 +218,7 @@ private:
     vector<vector<unsigned>> *_cl3d_clusters = 0;
     vector<float>            *_cl3d_firstlayer = 0;      
     vector<float>            *_cl3d_maxlayer = 0;      
+    vector<float>            *_cl3d_showerlength = 0;      
 
     bool _missing__cl3d_id      ;
     bool _missing__cl3d_pt      ;
@@ -223,6 +228,7 @@ private:
     bool _missing__cl3d_clusters;
     bool _missing__cl3d_firstlayer;
     bool _missing__cl3d_maxlayer;
+    bool _missing__cl3d_showerlength;
 
     /* mapping all the GEN and GENPART */
     map<unsigned,HGCgen>     _gen;

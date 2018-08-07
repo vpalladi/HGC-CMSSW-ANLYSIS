@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <getopt.h>
 
 #include <TApplication.h>
 #include <TROOT.h>
@@ -57,24 +58,89 @@ public:
 
 int main(int argc, char** argv){
 
-    TApplication app("the app", &argc, argv);
-
     /* parameteres */
-    int nentries = -100;
-    double ptCut = 0.; // Pt cut for C3D (as in CMSSW L1Trigger/L1THGCal/python/hgcalTriggerPrimitiveDigiProducer_cfi.py )
+    int nentries = -50;
+    double ptCut = 0.5; // Pt cut for C3D (as in CMSSW L1Trigger/L1THGCal/python/hgcalTriggerPrimitiveDigiProducer_cfi.py )
 
     string ene("50");
     string PU("noPU");
+
+    bool c2dFlag = false;
+    bool c3dFlag = false;
+
+    /* inputs */
+    const struct option longOptions[] = {
+        {"help",         no_argument,        0, 'h'},
+        {"energy",       required_argument,  0, 'e'},
+        {"nEvt",         required_argument,  0, 'n'},
+        {"pu",           required_argument,  0, 'p'},
+        {"c2dFlag",      required_argument,  0, '2'},
+        {"c3dFlag",      required_argument,  0, '3'},
+        
+        {0,0,0,0}
+    };
     
+    int opt;
+    int optIndex = 0;
+    while ( (opt = getopt_long (argc, argv, "he:n:p:23", longOptions, &optIndex) ) != -1 ) {
+        
+        switch (opt)
+        {
+        case 'h':
+            cout << "Help" << endl;
+            cout << " -h(--help        ) :\t shows this help." << endl; 
+            cout << " -e(--energy      ) <energy> :\t energy of the sample to process." << endl; 
+            cout << " -n(--nEvt        ) <nEvt> :\t number of events to be processed (default: all)." << endl;
+            cout << " -p(--pu          ) <pu> :\t PU to process ('noPU' or PU200)." << endl;
+            cout << " -2(--c2dFlag     ) <c2dFlag> :\t process the c2ds." << endl;
+            cout << " -3(--c3dFlag     ) <c3dFlag> :\t process the c3ds." << endl;
+            return 0;
+            break;
+	case 'e':
+            ene = optarg;
+            break;
+	case 'n':
+            nentries = atoi( optarg );
+            break;
+        case 'p':
+            PU = optarg;
+            break;
+        case '2':
+            c2dFlag = true;
+            break;    
+        case '3':
+            c3dFlag = true;
+            break;    
+        case '?':
+            cout << "unknown param" << endl;
+            return 1;
+        default:
+            return 0;
+        }
+    }
+
+    cout << " >>> PARAMETERS <<< "     << endl 
+         << "     nentries   "  << nentries  << endl
+         << "     ptCut      "  << ptCut     << endl
+         << "     ene        "  << ene       << endl
+         << "     PU         "  << PU        << endl
+         << std::boolalpha
+         << "     C2Dloop    "  << c2dFlag   << endl
+         << "     C3Dloop    "  << c3dFlag   << endl
+         << std::noboolalpha;
+
+    
+    TApplication app("theApp", &argc, argv);
+  
     /* style */
     gStyle->SetOptStat(0);
     gStyle->SetOptTitle(0);
 
     /* samples */
     string path = "";
-    string pathMulticone = "";
-    string pathMulticone02 = "";
-    string pathMulticoneMR = "";
+//    string pathMulticone = "";
+//    string pathMulticone02 = "";
+//    string pathMulticoneMR = "";
 
     if( opendir( ("pi_"+PU+"_E"+ene).c_str() ) == NULL ){
         mkdir(("pi_"+PU+"_E"+ene).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -84,54 +150,66 @@ int main(int argc, char** argv){
 
     if( ene == "50"){
         if( PU == "noPU" ){
-            path            = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/cone_R01_CMSSW_9_3_7/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180601_172509/0000/";
-            pathMulticone   = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180524_181021/0000";
-            pathMulticone02 = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone_R02/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180529_105957/0000";
-            pathMulticoneMR = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone_multiradii/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180605_192728/0000";
+            path            = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/cone_R01_CMSSW_9_3_7_tc/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180619_155107/0000";
+//            pathMulticone   = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180524_181021/0000";
+//            pathMulticone02 = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone_R02/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180529_105957/0000";
+            //pathMulticoneMR = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone_multiradii/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_noPUFEVT/180605_192728/0000";
         }
         else if( PU == "PU200" ){
-            path            = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/CMSSW_9_3_7/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_PU200FEVT/180514_175310/0000";
-            pathMulticone   = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_PU200FEVT/180524_181002/0000";
-            pathMulticone02 = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone_R02/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_PU200FEVT/180529_105940/0000";
+            path            = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/cone_R01_CMSSW_9_3_7_tc/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_PU200FEVT/180619_155030/0000";
+//            pathMulticone   = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_PU200FEVT/180524_181002/0000";
+//            pathMulticone02 = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone_R02/SinglePiPt50Eta1p6_2p8/SinglePiPt50Eta1p6_2p8_PU200FEVT/180529_105940/0000";
         }
     }
     else if( ene == "100" ){
         if( PU == "noPU" ){
             path          = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/CMSSW_9_3_7/SinglePiPt100Eta1p6_2p8/SinglePiPt100Eta1p6_2p8_noPUFEVT/180514_175604/0000";
-            pathMulticone = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt100Eta1p6_2p8/SinglePiPt100Eta1p6_2p8_noPUFEVT/180524_160101/0000";
+//            pathMulticone = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt100Eta1p6_2p8/SinglePiPt100Eta1p6_2p8_noPUFEVT/180524_160101/0000";
         }
         else if( PU == "PU200" ){
             path          = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/CMSSW_9_3_7/SinglePiPt100Eta1p6_2p8/SinglePiPt100Eta1p6_2p8_PU200FEVT/180514_175628/0000";
-            pathMulticone = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt100Eta1p6_2p8/SinglePiPt100Eta1p6_2p8_PU200FEVT/180524_155706/0000";
+//            pathMulticone = "root://cms-xrd-global.cern.ch//store/user/vpalladi/TPG/multicone/SinglePiPt100Eta1p6_2p8/SinglePiPt100Eta1p6_2p8_PU200FEVT/180524_155706/0000";
         }
     }
 
+
     vector< pair< pair<string,int> ,string > > files = { 
-        pair< pair<string,int>,string >( pair<string,int>("forest"        , kGreen+1 ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_forest.root"     ).c_str()) ,
-        pair< pair<string,int>,string >( pair<string,int>("single"        , kGreen-1 ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_single.root"     ).c_str()) ,
-                                                                                                
-        pair< pair<string,int>,string >( pair<string,int>("norm9x9_R01"   , kBlue    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R01_SR9.root"    ).c_str()) ,
-        pair< pair<string,int>,string >( pair<string,int>("norm9x9_R02"   , kPink    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R02_SR9.root"    ).c_str()) , 
-        pair< pair<string,int>,string >( pair<string,int>("norm9x9_R1"    , kViolet  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R1_SR9.root"     ).c_str()) , 
-                                                                                                
-        pair< pair<string,int>,string >( pair<string,int>("norm5x5_R01"   , kBlue    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R01_SR5.root"    ).c_str()) ,
-        pair< pair<string,int>,string >( pair<string,int>("norm5x5_R02"   , kPink    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R02_SR5.root"    ).c_str()) ,
-        pair< pair<string,int>,string >( pair<string,int>("norm5x5_R1"    , kViolet  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R1_SR5.root"     ).c_str()) ,
-                                                                                                
-        pair< pair<string,int>,string >( pair<string,int>("norm3x3_R01"   , kBlue    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R01_SR3.root"    ).c_str()) ,
-        pair< pair<string,int>,string >( pair<string,int>("norm3x3_R02"   , kPink    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R02_SR3.root"    ).c_str()) ,
-        pair< pair<string,int>,string >( pair<string,int>("norm3x3_R1"    , kViolet  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R1_SR3.root"     ).c_str()) ,
+        //pair< pair<string,int>,string >( pair<string,int>("forest"        , kGreen+1 ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_forest.root"     ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("single"        , kGreen-1 ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_single_cone_R01_CMSSW_9_3_7_tc.root"     ).c_str()) ,
         
+//        pair< pair<string,int>,string >( pair<string,int>("norm9x9_R01"   , kBlue    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_norm_R01_SR9.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("norm9x9_R02"   , kPink    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_norm_R02_SR9.root"    ).c_str()) , 
+//        pair< pair<string,int>,string >( pair<string,int>("norm9x9_R1"    , kViolet  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_norm_R1_SR9.root"     ).c_str()) , 
+        
+//        pair< pair<string,int>,string >( pair<string,int>("norm5x5_R01"   , kBlue+1  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_norm_R01_SR5.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("norm5x5_R02"   , kPink+1  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_norm_R02_SR5.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("norm5x5_R1"    , kViolet+1), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_norm_R1_SR5.root"     ).c_str()) ,
+
+        pair< pair<string,int>,string >( pair<string,int>("polarFW_R01"   , kBlue    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_"+PU+"FEVT_polarFW_cone_R01_CMSSW_9_3_7_tc_R01.root"    ).c_str()) ,
+        pair< pair<string,int>,string >( pair<string,int>("polarFW_R02"   , kBlue+1  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_"+PU+"FEVT_polarFW_cone_R01_CMSSW_9_3_7_tc_R02.root"    ).c_str()) ,
+        pair< pair<string,int>,string >( pair<string,int>("polarFW_R03"   , kBlue+2  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_"+PU+"FEVT_polarFW_cone_R01_CMSSW_9_3_7_tc_R03.root"    ).c_str()) ,
+
+        pair< pair<string,int>,string >( pair<string,int>("polarFWtc_R01"   , kViolet    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_"+PU+"FEVT_polarFWtc_cone_R01_CMSSW_9_3_7_tc_R01.root"    ).c_str()) ,
+        pair< pair<string,int>,string >( pair<string,int>("polarFWtc_R02"   , kViolet+1  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_"+PU+"FEVT_polarFWtc_cone_R01_CMSSW_9_3_7_tc_R02.root"    ).c_str()) ,
+        pair< pair<string,int>,string >( pair<string,int>("polarFWtc_R03"   , kViolet+2  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_"+PU+"FEVT_polarFWtc_cone_R01_CMSSW_9_3_7_tc_R03.root"    ).c_str()) ,
+      
+//        pair< pair<string,int>,string >( pair<string,int>("norm3x3_R01"   , kBlue    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R01_SR3.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("norm3x3_R02"   , kPink    ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R02_SR3.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("norm3x3_R1"    , kViolet  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_norm_R1_SR3.root"     ).c_str()) ,
+        
+//        pair< pair<string,int>,string >( pair<string,int>("gen_R01"       , kBlue+2  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_gen_R01.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("gen_R02"       , kPink+2  ), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_gen_R02.root"    ).c_str()) ,
+//        pair< pair<string,int>,string >( pair<string,int>("gen_R1"        , kViolet+2), (path+"/C3Dstudies/SinglePiPt100Eta1p6_2p8_1_E"+ene+"_cone_CMSSW_9_3_7_tc_gen_R1.root"     ).c_str()) ,
+   
         pair< pair<string,int>,string >( pair<string,int>("cone"          , kGreen   ), (path           +"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() ),
-        pair< pair<string,int>,string >( pair<string,int>("multicone"     , kBlack   ), (pathMulticone  +"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() ),
-        pair< pair<string,int>,string >( pair<string,int>("multicone02"   , kBlue-9  ), (pathMulticone02+"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() ),
-        pair< pair<string,int>,string >( pair<string,int>("multiconeMR"   , kCyan-6  ), (pathMulticoneMR+"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() )
+//        pair< pair<string,int>,string >( pair<string,int>("multicone"     , kBlack   ), (pathMulticone  +"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() ),
+//        pair< pair<string,int>,string >( pair<string,int>("multicone02"   , kBlue-9  ), (pathMulticone02+"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() ),
+//        pair< pair<string,int>,string >( pair<string,int>("multiconeMR"   , kCyan-6  ), (pathMulticoneMR+"/PhaseIITDRFall17DR__SinglePiPt100Eta1p6_2p8__GEN-SIM-RECO__PU200FEVT_93X_upgrade2023_realistic_v2-v1__0694AE79-EEB0-E711-A16F-A4BF0112DFA0_1.root").c_str() )
     };
-
-
 
     const unsigned Nsamples = files.size();
 
+    // define the cmsswsamples
     vector<unsigned> cmsswSamplesId;
 
     for( unsigned i=0; i<files.size(); i++ ){
@@ -141,7 +219,7 @@ int main(int argc, char** argv){
             cmsswSamplesId.push_back(i);
     }
     
-    
+
     /* cmssw */
     vector<HGC*> detectors;
 
@@ -153,7 +231,7 @@ int main(int argc, char** argv){
         fList->Add( new TObjString( TString(files[cmsswSamplesId.at(icmsswsample)].second) ) );
         
         HGC *detector = new HGC( fList, 
-                                 true, true, true, true, false, 
+                                 true, true, true, true, true, 
                                  false,
                                  0 
             );
@@ -169,7 +247,7 @@ int main(int argc, char** argv){
 
     /* trees */  
     for( unsigned isample=0; isample<Nsamples; isample++ ) {
-
+        
         if( find(cmsswSamplesId.begin(), cmsswSamplesId.end(), isample) != cmsswSamplesId.end() )
             continue;
 
@@ -208,12 +286,18 @@ int main(int argc, char** argv){
     TH1D *hc3dGenDistZoom[Nsamples];
     TH1D *hc3dGenDistXzoom[Nsamples];
     TH1D *hc3dGenDistYzoom[Nsamples];
+//density    TH1D *hc3dEnergyDensity[Nsamples];
+//density    TGraph *gc3dEnergyDensityRatio[Nsamples];
+//density    TH2D *hhc3dEnergyDensityRatio[Nsamples];
+//density    TH2D *hhc3dEnergyDensityTCvsEnergy[Nsamples];
+    //TH2D *hhc3dEnergyVsNtc[Nsamples];
     //TH1D *hEresolution[Nsamples];     
     TH1D *hNc3dWthinGenProj[Nsamples];
     TH2D *hhc3dc2dNumberPerLayer[Nsamples];
     TH1D *hPtHighestC3D[Nsamples];
     TH1D *hPtClosestC3D[Nsamples];
     TH1D *hPtAllC3D[Nsamples];
+
     TGraphErrors *gPtHighestC3D[Nsamples];
     TGraphErrors *gPtClosestC3D[Nsamples];
     TGraphErrors *gPtAllC3D[Nsamples];
@@ -275,7 +359,7 @@ int main(int argc, char** argv){
         hNc2d[isample]            = new TH1D( ("hNc2d_"             + files[isample].first.first ).c_str(), ("hNc2d_"             + files[isample].first.first ).c_str(), 
                                               30  , 0, 30   );
         hc3dPt[isample]           = new TH1D( ("hc3dPt_"            + files[isample].first.first ).c_str(), ("hc3dPt_"            + files[isample].first.first ).c_str(), 
-                                              250 , 0, 500  );
+                                              75 , 0, 150  );
         hc3dFirstLayer[isample]   = new TH1D( ("hc3dFirstLayer_"    + files[isample].first.first ).c_str(), ("hc3dFirstLayer_"    + files[isample].first.first ).c_str(), 
                                               52  , 0, 52   );
         hc3dMaxLayer[isample]     = new TH1D( ("hc3dMaxLayer_"      + files[isample].first.first ).c_str(), ("hc3dMaxLayer_"      + files[isample].first.first ).c_str(), 
@@ -293,6 +377,20 @@ int main(int argc, char** argv){
                                               200 , -.05, .05  );
         hc3dGenDistYzoom[isample] = new TH1D( ("hc3dGenDistYzoom_"  + files[isample].first.first ).c_str(), ("hc3dGenDistYzoom_"  + files[isample].first.first ).c_str(), 
                                               200 , -.05, .05  );
+//density        hc3dEnergyDensity[isample] = new TH1D( ("hc3dEnergyDensity_"  + files[isample].first.first ).c_str(), ("hc3dEnergyDensity_"  + files[isample].first.first ).c_str(), 
+//density                                               400 , .0, 100  );
+//density        hhc3dEnergyDensityRatio[isample] = new TH2D( ("hhc3dEnergyDensityRatio_"  + files[isample].first.first ).c_str(), ("hhc3dEnergyDensityRatio_"  + files[isample].first.first ).c_str(), 
+//density                                                     1000 , .0, 3,
+//density                                                     1000 , .0, 0.1 );
+//density        hhc3dEnergyDensityTCvsEnergy[isample] = new TH2D( ("hhc3dEnergyDensityTCvsEnergy_"  + files[isample].first.first ).c_str(), ("hhc3dEnergyDensityTCvsEnergy_"  + files[isample].first.first ).c_str(), 
+//density                                                          1000 , .0, 100,
+//density                                                          100 , .0, 100 );
+//density        
+//density        //hhc3dEnergyDensityRatio[isample] = new TH2D( ("hhc3dEnergyDensityRatio_"  + files[isample].first.first ).c_str(), ("hhc3dEnergyDensityRatio_"  + files[isample].first.first ).c_str(), 
+//density        //                                             1000 , .0, 3,
+//density        //                                             1000 , .0, 0.1  );
+//density        gc3dEnergyDensityRatio[isample] = new TGraph();
+//density        gc3dEnergyDensityRatio[isample]->SetName( ("gc3dEnergyDensityRatio_"  + files[isample].first.first ).c_str() );
 
         //hEresolution[isample]     = new TH1D( ("hEresolution_"      + files[isample].first.first ).c_str(), ("hEresolutin_"       + files[isample].first.first ).c_str(), 500 ,   0.00001, 500  );
         hNc3dWthinGenProj[isample]= new TH1D( ("hNc3dWthinGenProj_" + files[isample].first.first ).c_str(), ("hNc3dWthinGenProj_" + files[isample].first.first ).c_str(), 
@@ -365,8 +463,8 @@ int main(int argc, char** argv){
                                    250 ,   0.00001, 250,
                                    200 ,  0, .1 );
     hhc2dMinDistLayerZoom = new TH2D( "hhc2dMinDistLayerZoom" , "hhc2dMinDistLayerZoom" ,
-                                  52  ,   0, 52,
-                                  500 ,   0,  .1 );
+                                      52  ,   0, 52,
+                                      500 ,   0,  .1 );
     hhc2dMinDistLayerWZoom = new TH2D( "hhc2dMinDistLayerWZoom" , "hhc2dMinDistLayerWZoom" ,
                                        52  ,   0, 52,
                                        500 ,   0,  .1 );
@@ -386,7 +484,7 @@ int main(int argc, char** argv){
     hc2dGenWDist      = new TH1D( "hc2dGenWDist", "hc2dGenWDist", 100 ,  0, 1  );
     for(unsigned ilayer=0; ilayer<HGCgeom::instance()->nLayers(); ilayer++) { 
         hc2dGenWDistLayer[ilayer]= new TH1D( Form("hc2dGenWDist_layer_%d", ilayer ) , Form("hc2dGenWDist_layer_%d", ilayer ),  
-                                            500 ,   0,  1  );
+                                             500 ,   0,  1  );
     }
     hhc2dGenWDistLayer = new TH2D( "hhc2dGenWDist" , "hhc2dGenWDist" ,
                                    52  ,   0, 52,
@@ -409,12 +507,12 @@ int main(int argc, char** argv){
     hc2dGenGhostDist      = new TH1D( "hc2dGenGhostDist", "hc2dGenGhostDist", 100 ,  0, 1  );
     for(unsigned ilayer=0; ilayer<HGCgeom::instance()->nLayers(); ilayer++) { 
         hc2dGenGhostDistLayer[ilayer]= new TH1D( Form("hc2dGenGhostDist_layer_%d", ilayer ) ,  
-                                                  Form("hc2dGenGhostDist_layer_%d", ilayer ) ,  
-                                                  500 ,   0,  1  );
+                                                 Form("hc2dGenGhostDist_layer_%d", ilayer ) ,  
+                                                 500 ,   0,  1  );
     }
     hhc2dGenGhostDistLayer = new TH2D( "hhc2dGenGhostDist" , "hhc2dGenGhostDist" ,
-                                        52  ,   0, 52,
-                                        500 ,   0,  1 );
+                                       52  ,   0, 52,
+                                       500 ,   0,  1 );
     hc2dGenGhostDistX     = new TH1D( "hc2dGenGhostDistX"    , "hc2dGenGhostDistX"    , 
                                       200 , -1,    1  );
     hc2dGenGhostDistY     = new TH1D( "hc2dGenGhostDistY"    , "hc2dGenGhostDistY"    , 
@@ -447,7 +545,8 @@ int main(int argc, char** argv){
                              hName(  hPtClosestC3D         , "PtClosestC3D"          , new hRange(0.00001, 0.2 ) ) ,
                              hName(  hPtAllC3D             , "PtAllC3D"              , new hRange(0.00001, 0.2 ) ) ,
                              hName(  hDistHighestC3Dgen    , "DistHighestC3Dgen"     , new hRange(0.00001, 0.25) ) ,
-                             hName(  hDistHighestC3DgenZoom, "DistHighestC3DgenZoom" , new hRange(0.00001, 0.1 ) )
+                             hName(  hDistHighestC3DgenZoom, "DistHighestC3DgenZoom" , new hRange(0.00001, 0.1 ) ) 
+//density                             hName(  hc3dEnergyDensity     , "c3dEnergyDensity"      , new hRange(0.00001, 0.1 ) )
 //                             hName(  hc2dGenDist           , "c2dGenDist"            , new hRange(0, 0.01) ) ,
 //                             hName(  hc2dGenDistX          , "c2dGenDistX"           , new hRange(0, 0.01) ) ,
 //                             hName(  hc2dGenDistY          , "c2dGenDistY"           , new hRange(0, 0.01) ) ,
@@ -460,11 +559,11 @@ int main(int argc, char** argv){
     TH2D *h2FirstVsMaxLayer[Nsamples];
 
     for(unsigned isample=0; isample<Nsamples; isample++) {
-          h2FirstVsMaxLayer[isample] = new TH2D( ("h2FirstVsMaxLayer" + files[isample].first.first ).c_str(),  
-                                                 ("h2FirstVsMaxLayer" + files[isample].first.first ).c_str(),
-                                                 52, 0, 52,
-                                                 52, 0, 52
-              );
+        h2FirstVsMaxLayer[isample] = new TH2D( ("h2FirstVsMaxLayer" + files[isample].first.first ).c_str(),  
+                                               ("h2FirstVsMaxLayer" + files[isample].first.first ).c_str(),
+                                               52, 0, 52,
+                                               52, 0, 52
+            );
     }
 
     
@@ -472,7 +571,7 @@ int main(int argc, char** argv){
     cout << " >>> looping on " << nentries << " entries" << endl;
     
     for(int ievt=0; ievt<nentries; ievt++) {
-     
+        
         // get the gen part 
         vector<HGCgen*> allGen = detectors.at(0)->getGenAll();
         
@@ -485,286 +584,360 @@ int main(int argc, char** argv){
         for(unsigned isample=0; isample<Nsamples; isample++) {
             if( find(cmsswSamplesId.begin(), cmsswSamplesId.end(), isample) != cmsswSamplesId.end() )
                 continue;
+            
             tNewC3Ds[isample]->GetEntry(ievt);
         } 
         
-        if( ievt%100 == 0 )
-            cout << ievt << " events processed." << endl;
+        //if( ievt%100 == 0 )
+        cout << ievt << " events processed." << endl;
         
         /* sample loop */
         for(unsigned isample=0; isample<Nsamples; isample++) {
-            
+
             unsigned nC3D=0;
             
             /* endcap loop */
             for(unsigned iendcap=0; iendcap<2; iendcap++) {
-
+                
+                
                 /*** nc2ds loop ***/
-                if( isample == 0 ) {
-                    
-                    // get all c2ds
-                    vector<const HGCC2D*> c2ds = detectors.at(0)->getSubdet(iendcap, 3)->getAll<HGCC2D>();                    
-                    unsigned nC2DperLayer[53];
-                    std::uninitialized_fill_n(nC2DperLayer, 53, 0);
-
-                    for( unsigned ic2d=0; ic2d<c2ds.size(); ic2d++ ) {
-
-                        /* nC2Ds per layer*/
-                        nC2DperLayer[c2ds.at(ic2d)->layer()+1]++;
-
-                        /* c2d sub loop */
-                        unsigned searchingLayerId = 0;
+                if( c2dFlag ) {
+                    if( isample == 0 ) {
                         
-                        if( HGCgeom::instance()->layerZisTriggerLayer( iendcap, c2ds.at(ic2d)->layer()+1 ) ){
-                            searchingLayerId = c2ds.at(ic2d)->layer()+1;
-                        }
-                        else{
-                            searchingLayerId = c2ds.at(ic2d)->layer()+2;
-                        }
+                        // get all c2ds
+                        vector<const HGCC2D*> c2ds = detectors.at(0)->getSubdet(iendcap, 3)->getAll<HGCC2D>();                    
+                        unsigned nC2DperLayer[53];
+                        std::uninitialized_fill_n(nC2DperLayer, 53, 0);
+                        
+                        for( unsigned ic2d=0; ic2d<c2ds.size(); ic2d++ ) {
+                            
+                            /* nC2Ds per layer*/
+                            nC2DperLayer[c2ds.at(ic2d)->layer()+1]++;
 
-                        // minimum distance of c2d belonging to consecutive trigger layers
-                        if( searchingLayerId<=HGCgeom::instance()->nLayers() ) {
-
-                            double minDist=10.;
-                            double minPt=0;
-
-                            for( unsigned ic2dsub=0; ic2dsub<c2ds.size(); ic2dsub++ ) {
-
-                                if( c2ds.at(ic2d)->id() == c2ds.at(ic2dsub)->id() )
-                                    continue;
-                                
-                                if( c2ds.at(ic2dsub)->layer() != searchingLayerId )
-                                    continue;
-                                    
-                                double XnormDist = c2ds.at(ic2d)->xNorm() - c2ds.at(ic2dsub)->xNorm();
-                                double YnormDist = c2ds.at(ic2d)->yNorm() - c2ds.at(ic2dsub)->yNorm();
-                                double normDist  = TMath::Sqrt( XnormDist*XnormDist + YnormDist*YnormDist );
-                                
-                                if( normDist < minDist ){
-                                    minDist = normDist;
-                                    minPt = c2ds.at(ic2dsub)->Pt();
-                                }
+                            /* c2d sub loop */
+                            unsigned searchingLayerId = 0;
+                            
+                            if( HGCgeom::instance()->layerZisTriggerLayer( iendcap, c2ds.at(ic2d)->layer()+1 ) ){
+                                searchingLayerId = c2ds.at(ic2d)->layer()+1;
                             }
-
-                            hhc2dMinDistLayer     ->Fill( searchingLayerId-1, minDist );
-                            hhc2dMinDistLayerZoom ->Fill( searchingLayerId-1, minDist );
-
-                            hhc2dMinDistLayerW    ->Fill( searchingLayerId-1, minDist, minPt );
-                            hhc2dMinDistLayerWZoom->Fill( searchingLayerId-1, minDist, minPt );
-
-                        }
-
-                        /* gen loop */
-                        for( unsigned igen=0; igen<allGen.size(); igen++ ) {
+                            else{
+                                searchingLayerId = c2ds.at(ic2d)->layer()+2;
+                            }
                             
-                            if( allGen.at(igen)->getEndcapId() != (int)iendcap ) continue;
+                            // minimum distance of c2d belonging to consecutive trigger layers
+                            if( searchingLayerId<=HGCgeom::instance()->nLayers() ) {
 
-                            double c2dPt = c2ds.at(ic2d)->Pt(); // weight
+                                double minDist=10.;
+                                double minPt=0;
+                                
+                                for( unsigned ic2dsub=0; ic2dsub<c2ds.size(); ic2dsub++ ) {
+                                    
+                                    if( c2ds.at(ic2d)->id() == c2ds.at(ic2dsub)->id() )
+                                        continue;
+                                    
+                                    if( c2ds.at(ic2dsub)->layer() != searchingLayerId )
+                                        continue;
+                                    
+                                    double XnormDist = c2ds.at(ic2d)->xNorm() - c2ds.at(ic2dsub)->xNorm();
+                                    double YnormDist = c2ds.at(ic2d)->yNorm() - c2ds.at(ic2dsub)->yNorm();
+                                    double normDist  = TMath::Sqrt( XnormDist*XnormDist + YnormDist*YnormDist );
+                                    
+                                    if( normDist < minDist ){
+                                        minDist = normDist;
+                                        minPt = c2ds.at(ic2dsub)->Pt();
+                                    }
+                                }
 
-                            double XnormDist = c2ds.at(ic2d)->xNorm() - allGen.at(igen)->xNorm();
-                            double YnormDist = c2ds.at(ic2d)->yNorm() - allGen.at(igen)->yNorm();
-                            double normDist  = TMath::Sqrt( XnormDist*XnormDist + YnormDist*YnormDist );
-                            unsigned c2dLayer = c2ds.at(ic2d)->layer();
-                            
-                            hc2dGenDist     ->Fill( normDist  ); 
-                            hc2dGenDistX    ->Fill( XnormDist ); 
-                            hc2dGenDistY    ->Fill( YnormDist );
-                            hc2dGenDistZoom ->Fill( normDist  ); 
-                            hc2dGenDistXzoom->Fill( XnormDist ); 
-                            hc2dGenDistYzoom->Fill( YnormDist );
-                            
-                            hc2dGenDistLayer[c2dLayer-1]->Fill( normDist ); 
-                            hhc2dGenDistLayer           ->Fill(c2dLayer-1, normDist ); 
-                            hhc2dGenDistLayerZoom       ->Fill(c2dLayer-1, normDist ); 
-                            hhc2dGenDistLayerW          ->Fill(c2dLayer-1, normDist, c2dPt ); 
-                            hhc2dGenDistLayerWZoom      ->Fill(c2dLayer-1, normDist, c2dPt ); 
-                            hhc2dGenDistPt              ->Fill(c2dPt,      normDist ); 
-                            hhc2dGenDistPtZoom          ->Fill(c2dPt,      normDist ); 
+                                hhc2dMinDistLayer     ->Fill( searchingLayerId-1, minDist );
+                                hhc2dMinDistLayerZoom ->Fill( searchingLayerId-1, minDist );
+                                
+                                hhc2dMinDistLayerW    ->Fill( searchingLayerId-1, minDist, minPt );
+                                hhc2dMinDistLayerWZoom->Fill( searchingLayerId-1, minDist, minPt );
 
-                            // W
-                            hc2dGenWDist     ->Fill( normDist  , c2dPt ); 
-                            hc2dGenWDistX    ->Fill( XnormDist , c2dPt ); 
-                            hc2dGenWDistY    ->Fill( YnormDist , c2dPt );
-                            hc2dGenWDistZoom ->Fill( normDist  , c2dPt ); 
-                            hc2dGenWDistXzoom->Fill( XnormDist , c2dPt ); 
-                            hc2dGenWDistYzoom->Fill( YnormDist , c2dPt );
+                            }
                             
-                            hc2dGenWDistLayer[c2dLayer-1]->Fill( normDist , c2dPt ); 
-                            hhc2dGenWDistLayer->Fill(c2dLayer-1, normDist, c2dPt ); 
-                            hhc2dGenWDistLayerZoom->Fill(c2dLayer-1, normDist, c2dPt ); 
+                            /* gen loop */
+                            for( unsigned igen=0; igen<allGen.size(); igen++ ) {
+                                
+                                if( allGen.at(igen)->getEndcapId() != (int)iendcap ) continue;
+                                
+                                double c2dPt = c2ds.at(ic2d)->Pt(); // weight
+                                
+                                double XnormDist = c2ds.at(ic2d)->xNorm() - allGen.at(igen)->xNorm();
+                                double YnormDist = c2ds.at(ic2d)->yNorm() - allGen.at(igen)->yNorm();
+                                double normDist  = TMath::Sqrt( XnormDist*XnormDist + YnormDist*YnormDist );
+                                unsigned c2dLayer = c2ds.at(ic2d)->layer();
+                                
+                                hc2dGenDist     ->Fill( normDist  ); 
+                                hc2dGenDistX    ->Fill( XnormDist ); 
+                                hc2dGenDistY    ->Fill( YnormDist );
+                                hc2dGenDistZoom ->Fill( normDist  ); 
+                                hc2dGenDistXzoom->Fill( XnormDist ); 
+                                hc2dGenDistYzoom->Fill( YnormDist );
+                                
+                                hc2dGenDistLayer[c2dLayer-1]->Fill( normDist ); 
+                                hhc2dGenDistLayer           ->Fill(c2dLayer-1, normDist ); 
+                                hhc2dGenDistLayerZoom       ->Fill(c2dLayer-1, normDist ); 
+                                hhc2dGenDistLayerW          ->Fill(c2dLayer-1, normDist, c2dPt ); 
+                                hhc2dGenDistLayerWZoom      ->Fill(c2dLayer-1, normDist, c2dPt ); 
+                                hhc2dGenDistPt              ->Fill(c2dPt,      normDist ); 
+                                hhc2dGenDistPtZoom          ->Fill(c2dPt,      normDist ); 
+                                
+                                // W
+                                hc2dGenWDist     ->Fill( normDist  , c2dPt ); 
+                                hc2dGenWDistX    ->Fill( XnormDist , c2dPt ); 
+                                hc2dGenWDistY    ->Fill( YnormDist , c2dPt );
+                                hc2dGenWDistZoom ->Fill( normDist  , c2dPt ); 
+                                hc2dGenWDistXzoom->Fill( XnormDist , c2dPt ); 
+                                hc2dGenWDistYzoom->Fill( YnormDist , c2dPt );
+                                
+                                hc2dGenWDistLayer[c2dLayer-1]->Fill( normDist , c2dPt ); 
+                                hhc2dGenWDistLayer->Fill(c2dLayer-1, normDist, c2dPt ); 
+                                hhc2dGenWDistLayerZoom->Fill(c2dLayer-1, normDist, c2dPt ); 
+                                
+                                /* ghost GEN */
+                                double XnormDistGhost = c2ds.at(ic2d)->xNorm() - (-allGen.at(igen)->xNorm());
+                                double YnormDistGhost = c2ds.at(ic2d)->yNorm() - (-allGen.at(igen)->yNorm());
+                                double normDistGhost  = TMath::Sqrt( XnormDistGhost*XnormDistGhost + YnormDistGhost*YnormDistGhost );
+                                //unsigned c2dLayerGhost = c2ds.at(ic2d)->layer();
+                            
+                                hc2dGenGhostDist     ->Fill( normDistGhost  ); 
+                                hc2dGenGhostDistX    ->Fill( XnormDistGhost ); 
+                                hc2dGenGhostDistY    ->Fill( YnormDistGhost );
+                                hc2dGenGhostDistZoom ->Fill( normDistGhost  ); 
+                                hc2dGenGhostDistXzoom->Fill( XnormDistGhost ); 
+                                hc2dGenGhostDistYzoom->Fill( YnormDistGhost );
+                                
+                                hc2dGenGhostDistLayer[c2dLayer-1]->Fill( normDistGhost );
+                                hhc2dGenGhostDistLayer->Fill( c2dLayer-1, normDistGhost );
+                                hhc2dGenGhostDistLayerZoom->Fill( c2dLayer-1, normDistGhost );
+                            
+                            }// end gen loop
+                            
+                        }// end c2d loop
 
-                            /* ghost GEN */
-                            double XnormDistGhost = c2ds.at(ic2d)->xNorm() - (-allGen.at(igen)->xNorm());
-                            double YnormDistGhost = c2ds.at(ic2d)->yNorm() - (-allGen.at(igen)->yNorm());
-                            double normDistGhost  = TMath::Sqrt( XnormDistGhost*XnormDistGhost + YnormDistGhost*YnormDistGhost );
-                            //unsigned c2dLayerGhost = c2ds.at(ic2d)->layer();
-                            
-                            hc2dGenGhostDist     ->Fill( normDistGhost  ); 
-                            hc2dGenGhostDistX    ->Fill( XnormDistGhost ); 
-                            hc2dGenGhostDistY    ->Fill( YnormDistGhost );
-                            hc2dGenGhostDistZoom ->Fill( normDistGhost  ); 
-                            hc2dGenGhostDistXzoom->Fill( XnormDistGhost ); 
-                            hc2dGenGhostDistYzoom->Fill( YnormDistGhost );
-                            
-                            hc2dGenGhostDistLayer[c2dLayer-1]->Fill( normDistGhost );
-                            hhc2dGenGhostDistLayer->Fill( c2dLayer-1, normDistGhost );
-                            hhc2dGenGhostDistLayerZoom->Fill( c2dLayer-1, normDistGhost );
-                            
-                        }// end gen loop
+                        for(int ilayer=0; ilayer<53; ilayer++)
+                            hhc2dNumberPerLayer->Fill(ilayer,  nC2DperLayer[ilayer]);
 
-                    }// end c2d loop 
-                    
-                    for(int ilayer=0; ilayer<53; ilayer++)
-                        hhc2dNumberPerLayer->Fill(ilayer,  nC2DperLayer[ilayer]);
-
+                    }
                 }
-               
+                
                 /*** c3ds loop ***/
-                int nc3dinVec = 0;
-                if( find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) != cmsswSamplesId.end() ) {
-                    int idetector = distance ( cmsswSamplesId.begin(), find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) );
-                    nc3dinVec = detectors.at( idetector )->getSubdet(iendcap, 3)->getAll<HGCC3D>().size();
-                }
-                else {
-                    nc3dinVec = c3ds[isample][iendcap]->size();
-                }
-                
-                vector< pair<int,int> > nC3dPerPenPart;
-                map<int,pair<float,HGCC3D> > closestC3DtoGen;
-                
-                float maxC3Dpt = 0;
-                float genDistHighestC3Dpt = 0;
-                float allC3Dpt = 0;
-                
-                for( int ic3d=0; ic3d<nc3dinVec; ic3d++ ) {
-                    
-                    HGCC3D c3d;
-
-                    if( find(cmsswSamplesId.begin(), cmsswSamplesId.end(), isample) != cmsswSamplesId.end() ){
+                if( c3dFlag ) {
+                    int nc3dinVec = 0;
+                    if( find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) != cmsswSamplesId.end() ) {
                         int idetector = distance ( cmsswSamplesId.begin(), find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) );
-                        c3d = *(detectors.at(idetector)->getSubdet(iendcap, 3)->getAll<HGCC3D>().at(ic3d));
-                        c3d.setNearestGen(allGen); // set the nearest if cone Id
+                        nc3dinVec = detectors.at( idetector )->getSubdet(iendcap, 3)->getAll<HGCC3D>().size();
                     }
                     else {
-                        c3d = c3ds[isample][iendcap]->at(ic3d);
-                    }
-
-                    /******************/
-                    /* !!! Pt CUT !!! */
-                    /******************/
-                    if( c3d.Pt() < ptCut ) continue;
-
-                    /* total pt */
-                    allC3Dpt += c3d.Pt();
-
-                    /* get nearest gen */
-                    HGCgen gen=c3d.getNearestGen();
-                    
-                    /* calculate features */
-                    double XnormDist = c3d.xNorm() - gen.xNorm();
-                    double YnormDist = c3d.yNorm() - gen.yNorm();
-                    double normDist  = TMath::Sqrt( XnormDist*XnormDist + YnormDist*YnormDist );
-                    
-                    if( c3d.Pt() > maxC3Dpt ) {
-                        maxC3Dpt = c3d.Pt();
-                        genDistHighestC3Dpt = normDist;
-                    }
-
-                    if( closestC3DtoGen.find( gen.id() )==closestC3DtoGen.end() ) {
-                        closestC3DtoGen[gen.id()] = pair<float,HGCC3D>(normDist, c3d);
-                    } else {
-                        if( normDist<closestC3DtoGen[gen.id()].first )
-                            closestC3DtoGen[gen.id()] = pair<float,HGCC3D>(normDist, c3d);
+                        nc3dinVec = c3ds[isample][iendcap]->size();
                     }
                     
-                    if( c3d.nclusters() < 3 ) { 
-
-                        vector<unsigned> c2ds = c3d.clusters();
+                    vector< pair<int,int> > nC3dPerPenPart;
+                    map<int,pair<float,HGCC3D> > closestC3DtoGen;
+                    
+                    float maxC3Dpt = 0;
+                    unsigned maxC3DptId = 0;
+                    float genDistHighestC3Dpt = 0;
+                    float allC3Dpt = 0;
+                    
+                    // gen loop
+                    //for( unsigned igen=0; igen<allGen.size(); igen++ ) {
+                    //    
+                    //    if( allGen.at(igen)->getEndcapId() != (int)iendcap ) continue;
+                    //
+                    //    HGCgen* gen = allGen.at(igen);
+                    //    
+                    //    for( int ic3d=0; ic3d<nc3dinVec; ic3d++ ) {
+                    //        
+                    //        HGCC3D c3d;
+                    //        
+                    //        if( find(cmsswSamplesId.begin(), cmsswSamplesId.end(), isample) != cmsswSamplesId.end() ){
+                    //            int idetector = distance ( cmsswSamplesId.begin(), find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) );
+                    //            c3d = *( detectors.at(idetector)->getSubdet(iendcap, 3)->getAll<HGCC3D>().at(ic3d) );
+                    //            c3d.setNearestGen(allGen); // set the nearest if cone Id
+                    //        }
+                    //        else {
+                    //            c3d = c3ds[isample][iendcap]->at(ic3d);
+                    //        }
+                    //    
+                    //        
+                    //
+                    //    }
+                    //
+                    //}        
                         
-                        for(unsigned ic2d=0; ic2d< c2ds.size(); ic2d++ ){
-                            HGCC2D c2d;
-                            detectors.at(0)->getSubdet(iendcap, 3)->get( c2ds.at(ic2d), c2d );
-                            double c2dXnormDist = c2d.xNorm() - gen.xNorm();
-                            double c2dYnormDist = c2d.yNorm() - gen.yNorm();
-                            double c2dnormDist  = TMath::Sqrt( c2dXnormDist*c2dXnormDist + c2dYnormDist*c2dYnormDist );
+                    // c3d loop
+                    for( int ic3d=0; ic3d<nc3dinVec; ic3d++ ) {
+                    
+                        HGCC3D c3d;
 
-                            hhDistLowPopulatedC3DgenVsLayer[isample]->Fill( c2d.layer(), c2dnormDist );
-                            hhDistLowPopulatedC3DgenVsLayerZoom[isample]->Fill( c2d.layer(), c2dnormDist );
+                        if( find(cmsswSamplesId.begin(), cmsswSamplesId.end(), isample) != cmsswSamplesId.end() ){
+                            int idetector = distance ( cmsswSamplesId.begin(), find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) );
+                            c3d = *( detectors.at(idetector)->getSubdet(iendcap, 3)->getAll<HGCC3D>().at(ic3d) );
+                            c3d.setNearestGen(allGen); // set the nearest if cone Id
+                        }
+                        else {
+                            c3d = c3ds[isample][iendcap]->at(ic3d);
+                        }
+                        /******************/
+                        /* !!! Pt CUT !!! */
+                        /******************/
+                        if( c3d.Pt() < ptCut ) continue;
+                    
+                        /* energy density */
+//density                    float density = c3d.getEnergyDensity(0.01);
+//density                    float densityTC = c3d.getEnergyDensity();
+//density                    hc3dEnergyDensity[isample]->Fill( density );
+//density                    hhc3dEnergyDensityTCvsEnergy[isample]->Fill( densityTC, c3d.Energy() );
+                        //cout << densityTC << " " << c3d.Energy() << endl; 
+                        /* total pt */
+                        allC3Dpt += c3d.Pt();
 
+                        /* get nearest gen */
+                        HGCgen gen=c3d.getNearestGen();
+                    
+                        /* calculate features */
+                        double XnormDist = c3d.xNorm() - gen.xNorm();
+                        double YnormDist = c3d.yNorm() - gen.yNorm();
+                        double normDist  = TMath::Sqrt( XnormDist*XnormDist + YnormDist*YnormDist );
+                    
+                        if( c3d.Pt() > maxC3Dpt ) {
+                            maxC3Dpt  = c3d.Pt();
+                            maxC3DptId= c3d.id();
+                            genDistHighestC3Dpt = normDist;
                         }
 
-                    }
+                        if( closestC3DtoGen.find( gen.id() )==closestC3DtoGen.end() ) {
+                            closestC3DtoGen[gen.id()] = pair<float,HGCC3D>(normDist, c3d);
+                        } else {
+                            if( normDist<closestC3DtoGen[gen.id()].first )
+                                closestC3DtoGen[gen.id()] = pair<float,HGCC3D>(normDist, c3d);
+                        }
+                    
+                        if( c3d.nclusters() < 3 ) { 
+
+                            vector<unsigned> c2ds = c3d.clusters();
+                        
+                            for(unsigned ic2d=0; ic2d< c2ds.size(); ic2d++ ){
+                                HGCC2D c2d;
+                                detectors.at(0)->getSubdet(iendcap, 3)->get( c2ds.at(ic2d), c2d );
+                                double c2dXnormDist = c2d.xNorm() - gen.xNorm();
+                                double c2dYnormDist = c2d.yNorm() - gen.yNorm();
+                                double c2dnormDist  = TMath::Sqrt( c2dXnormDist*c2dXnormDist + c2dYnormDist*c2dYnormDist );
+
+                                hhDistLowPopulatedC3DgenVsLayer[isample]->Fill( c2d.layer(), c2dnormDist );
+                                hhDistLowPopulatedC3DgenVsLayerZoom[isample]->Fill( c2d.layer(), c2dnormDist );
+
+                            }
+
+                        }
 
 //                    if( XnormDist<0.01 && YnormDist<0.01 ){
-                    if( normDist<0.01 ){
+                        if( normDist<0.01 ){
 
-                        bool addGen=true;
-                        for( unsigned igen=0; igen<nC3dPerPenPart.size(); igen++ ){
-                            if( nC3dPerPenPart.at(igen).first == gen.id() ){
-                                addGen=false;
-                                nC3dPerPenPart.at(igen).second++;
-                                break;
+                            bool addGen=true;
+                            for( unsigned igen=0; igen<nC3dPerPenPart.size(); igen++ ){
+                                if( nC3dPerPenPart.at(igen).first == gen.id() ){
+                                    addGen=false;
+                                    nC3dPerPenPart.at(igen).second++;
+                                    break;
+                                }
                             }
+                            if( addGen ) nC3dPerPenPart.push_back( pair<int,int>(gen.id(), 1) ); 
                         }
-                        if( addGen ) nC3dPerPenPart.push_back( pair<int,int>(gen.id(), 1) ); 
-                    }
-                    nC3D++;
+                        nC3D++;
 
-                    /* loooping over the C2Ds components of the C3D */
-                    vector<unsigned> c2dIds = c3d.clusters();
-                    bool hit[HGCgeom::instance()->nLayers()];
-                    std::fill_n(hit, HGCgeom::instance()->nLayers(), false);
-                    float percentage[HGCgeom::instance()->nLayers()];
-                    std::fill_n(percentage, HGCgeom::instance()->nLayers(), 0.);
-                    unsigned nC2D[53];
-                    std::uninitialized_fill_n(nC2D, 53, 0);
+                        /* loooping over the C2Ds components of the C3D */
+                        vector<unsigned> c2dIds = c3d.clusters();
+                        bool hit[HGCgeom::instance()->nLayers()];
+                        std::fill_n(hit, HGCgeom::instance()->nLayers(), false);
+                        float percentage[HGCgeom::instance()->nLayers()];
+                        std::fill_n(percentage, HGCgeom::instance()->nLayers(), 0.);
+                        unsigned nC2D[53];
+                        std::uninitialized_fill_n(nC2D, 53, 0);
                     
-                    for(vector<unsigned>::iterator c2dId=c2dIds.begin(); c2dId!=c2dIds.end(); c2dId++) {
-                        HGCC2D c2d;
-                        detectors.at(0)->getSubdet(iendcap, 3)->get<HGCC2D>(*c2dId, c2d);
-                        hit[c2d.layer()] = true;
-                        percentage[c2d.layer()] = c2d.Pt()/c3d.Pt();
-                        nC2D[c2d.layer()]++;
+                        for(vector<unsigned>::iterator c2dId=c2dIds.begin(); c2dId!=c2dIds.end(); c2dId++) {
+                            HGCC2D c2d;
+                            detectors.at(0)->getSubdet(iendcap, 3)->get<HGCC2D>(*c2dId, c2d);
+                            hit[c2d.layer()] = true;
+                            percentage[c2d.layer()] = c2d.Pt()/c3d.Pt();
+                            nC2D[c2d.layer()]++;
+                        }
+
+                        /* Filling */ 
+                        hNc2d[isample]             ->Fill( c3d.nclusters()    );
+                        hc3dPt[isample]            ->Fill( c3d.Pt()           );
+                        hc3dFirstLayer[isample]    ->Fill( c3d.getFirstLayer());
+                        hc3dMaxLayer[isample]      ->Fill( c3d.getMaxLayer() );
+                        h2FirstVsMaxLayer[isample] ->Fill( c3d.getMaxLayer(), c3d.getFirstLayer() );
+                        hc3dGenDist[isample]       ->Fill( normDist  ); 
+                        hc3dGenDistX[isample]      ->Fill( XnormDist ); 
+                        hc3dGenDistY[isample]      ->Fill( YnormDist );
+                        hc3dGenDistZoom[isample]   ->Fill( normDist  ); 
+                        hc3dGenDistXzoom[isample]  ->Fill( XnormDist ); 
+                        hc3dGenDistYzoom[isample]  ->Fill( YnormDist );
+                    
+                        for(int ilayer=0; ilayer<53; ilayer++)
+                            hhc3dc2dNumberPerLayer[isample]->Fill( ilayer,  nC2D[ilayer] );
+
+                    } // end c3ds loop
+                
+                    /* highest pt c3d */
+                    HGCC3D c3dHighestPt;
+//density                float clusterDensity, regionDensity;
+                    if( find(cmsswSamplesId.begin(), cmsswSamplesId.end(), isample) != cmsswSamplesId.end() ){
+
+                        int idetector  = distance ( cmsswSamplesId.begin(), find( cmsswSamplesId.begin(), cmsswSamplesId.end(), isample ) );
+                        detectors.at(idetector)->getSubdet(iendcap, 3)->get<HGCC3D>(maxC3DptId, c3dHighestPt);
+//density                    clusterDensity = c3dHighestPt.getEnergyDensity(0.01);
+//density                    regionDensity  = c3dHighestPt.getEnergyDensity( detectors.at(idetector)->getSubdet(iendcap, 3)->getAll<HGCC3D>(), 0.1, 0.01 );
+                    
+                    }
+                    else {
+                        for( int ic3d=0; ic3d<nc3dinVec; ic3d++ ) {
+                            if( maxC3DptId == c3ds[isample][iendcap]->at(ic3d).id() )
+                                c3dHighestPt = c3ds[isample][iendcap]->at(ic3d);
+                        }
+                    
+//density                    clusterDensity = c3dHighestPt.getEnergyDensity(0.01);
+//density                    regionDensity  = c3dHighestPt.getEnergyDensity( c3ds[isample][iendcap], 0.1, 0.01 );
+                    
                     }
 
-                    /* Filling */ 
-                    hNc2d[isample]             ->Fill( c3d.nclusters()    );
-                    hc3dPt[isample]            ->Fill( c3d.Pt()           );
-                    hc3dFirstLayer[isample]    ->Fill( c3d.getFirstLayer());
-                    hc3dMaxLayer[isample]      ->Fill( c3d.getMaxLayer() );
-                    h2FirstVsMaxLayer[isample] ->Fill( c3d.getMaxLayer(), c3d.getFirstLayer() );
-                    hc3dGenDist[isample]       ->Fill( normDist  ); 
-                    hc3dGenDistX[isample]      ->Fill( XnormDist ); 
-                    hc3dGenDistY[isample]      ->Fill( YnormDist );
-                    hc3dGenDistZoom[isample]   ->Fill( normDist  ); 
-                    hc3dGenDistXzoom[isample]  ->Fill( XnormDist ); 
-                    hc3dGenDistYzoom[isample]  ->Fill( YnormDist );
-                    
-                    for(int ilayer=0; ilayer<53; ilayer++)
-                        hhc3dc2dNumberPerLayer[isample]->Fill( ilayer,  nC2D[ilayer] );
-
-                } // end c3ds loop
-
-                hPtHighestC3D[isample]->Fill( maxC3Dpt );
-                hPtAllC3D[isample]->Fill( allC3Dpt );
-                hDistHighestC3Dgen[isample]->Fill( genDistHighestC3Dpt );
-                hDistHighestC3DgenZoom[isample]->Fill( genDistHighestC3Dpt );
-                hhDistHighestC3DgenVsEvt[isample]->Fill( ievt, genDistHighestC3Dpt );
-
-                for(map<int,pair<float,HGCC3D> >::iterator it = closestC3DtoGen.begin(); it != closestC3DtoGen.end(); ++it) {
-                        hPtClosestC3D[isample]->Fill( it->second.second.Pt() );
-                }
-
-
-                for( unsigned igen=0; igen<nC3dPerPenPart.size(); igen++ ){
-                    hNc3dWthinGenProj[isample]->Fill( nC3dPerPenPart.at(igen).second );
-                }
-
-            }
+//density                hhc3dEnergyDensityRatio[isample]->Fill( clusterDensity, 
+//density                                                        regionDensity 
+//density                    );
+                
+//density                gc3dEnergyDensityRatio[isample]->SetPoint(gc3dEnergyDensityRatio[isample]->GetN(),
+//density                                                          clusterDensity, 
+//density                                                          regionDensity 
+//density                   );
             
+                    
+
+                    /* filling c3d's related histos*/
+                    hPtHighestC3D[isample]->Fill( maxC3Dpt );
+                    hPtAllC3D[isample]->Fill( allC3Dpt );
+                    hDistHighestC3Dgen[isample]->Fill( genDistHighestC3Dpt );
+                    hDistHighestC3DgenZoom[isample]->Fill( genDistHighestC3Dpt );
+                    hhDistHighestC3DgenVsEvt[isample]->Fill( ievt, genDistHighestC3Dpt );
+
+                    for(map<int,pair<float,HGCC3D> >::iterator it = closestC3DtoGen.begin(); it != closestC3DtoGen.end(); ++it) {
+                        hPtClosestC3D[isample]->Fill( it->second.second.Pt() );
+                    }
+
+
+                    for( unsigned igen=0; igen<nC3dPerPenPart.size(); igen++ ){
+                        hNc3dWthinGenProj[isample]->Fill( nC3dPerPenPart.at(igen).second );
+                    }
+
+                }
+            }
+
             hNc3d[isample]->Fill( nC3D );            
             hNc3dZoom[isample]->Fill( nC3D );
-
+            
         }
 
     } // end event loop
@@ -839,18 +1012,21 @@ int main(int argc, char** argv){
         hhDistLowPopulatedC3DgenVsLayer[isample]->Write();
         hhDistLowPopulatedC3DgenVsLayerZoom[isample]->Write();
         hhc3dc2dNumberPerLayer[isample]->Write();
+//density        gc3dEnergyDensityRatio[isample]->Write();
+//density        hhc3dEnergyDensityRatio[isample]->Write();
+//density        hhc3dEnergyDensityTCvsEnergy[isample]->Write();
     }
 
     /* plotting into canvases */
-    TLegend gResoHighestLeg(0.8, 0.6, 1, 1);
-    TLegend gResoClosestLeg(0.8, 0.6, 1, 1);
-    TLegend gResoAllLeg(0.8, 0.6, 1, 1);
+    TLegend gResoHighestLeg(0.75, 0.6, 1, 1);
+    TLegend gResoClosestLeg(0.75, 0.6, 1, 1);
+    TLegend gResoAllLeg(0.75, 0.6, 1, 1);
     for( unsigned ifeature=0; ifeature<Nfeatures; ifeature++ ) {
 
         TLegend *leg[6];
        
         for(int i=0; i<6; i++) {
-            leg[i] = new TLegend(0.7, 0.575, 0.9, 0.9 ); 
+            leg[i] = new TLegend(0.6, 0.575, 0.9, 0.9 ); 
         }
 
         for(unsigned isample=0; isample<Nsamples; isample++){
@@ -911,19 +1087,16 @@ int main(int argc, char** argv){
                 gPtClosestC3D[isample]->SetMarkerStyle( 25 );
                 gPtAllC3D[isample]->SetMarkerStyle( 25 );
             } 
-            if ( files[isample].first.first == "norm3x3_R003"   ||
-                 files[isample].first.first == "norm3x3_R00425" ||
-                 files[isample].first.first == "norm3x3_R01"    || 
-                 files[isample].first.first == "norm3x3_R02"    || 
-                 files[isample].first.first == "norm3x3_R03"    || 
-                 files[isample].first.first == "norm3x3_R04"    ||
-                 files[isample].first.first == "norm3x3_R1"    
+            if ( files[isample].first.first == "gen_R01" ||
+                 files[isample].first.first == "gen_R02" ||
+                 files[isample].first.first == "gen_R1"    
                 ) {
                 nPad=5;
                 gPtHighestC3D[isample]->SetMarkerStyle( 26 );
                 gPtClosestC3D[isample]->SetMarkerStyle( 26 );
                 gPtAllC3D[isample]->SetMarkerStyle( 25 );
             } 
+
 
             leg[nPad-1]->AddEntry( hAll[ifeature].histo[isample], files[isample].first.first.c_str(), "l" );  
 
@@ -939,33 +1112,36 @@ int main(int argc, char** argv){
             (hAll[ifeature].histo)[isample]->GetYaxis()->SetRangeUser( hAll[ifeature].range->min, hAll[ifeature].range->max);
 
             if( files[isample].first.first == "cone"   ||
+                files[isample].first.first == "multicone"   ||
+                files[isample].first.first == "multiconeMR" ||
+                files[isample].first.first == "gen_R1" ||
                 files[isample].first.first == "forest" ||
                 files[isample].first.first == "single" ||
-                files[isample].first.first == "norm9x9_R01" ||
-                files[isample].first.first == "norm5x5_R01" ||
-                files[isample].first.first == "norm3x3_R01"
+                files[isample].first.first == "norm9x9_R1" ||
+                files[isample].first.first == "norm5x5_R1" ||
+                files[isample].first.first == "norm3x3_R1"
                 ) {
 
-            // select the correct pad
-            cAll[ifeature]->cd(6);
+                // select the correct pad
+                cAll[ifeature]->cd(6);
           
-            //
-            TH1D* copy = (TH1D*)(hAll[ifeature].histo)[isample]->Clone();
-            leg[5]->AddEntry( copy, files[isample].first.first.c_str(), "l" );  
-
-            if( files[isample].first.first == "norm9x9_R01" )
-                copy->SetLineColor(kBlue);
-            if( files[isample].first.first == "norm5x5_R01" )
-                copy->SetLineColor(kBlue+10);
-            if( files[isample].first.first == "norm3x3_R01" )
-                copy->SetLineColor(kBlue-9);
-
-            copy->Draw( opt.c_str() );
-            copy->GetYaxis()->SetRangeUser( hAll[ifeature].range->min, hAll[ifeature].range->max);
+                //
+                TH1D* copy = (TH1D*)(hAll[ifeature].histo)[isample]->Clone();
+                leg[5]->AddEntry( copy, files[isample].first.first.c_str(), "l" );  
+                
+                if( files[isample].first.first == "norm9x9_R01" )
+                    copy->SetLineColor(kBlue);
+                if( files[isample].first.first == "norm5x5_R01" )
+                    copy->SetLineColor(kBlue+10);
+                if( files[isample].first.first == "norm3x3_R01" )
+                    copy->SetLineColor(kBlue-9);
+                
+                copy->Draw( opt.c_str() );
+                copy->GetYaxis()->SetRangeUser( hAll[ifeature].range->min, hAll[ifeature].range->max);
                 
                 
             }
-
+            
             /* graphs */
             float mean = hAll.at(ifeature).histo[isample]->GetMean(1);
             float rms  = hAll.at(ifeature).histo[isample]->GetRMS(1);

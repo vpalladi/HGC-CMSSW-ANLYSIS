@@ -6,7 +6,7 @@ ClassImp(HGChit)
 
 HGChit::HGChit()  { 
     
-    _isTrigger=true; 
+    this->init();
 
 }
 
@@ -177,3 +177,21 @@ bool HGChit::operator==( const HGChit &comp ){
 //}
 
 
+void HGChit::init() {
+
+    _id     = 0 ;
+    _subdet = 0 ;
+    _pt     = 0.;
+    _energy = 0.;
+    _eta    = 0.;
+    _phi    = 0.;
+    _x      = 0.;
+    _y      = 0.;
+    _z      = 0.;
+    _layer  = -1 ;
+
+    /* derived */
+    _theta  = 0.;
+    _isTrigger = true;
+
+}

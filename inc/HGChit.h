@@ -88,6 +88,8 @@ class HGChit : public TObject {
 //    double _sectionStart[3];
 //    double _sectionEnd[3];
 
+    void init();
+
     /* direct */
     unsigned int         _id     ;
     int                  _subdet ;

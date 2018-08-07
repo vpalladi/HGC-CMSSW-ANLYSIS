@@ -137,22 +137,22 @@ void HGCsubdet::getTDall( vector<HGCROC> &data ) {
 }
 
 
-template<class T>
-vector<const T*> HGCsubdet::getAllInRegion(double minR, double maxR, double minPhi, double maxPhi){
-
-    vector<const T*> vecT = this->getAll<T>();
-    vector<const T*> vecTselected;
-
-    for(unsigned i=0; i<vecT.size(); i++){
-        if( vecT.at(i)->Phi()>minPhi && vecT.at(i)->Phi()<maxPhi && 
-            vecT.at(i)->r()>minR && vecT.at(i)->r()<maxR            ){
-            vecTselected.push_back( vecT.at(i) );
-        }
-    }
-
-    return vecTselected;
-
-}
+//in .h    template<class T>
+//in .h    vector<const T*> HGCsubdet::getAllInRegion(double minR, double maxR, double minPhi, double maxPhi){
+//in .h    
+//in .h        vector<const T*> vecT = this->getAll<T>();
+//in .h        vector<const T*> vecTselected;
+//in .h    
+//in .h        for(unsigned i=0; i<vecT.size(); i++){
+//in .h            if( vecT.at(i)->Phi()>minPhi && vecT.at(i)->Phi()<maxPhi && 
+//in .h                vecT.at(i)->r()>minR && vecT.at(i)->r()<maxR            ){
+//in .h                vecTselected.push_back( vecT.at(i) );
+//in .h            }
+//in .h        }
+//in .h    
+//in .h        return vecTselected;
+//in .h    
+//in .h    }
 
 
 bool HGCsubdet::isPertinent(float z){
@@ -273,6 +273,24 @@ HGCsingleC3D HGCsubdet::getSingleC3D() {
 }
 
 
+HGCC3Dgen HGCsubdet::getGenC3D(double radius) {
+
+    HGCC3Dgen genC3D;
+
+    vector<const HGCC2D*> c2ds = getAll<HGCC2D>();
+    vector<HGCgen*>       gens = getGenAll();
+    
+    for(std::vector<const HGCC2D*>::iterator c2d=c2ds.begin(); c2d!=c2ds.end(); c2d++) {
+
+        genC3D.addPoint( *(*c2d), gens, radius );
+
+    }
+    
+    return genC3D;
+                                         
+}
+
+
 HGCht HGCsubdet::getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
                                        int nRowsRho,      double rhoMin,      double rhoMax, 
                                        double zOffset, double slopeCorrection,
@@ -358,9 +376,9 @@ void HGCsubdet::clear() {
     _C2Dvec.clear();
     _C3Dvec.clear();
 
+    _genVec.clear();
+
 //    _vC3Dforest.clear();
 //    _vC3Dnorm  .clear();
     
 }
-
-

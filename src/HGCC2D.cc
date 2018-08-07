@@ -25,8 +25,8 @@ void             HGCC2D::setCells(vector<unsigned> cells) {
 }
         
 /* get C2D parameters */                      
-unsigned         HGCC2D::nCells()                         { return _ncells   ; }
-vector<unsigned> HGCC2D::cells()                          { return _cells    ; }
+unsigned         HGCC2D::nCells() const                   { return _ncells   ; }
+vector<unsigned> HGCC2D::cells()  const                   { return _cells    ; }
 
 
 unsigned HGCC2D::HGCROCn() {

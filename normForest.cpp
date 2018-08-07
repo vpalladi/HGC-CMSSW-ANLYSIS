@@ -30,6 +30,8 @@
 #include "HGCROC.h"
 //#include "Ntuplizer.h"
 #include "HGCht.h"
+#include "HGCpolarHisto_T.h"
+
 
 
 using namespace std;
@@ -116,7 +118,7 @@ int main(int argc, char **argv){
             //cout << " -a(--nNNsum      ) <nNNsum> :\t norm coo strategy, number of bins around the maxima to sum," << endl;
             cout << " -r(--c3dRadius   ) <c3dradius> :\t radius (in norm coo) to clusterise the norm tranform," << endl;
             cout << " -e(--saveEvtByEvt) <saveEvtByEvt> :\t saves info event-by-event base, WARNING large output files." << endl;
-            cout << " -g(--strategy    ) <strategy> :\t defines which strategy to adopt for the new C3Ds ('forest', 'norm', 'single', 'none')." << endl;
+            cout << " -g(--strategy    ) <strategy> :\t defines which strategy to adopt for the new C3Ds ('forest', 'norm', 'single', 'gen', 'none', 'polarFW', 'polarFWtc')." << endl;
             return 0;
             break;
         case 'f':
@@ -534,13 +536,67 @@ int main(int argc, char **argv){
                                 
                                 newC3Ds[iendcap] = singleC3D.getNewC3Ds();
 
-                                //for(unsigned ic3d=0; ic3d<newC3Ds[iendcap].size(); ic3d++) {
-                                //    newC3Ds[iendcap].at(ic3d).setNearestGen( detector.getGenAll() );
-                                //}
+                            }
+
+                            /* gen */
+                            if( newC3DsStrategy == "gen" ){
+
+                                HGCC3Dgen C3Dgen = detector.getSubdet(iendcap, isection)->getGenC3D( c3dRadius );
+                                
+                                newC3Ds[iendcap] = C3Dgen.getNewC3Ds();
 
                             }
 
-                        }
+                            /* polarFW */
+                            unsigned binSums[36] = { 
+                                13,                                           // 0
+                                11, 11, 11,                                   // 1 - 3
+                                9, 9, 9,                                      // 4 - 6
+                                7, 7, 7, 7, 7, 7,                             // 7 - 12
+                                5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,  //13 - 27
+                                3, 3, 3, 3, 3, 3, 3, 3                        //28 - 35
+                            };
+                            if( newC3DsStrategy == "polarFW" ){
+
+                                HGCpolarHisto<HGCC2D> grid = detector.getSubdet(iendcap, isection)->getPolarFwC3D<HGCC2D>( c3dRadius );
+                                
+                                if( saveEventByEvent ) { 
+                                    grid.getHisto()               ->Write( "polarFW_gridH" );
+                                    grid.getHistoSums( binSums )  ->Write( "polarFW_gridHS" );
+                                    grid.getHistoMaxima( binSums )->Write( "polarFW_gridM" );
+                                    grid.getGraph()               ->Write( "polarFW_gridG" );
+                                }
+
+                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums );
+
+                                for(unsigned ic3d=0; ic3d<newC3Ds[iendcap].size(); ic3d++) {
+                                    newC3Ds[iendcap].at(ic3d).setNearestGen( detector.getGenAll() );
+                                }
+
+                            }
+
+                            /* polarFWtc */
+                            if( newC3DsStrategy == "polarFWtc" ){
+
+                                HGCpolarHisto<HGCTC> grid = detector.getSubdet(iendcap, isection)->getPolarFwC3D<HGCTC>( c3dRadius );
+                                                                
+                                if( saveEventByEvent ) { 
+                                    grid.getHisto()               ->Write( "polarFWtc_gridTcH"  );
+                                    grid.getHistoSums( binSums )  ->Write( "polarFWtc_gridTcHS" );
+                                    grid.getHistoMaxima( binSums )->Write( "polarFWtc_gridTcM"  );
+                                    grid.getGraph()               ->Write( "polarFWtc_gridTcG"  );
+                                }
+
+                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums );
+                                
+                                for(unsigned ic3d=0; ic3d<newC3Ds[iendcap].size(); ic3d++) {
+                                    newC3Ds[iendcap].at(ic3d).setNearestGen( detector.getGenAll() );
+                                }
+
+                            }
+
+
+                        } // end only section 3  
 
                     } // endl loop over sectors
 

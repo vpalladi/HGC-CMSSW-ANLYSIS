@@ -47,7 +47,7 @@ public:
 private:
 
     float _content;
-    vector<unsigned> _ids;
+    vector<unsigned>  _ids;
     pair<float,float> _centre;   /* first=x; second=y */
     pair<int,int>     _centreId; /* first=x; second=y */
 

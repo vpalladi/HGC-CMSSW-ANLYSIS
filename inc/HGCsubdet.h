@@ -15,6 +15,9 @@
 #include "HGCnorm.h"
 #include "HGCforest.h"
 #include "HGCsingleC3D.h"
+#include "HGCC3Dgen.h"
+//#include "HGCpolarHisto.h"
+#include "HGCpolarHisto_T.h"
 
 /* ROOT */
 #include "TMath.h"
@@ -55,8 +58,21 @@ public:
     void getTDall( vector<HGCROC> &data );
 
     template<class T>
-    vector<const T*>  getAllInRegion (double minR, double maxR, double minPhi, double maxPhi);
+    vector<const T*>  getAllInRegion (double minR, double maxR, double minPhi, double maxPhi) {
+        vector<const T*> vecT = this->getAll<T>();
+        vector<const T*> vecTselected;
+        
+        for(unsigned i=0; i<vecT.size(); i++){
+            if( vecT.at(i)->Phi()>minPhi && vecT.at(i)->Phi()<maxPhi && 
+                vecT.at(i)->r()>minR && vecT.at(i)->r()<maxR            ){
+                vecTselected.push_back( vecT.at(i) );
+            }
+        }
+        
+        return vecTselected;
+    }
     
+
     /* isPertinent */
     bool isPertinent(float z);
 
@@ -81,6 +97,17 @@ public:
         );
     
     HGCsingleC3D getSingleC3D();
+    
+    HGCC3Dgen getGenC3D(double radius);
+
+    template<class T> // HGCC2D or HGCTC
+    HGCpolarHisto<T> getPolarFwC3D(double radius) {
+        HGCpolarHisto<T> polarGrid( 36, 0.1, 0.52, 216, -TMath::Pi(), TMath::Pi() );
+        vector<const T*> hits = getAll<T>();
+        for(typename std::vector<const T*>::iterator hit=hits.begin(); hit!=hits.end(); hit++) 
+            polarGrid.addPoint( *(*hit) );
+        return polarGrid;    
+    }
     
 
     /* HOUGH transform */
@@ -215,8 +242,5 @@ private:
 };
 
 #endif
-
-
-
 
 

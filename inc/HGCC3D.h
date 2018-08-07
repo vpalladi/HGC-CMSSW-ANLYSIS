@@ -9,8 +9,8 @@
 /* mylibs */
 #include "detId.h"
 #include "HGChit.h"
+#include "HGCTC.h"
 #include "HGCC2D.h"
-#include "HGCC3D.h"
 #include "HGCgen.h"
 
 /* ROOT */
@@ -27,7 +27,8 @@ class HGCC3D : public HGChit {
     ~HGCC3D();
 
     /* add */
-    void addC2D( const HGCC2D* c2d);
+    void addC2D( const HGCC2D* c2d );
+    void addTC ( const HGCTC*  tc  );
 
     /* set methods*/
     void setClusters(vector<unsigned> clusters) ;
@@ -36,8 +37,10 @@ class HGCC3D : public HGChit {
     void setNearestGen(vector<HGCgen*> gens)    ;
     void setXnorm(float xNorm) ;
     void setYnorm(float yNorm) ;
-    void setFirstLayer(float firstLayer);
-    void setMaxLayer(float maxLayer);
+    void setFirstLayer(unsigned firstLayer);
+    void setMaxLayer(unsigned maxLayer);
+    void setLastLayer(unsigned lastLayer);
+    void setShowerLength(unsigned showerLength);
 
     /* get methods */
     unsigned         nclusters() const;
@@ -49,7 +52,9 @@ class HGCC3D : public HGChit {
     TLorentzVector P4() const;
 
     unsigned getFirstLayer() const;
+    unsigned getShowerLength() const; // in layers
     unsigned getMaxLayer() const;
+    unsigned getLastLayer() const;
 
     ROOT::Math::RhoEtaPhiPoint getZprojection( double z );
 
@@ -58,6 +63,11 @@ class HGCC3D : public HGChit {
 
     HGCgen getNearestGen() const;
 
+    float getEnergyDensity(float radiusNorm) const;
+    float getEnergyDensity() const; // uses the number of tc 
+    float getEnergyDensity(vector<const HGCC3D*> C3Ds, double radiusRegionNorm, double radiusNorm) const;
+    float getEnergyDensity(vector<HGCC3D> *C3Ds, double radiusRegionNorm, double radiusNorm) const;
+ 
 //    bool isGolden(int maxHoleLayers, int minNumberOfLayers);
 
     void print();
@@ -65,7 +75,9 @@ class HGCC3D : public HGChit {
  private:
 
     unsigned _firstLayer;
+    unsigned _lastLayer;
     unsigned _maxLayer;
+    unsigned _showerLength;
 
     vector<unsigned> _clusters ; // vector of HGCDetId for all the C2D
     vector<unsigned> _cells    ; // vector of HGCDetId for all the TC
@@ -73,7 +85,6 @@ class HGCC3D : public HGChit {
     HGCgen _nearestGen;
 
     float _xNorm, _yNorm;
-  
 
     ClassDef( HGCC3D,2 )
 

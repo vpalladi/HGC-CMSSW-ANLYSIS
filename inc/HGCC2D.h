@@ -32,8 +32,8 @@ class HGCC2D : public HGChit {
     void setCells(vector<unsigned> cells) ;
                                           
     /* get C2D parameters */    
-    unsigned         nCells()             ;
-    vector<unsigned> cells()              ;
+    unsigned         nCells() const;
+    vector<unsigned> cells() const ;
 
     /* HGCROC info*/
     unsigned HGCROCn();

@@ -13,6 +13,7 @@ void     HGCTC::setWafer(int wafer)         { _wafer = wafer         ; }
 void     HGCTC::setWaferType(int wafertype) { _wafertype = wafertype ; }
 void     HGCTC::setCell(int cell)           { _cell = cell           ; }
 void     HGCTC::setData(int data)           { _data = data           ; }
+void     HGCTC::setMipPt(float mipPt)       { _mipPt = mipPt         ; }
 
 /* get methods */
 int      HGCTC::zside()     const           { return _zside          ; }
@@ -20,6 +21,7 @@ int      HGCTC::wafer()     const           { return _wafer          ; }
 int      HGCTC::wafertype() const           { return _wafertype      ; }
 int      HGCTC::cell()      const           { return _cell           ; }
 unsigned HGCTC::data()      const           { return _data           ; }
+float    HGCTC::mipPt()     const           { return _mipPt          ; }
 
 /* transverse quantities */
 float HGCTC::MipT() const {   
