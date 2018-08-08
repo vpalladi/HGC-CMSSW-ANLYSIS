@@ -51,7 +51,7 @@ HGCpolarHisto<T>::HGCpolarHisto( unsigned rzNbins , double rzMin , double rzMax,
     for(unsigned i=0; i<_rzNbins; i++){
         double r1 = _rzMin+ i   *dR;
         double r2 = _rzMin+(i+1)*dR;
-        _binArea[i] = ( (phiMax-phiMin)/2. ) * ( pow(r2,2) - pow(r1,2) )  ;
+        _binArea[i] = ( (phiMax-phiMin)/(phiNbins*2.) ) * ( pow(r2,2) - pow(r1,2) )  ;
     }
 
 }
@@ -121,7 +121,7 @@ TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
         for (unsigned iphi=0; iphi<_phiNbins; iphi++) {
             
             double content = _grid[iphi][irz].getContent();
-            
+            doubel weight  = 1;
             for(int isbin=1; isbin<=nBinsSide; isbin++ ){
                 
                 int binToSumLeft = iphi;                 
@@ -135,9 +135,11 @@ TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
                 content += ( _grid[binToSumLeft][irz].getContent()  / pow( 2, isbin) ); // quadratic kernel
                 content += ( _grid[binToSumRight][irz].getContent() / pow( 2, isbin) ); // quadratic kernel
                 
+                weight += 2*(1/pow( 2, isbin))
+
             }
             
-            double area = _binArea[irz]*nBinsToSum[irz];
+            double area = _binArea[irz]*weight;
 
             _histoSums->SetBinContent(iphi+1, irz+1, content/area);
             
