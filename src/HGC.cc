@@ -17,6 +17,7 @@ HGC::HGC( TList *fileList,
     _flagC3D = flagC3D;
     _flagGen = flagGen;
     _flagGenpart = flagGenpart;
+    
     _triggerLayersOnly = triggerLayersOnly;
 
     /* Get the Chain */
@@ -54,6 +55,16 @@ HGC::HGC( TList *fileList,
         if( _chain->GetBranchStatus("gen_phi"              ) ) { _missing__gen_phi             = false; _chain->SetBranchAddress("gen_phi"             , &_gen_phi             ); } else { _missing__gen_phi            = true; cout << " HGC >> leaf GEN 'phi       ' not found." << endl; }
         if( _chain->GetBranchStatus("gen_PUNumInt"         ) ) { _missing__gen_PUNumInt        = false; _chain->SetBranchAddress("gen_PUNumInt"        , &_gen_PUNumInt        ); } else { _missing__gen_PUNumInt       = true; cout << " HGC >> leaf GEN 'PUNumInt  ' not found." << endl; }
         if( _chain->GetBranchStatus("gen_TrueNumInt"       ) ) { _missing__gen_TrueNumInt      = false; _chain->SetBranchAddress("gen_TrueNumInt"      , &_gen_TrueNumInt      ); } else { _missing__gen_TrueNumInt     = true; cout << " HGC >> leaf GEN 'TrueNumInt' not found." << endl; }
+        if( _chain->GetBranchStatus("gen_genjet_id"        ) ) { _missing__gen_genjet_id       = false; _chain->SetBranchAddress("gen_genjet_id"       , &_gen_genjet_id       ); } else { _missing__gen_genjet_id      = true; cout << " HGC >> leaf GEN 'genjet_id ' not found." << endl; }
+    }
+
+    // Generated Jets
+    if( _flagGen ){
+        if( _chain->GetBranchStatus("genjet_n"                ) ) { _missing__genjet_n               = false; _chain->SetBranchAddress("genjet_n"               , &_genjet_n               ); } else { _missing__genjet_n              = true; cout << " HGC >> leaf GENJET 'n         ' not found." << endl; }
+        if( _chain->GetBranchStatus("genjet_energy"           ) ) { _missing__genjet_energy          = false; _chain->SetBranchAddress("genjet_energy"          , &_genjet_energy          ); } else { _missing__genjet_energy         = true; cout << " HGC >> leaf GENJET 'energy    ' not found." << endl; }
+        if( _chain->GetBranchStatus("genjet_pt"               ) ) { _missing__genjet_pt              = false; _chain->SetBranchAddress("genjet_pt"              , &_genjet_pt              ); } else { _missing__genjet_pt             = true; cout << " HGC >> leaf GENJET 'pt        ' not found." << endl; }
+        if( _chain->GetBranchStatus("genjet_eta"              ) ) { _missing__genjet_eta             = false; _chain->SetBranchAddress("genjet_eta"             , &_genjet_eta             ); } else { _missing__genjet_eta            = true; cout << " HGC >> leaf GENJET 'eta       ' not found." << endl; }
+        if( _chain->GetBranchStatus("genjet_phi"              ) ) { _missing__genjet_phi             = false; _chain->SetBranchAddress("genjet_phi"             , &_genjet_phi             ); } else { _missing__genjet_phi            = true; cout << " HGC >> leaf GENJET 'phi       ' not found." << endl; }
     }
 
     // Generated Particles (track)
@@ -194,14 +205,38 @@ void HGC::getEvent( int evt ){
             if( !_missing__gen_pt         ) gen.setPt    (_gen_pt     ->at(igen) );  
             if( !_missing__gen_eta        ) gen.setEta   (_gen_eta    ->at(igen) );  
             if( !_missing__gen_phi        ) gen.setPhi   (_gen_phi    ->at(igen) );  
-            
+            if( !_missing__gen_genjet_id  ) gen.setGenjetId(_gen_genjet_id->at(igen) );  
+
             this->addGen( gen );
             this->getSubdet( gen.getEndcapId(), 0 )->addGen( gen );
             this->getSubdet( gen.getEndcapId(), 1 )->addGen( gen );
             this->getSubdet( gen.getEndcapId(), 2 )->addGen( gen );
             this->getSubdet( gen.getEndcapId(), 3 )->addGen( gen );
         }
+
     }
+
+    /*************************/
+    /* looping over Genjet */
+    if(_flagGen ){
+      
+        HGCgen genjet;
+        for( int igenjet = 0; igenjet<_genjet_n; igenjet++ ){
+
+            genjet.setId(igenjet);
+            if( !_missing__genjet_energy     ) genjet.setEnergy(_genjet_energy ->at(igenjet) );  
+            if( !_missing__genjet_pt         ) genjet.setPt    (_genjet_pt     ->at(igenjet) );  
+            if( !_missing__genjet_eta        ) genjet.setEta   (_genjet_eta    ->at(igenjet) );  
+            if( !_missing__genjet_phi        ) genjet.setPhi   (_genjet_phi    ->at(igenjet) );  
+            this->addGenjet( genjet );
+//            this->getSubdet( genjet.getEndcapId(), 0 )->addGenjet( genjet );
+//            this->getSubdet( genjet.getEndcapId(), 1 )->addGenjet( genjet );
+//            this->getSubdet( genjet.getEndcapId(), 2 )->addGenjet( genjet );
+//            this->getSubdet( genjet.getEndcapId(), 3 )->addGenjet( genjet );
+        }
+        
+    }
+
 
     /*************************/
     /* looping over Gen Part */
@@ -396,8 +431,6 @@ void HGC::getEvent( int evt ){
 //         temporary_comment     c3d.setCells(cl3d_cells);
                      
 	    }
-	    
-                
 
             /* fill the detector */
             if( c3d.Eta() > 0 )
@@ -413,12 +446,22 @@ void HGC::getEvent( int evt ){
  
 }
 
+
 void HGC::addGen(HGCgen gen){
 
-    _gen[gen.id()] = gen;
-    _genVec.push_back( &_gen[gen.id()] );
+    _gen[_genVec.size()] = gen;
+    _genVec.push_back( &_gen[_genVec.size()] );
 
 }
+
+
+void HGC::addGenjet(HGCgen genjet){
+
+    _genjet[genjet.id()] = genjet;
+    _genjetVec.push_back( &_genjet[genjet.id()] );
+
+}
+
 
 void HGC::addGenpart(HGCgenpart genpart){
 
@@ -428,8 +471,9 @@ void HGC::addGenpart(HGCgenpart genpart){
 }
 
 /* get objects by id */
-vector<HGCgen*>       HGC::getGenAll()                   { return _genVec           ; }
-vector<HGCgenpart*>   HGC::getGenpartAll()               { return _genpartVec           ; }
+vector<HGCgen*>       HGC::getGenAll()                   { return _genVec     ; }
+vector<HGCgen*>       HGC::getGenjetAll()                { return _genjetVec  ; }
+vector<HGCgenpart*>   HGC::getGenpartAll()               { return _genpartVec ; }
 
 vector<HGCgenpart*> HGC::getGenpartAllInPhiRegion(double minPhi, double maxPhi){
 
@@ -449,12 +493,71 @@ vector<HGCgenpart*> HGC::getGenpartAllInPhiRegion(double minPhi, double maxPhi){
 }
 
 
+//vector<HGCgenClu> HGC::getGenClusters(int endcapId, float ptCutGen, float clusteringNormRadius ) {
+//
+//    vector<HGCgen*>     allGen     = this->getGenAll();
+//    
+//    // preliminary gen loop (clustering)
+//    vector<HGCgenClu> genClusters;
+//    vector<HGCgen*> genToProcess;
+//    vector<HGCgen*> genProcessed;
+//    bool allGenProcessed = false;
+//            
+//    for( auto gen : allGen ) {
+//        if( gen->getEndcapId() != endcapId || // no need identified by genjetid   
+//            gen->Status() != 1 ||            // only stable particles 
+//            gen->Pt() < ptCutGen ) continue;
+//        
+//        genToProcess.push_back( gen );
+//        
+//    }
+//    
+//    while( !allGenProcessed ) {
+//        
+//        bool      genCluDone = false;
+//        HGCgenClu newGenClu;
+//                
+//        while( !genCluDone ) {
+//            
+//            bool added = false;
+//            for( auto gen : genToProcess ) {
+//                if( gen->getEndcapId() != endcapId || // no need identified by genjetid   
+//                    gen->Status() != 1 ||            // only stable particles 
+//                    gen->Pt() < ptCutGen ) continue;
+//                
+//                if( find( genProcessed.begin(), genProcessed.end(), gen) != genProcessed.end() )
+//                    continue;
+//                
+//                added = newGenClu.addGen( gen, clusteringNormRadius );
+//                
+//                if( added ) genProcessed.push_back( gen );
+//                
+//            }
+//            
+//            genCluDone = !added;
+//            //cout << genToProcess.size() << " " << genProcessed.size() << endl;
+//        }
+//        
+//        genClusters.push_back( newGenClu );
+//        
+//        if( genToProcess.size() == genProcessed.size() )
+//            allGenProcessed = true;
+//        
+//    }
+//    
+//    return genClusters;
+//
+//}
+
+
 void HGC::clear() {
 
     _gen.clear();
+    _genjet.clear();
     _genpart.clear();
 
     _genVec.clear();
+    _genjetVec.clear();
     _genpartVec.clear();
 
     _subdet[0][0]->clear();

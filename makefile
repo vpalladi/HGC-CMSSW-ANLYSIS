@@ -28,6 +28,7 @@ DIC_DIR = ./dic
 # root
 ROOT_CFLAGS = $(shell root-config --cflags)
 ROOT_GLIBS = $(shell root-config --glibs)
+ROOT_EXTRA_LIBS = -lEG # neede fot TDatabasePDG
 
 # INCLUDES
 INC += -I$(INC_DIR)
@@ -41,7 +42,7 @@ CXXFLAGS += $(INC)
 DEBUGFLAGS = -g
 
 # CXX LIBS
-CXXLIBS =  $(ROOT_GLIBS)
+CXXLIBS =  $(ROOT_GLIBS) $(ROOT_EXTRA_LIBS)
 
 
 #############
@@ -80,10 +81,10 @@ $(LIB): $(LIB_DIR)%.o: $(SRC_DIR)%.cc
 	$(CXX) $(CXXFLAGS) $(CXXLIBS) -I$(INC_DIR) -c $< -o $@
 
 clean:
-	rm -rf $(BIN_DIR)
 	rm -rf $(LIB_DIR)
 	rm -rf Dict*
 	rm -rf *.o
+	rm -rf $(BIN_DIR)
 
 init:
 	@mkdir -p $(INC_DIR)

@@ -17,7 +17,7 @@
 #include "TLorentzVector.h"
 #include "Math/Point3D.h"
 #include "TF1.h"
-
+#include "TDatabasePDG.h"
 
 using namespace std;
 
@@ -32,13 +32,14 @@ public:
 
     static int charge(int i);
 
-    void setPDGid ( int PDGid     );
-    void setId    ( int   id     );
-    void setStatus( float Status );
-    void setEnergy( float Energy );
-    void setPt    ( float Pt     );
-    void setEta   ( float Eta    );
-    void setPhi   ( float Phi    );
+    void setPDGid   ( int   PDGid  );
+    void setId      ( int   id     );
+    void setStatus  ( float Status );
+    void setEnergy  ( float Energy );
+    void setPt      ( float Pt     );
+    void setEta     ( float Eta    );
+    void setPhi     ( float Phi    );
+    void setGenjetId( int   genjetId );
 
     int   PDGid ();
     int   id    ();
@@ -47,10 +48,15 @@ public:
     float Pt    ();
     float Eta   ();
     float Phi   ();
+    int   genjetId();
+    
     float xNorm ();
     float yNorm ();
-
+    
     ROOT::Math::RhoEtaPhiPoint getZprojection( double z );
+    
+    float distanceNorm(HGCgen*);
+    float distanceEtaPhi(HGCgen*);
 
     // which endcap?
     int getEndcapId();
@@ -64,14 +70,17 @@ public:
    
 private:
 
-    int   _PDGid  ;
-    int   _id    ;
+    //int myCharge();
+
+    int   _genjetId;
+    int   _PDGid   ;
+    int   _id      ;
     float _Status;
     float _Energy; // GeV
     float _Pt    ; // GeV
     float _Eta   ;
     float _Phi   ;
-
+    
     ClassDef(HGCgen, 1);
 
 };

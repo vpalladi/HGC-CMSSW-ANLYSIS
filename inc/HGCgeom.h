@@ -3,7 +3,13 @@
 #define HGCgeom_HH
 
 #include <iostream>
+#include <vector>
+#include <map>
 
+#include <TFile.h>
+#include <TTree.h>
+
+using namespace std;
 /*
   
   units:
@@ -12,6 +18,144 @@
 
 
 */
+class geoTC {
+    
+public:
+
+    geoTC() {}
+
+    int   id         ;
+    int   zside      ;
+    int   subdet     ;
+    int   layer      ;
+    int   wafer      ;
+    int   triggercell;
+    float x          ;
+    float y          ;
+    float z          ;
+
+    int absLayer() {
+        int absLayer = -1;
+        if( subdet == 3 )
+            absLayer = layer;
+        else if( subdet == 4 )
+            absLayer = layer+12;
+        else if( subdet == 5 )
+            absLayer = layer+24;
+        return absLayer;
+    }
+    
+    double r() {
+        double r = sqrt( pow(this->x, 2) + pow(this->y, 2) );
+        return r;
+    }
+
+    double phi() {
+        double phi = atan2( this->y, this->x );
+        return phi;
+    }
+    
+    uint32_t r(int nbits, double offset, double min, double max) {
+        uint32_t mask = 0;
+        for(int i=0; i<32; i++)
+            mask = mask | (1<<i);
+        double delta = abs(max-min)/pow(2,nbits);
+        uint32_t r = (this->r()+offset)/delta;
+        return (r & mask);
+    }
+
+    uint32_t rz(int nbits, double offset, double min, double max) {
+        uint32_t mask = 0;
+        for(int i=0; i<32; i++)
+            mask = mask | (1<<i);
+        double delta = abs(max-min)/pow(2,nbits);
+        uint32_t rz = (this->r()/abs(z)+offset)/delta;
+        return (rz & mask);
+    }
+
+    uint32_t phi(int nbits, double offset, double min, double max) {
+        uint32_t mask = 0;
+        for(int i=0; i<32; i++)
+            if(i<nbits)
+                mask = mask | (1<<i);
+        double delta = abs(max-min)/pow(2,nbits);
+        uint32_t phi = (this->phi()+offset)/delta;
+        
+        return (phi & mask);
+    }
+
+};
+
+
+class geoWafer {
+
+public:
+
+    geoWafer() {
+        _id = -1;
+    }
+
+    geoWafer(geoTC tc) {
+        this->addTC(tc);
+        _id = tc.id;
+    }
+
+    int id(){ 
+        return _id; 
+    }
+
+    void addTC(geoTC tc) {
+        _tcs.push_back(tc);
+    }
+
+    vector<geoTC> getTCs() {
+        return _tcs;
+    }
+
+    double x() { 
+        double x=0;
+        for(auto tc : _tcs) 
+            x += tc.x;
+        x = x/_tcs.size(); 
+        return x;
+    }
+
+    double y() { 
+        double y=0;
+        for(auto tc : _tcs) 
+            y += tc.y;
+        y = y/_tcs.size(); 
+        return y;
+
+    }
+
+    double r() {
+        double r = sqrt( pow(this->x(), 2) + pow(this->y(), 2) );
+        return r;
+    }
+
+    double phi() {
+        double phi = atan2( this->y(), this->x() );
+        return phi;
+    }
+
+    bool isFullyContainedInPhiSector(double phiMin, double phiMax) {
+
+        for( auto tc : _tcs )
+            if( tc.phi()<phiMin || tc.phi()>phiMax )
+                return false;
+        return true;
+
+    }
+    
+private:
+
+    int _id;
+
+    vector<geoTC> _tcs;
+
+};
+
 
 class HGCgeom {
 
@@ -25,7 +169,13 @@ private:
 
 public:
 
-    ~HGCgeom() {}
+    ~HGCgeom() {
+        
+        for( unsigned iendcap=0; iendcap<_nEndcaps; iendcap++ )
+            delete[] _wafers[iendcap];
+        delete[] _wafers;
+        
+    }
     
     static HGCgeom* instance();
 
@@ -92,16 +242,78 @@ public:
             _isTriggerLayer[ilayer+fistBHlayer] = true;
         }
 
-        //std::cout << " *** GEOMETRY *** " << std::endl;
-        //for(unsigned ilayer=1; ilayer<nLayers; ilayer++) { 
-        //
-        //    std::cout << " Layer " << ilayer << " is at " << layerZ[ilayer];
-        //    if( isTriggerLayer[ilayer] )  std::cout << " and is a trigger layer"     << std::endl;
-        //    else                           std::cout << " and is NOT a trigger layer" << std::endl;
-        //      
-        //}
-   
+        /* wafer and TC */
+
+        TFile fIn("test_triggergeom.root", "read");
+
+        _wafers = new map< unsigned, geoWafer >*[_nEndcaps];
+        for( unsigned iendcap=0; iendcap<_nEndcaps; iendcap++ )
+            _wafers[iendcap] = new map< unsigned, geoWafer >[_nLayers];
+
+        TTree* t = (TTree*)fIn.Get("hgcaltriggergeomtester/TreeTriggerCells");  
+        unsigned nEnt = t->GetEntries();
+        
+        int   id         ;
+        int   zside      ;
+        int   subdet     ;
+        int   layer      ;
+        int   wafer      ;
+        int   triggercell;
+        float x          ;
+        float y          ;
+        float z          ;
+        
+        t->SetBranchAddress("id"         , &id         );
+        t->SetBranchAddress("zside"      , &zside      );
+        t->SetBranchAddress("subdet"     , &subdet     );
+        t->SetBranchAddress("layer"      , &layer      );
+        t->SetBranchAddress("wafer"      , &wafer      );
+        t->SetBranchAddress("triggercell", &triggercell);
+        t->SetBranchAddress("x"          , &x          );
+        t->SetBranchAddress("y"          , &y          );
+        t->SetBranchAddress("z"          , &z          );
+     
+        
+        for( unsigned ient=0; ient<nEnt; ient++ ) {
+            
+            t->GetEntry(ient);
+            
+            geoTC tc;
+            tc.id          = id         ;
+            tc.zside       = zside      ;
+            tc.subdet      = subdet     ;
+            tc.layer       = layer      ;
+            tc.wafer       = wafer      ;
+            tc.triggercell = triggercell;
+            tc.x           = x          ;
+            tc.y           = y          ;
+            tc.z           = z          ;
+            
+            int iendcap = zside > 0 ? 0 : 1;
+            
+            if( _wafers[iendcap][layer].find( wafer ) == _wafers[iendcap][layer].end() ) {
+                
+                geoWafer w(tc);
+                _wafers[iendcap][tc.absLayer()][wafer] = w;
+                
+            }
+            else {
+                
+                _wafers[iendcap][tc.absLayer()][wafer].addTC( tc );
+                
+            }
+            
+        }
+        
     }
+
+    
+    map< unsigned, geoWafer > getWafers( unsigned endcap, unsigned layer) {
+
+        return _wafers[endcap][layer]; 
+        
+    }
+
 
     double getSectionStart(int iendcap, int isection) {
         if( iendcap == 0 ) {
@@ -209,6 +421,8 @@ private:
     unsigned _nLayersFH;
     unsigned _nLayersBH;
     unsigned _nLayers;  
+
+    map< unsigned, geoWafer > **_wafers;
     
 };
 

@@ -49,15 +49,19 @@ public:
 
     /* add */
     void addGen    ( HGCgen gen );
+    void addGenjet ( HGCgen genjet );
     void addGenpart( HGCgenpart genpart );
-  
+    
     /* get */
     vector<HGCgen*> getGenAll();
+    vector<HGCgen*> getGenjetAll();
     vector<HGCgenpart*> getGenpartAll();
 
     void getTDall( vector<HGCROC> &data );
 
     vector<HGCgenpart*> getGenpartAllInPhiRegion(double minPhi, double maxPhi);
+
+//    vector<HGCgenClu> getGenClusters(int endcapId, float ptCutGen, float clusteringNormRadius );
 
     void clear();
 
@@ -85,6 +89,7 @@ private:
     vector<float>  *_gen_pt        = 0;
     vector<float>  *_gen_eta       = 0;
     vector<float>  *_gen_phi       = 0;
+    vector<int>    *_gen_genjet_id = 0;
     int             _gen_PUNumInt     ;
     float           _gen_TrueNumInt   ;
 
@@ -95,8 +100,22 @@ private:
     bool _missing__gen_pt             ;
     bool _missing__gen_eta            ;
     bool _missing__gen_phi            ;
+    bool _missing__gen_genjet_id       ;
     bool _missing__gen_PUNumInt       ;
     bool _missing__gen_TrueNumInt     ;
+
+    // generated Jets
+    int             _genjet_n            ;
+    vector<float>  *_genjet_energy    = 0;
+    vector<float>  *_genjet_pt        = 0;
+    vector<float>  *_genjet_eta       = 0;
+    vector<float>  *_genjet_phi       = 0;
+
+    bool _missing__genjet_n              ;
+    bool _missing__genjet_energy         ;
+    bool _missing__genjet_pt             ;
+    bool _missing__genjet_eta            ;
+    bool _missing__genjet_phi            ;
 
     // Generated Particles (tracks)
     vector<float> *_genpart_eta           = 0 ; // track momentum eta
@@ -232,10 +251,12 @@ private:
 
     /* mapping all the GEN and GENPART */
     map<unsigned,HGCgen>     _gen;
+    map<unsigned,HGCgen>     _genjet;
     map<unsigned,HGCgenpart> _genpart;  
     
     /* ordered preserved, needed fo storage purposes */
     vector<HGCgen*>     _genVec;
+    vector<HGCgen*>     _genjetVec;
     vector<HGCgenpart*> _genpartVec;
 
     ClassDef(HGC, 1);

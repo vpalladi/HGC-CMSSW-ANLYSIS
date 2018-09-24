@@ -28,17 +28,17 @@ class HGChit : public TObject {
     ~HGChit();
 
     /* set hit parameters */
-    void setId(unsigned id)               ;
-    void setSubdet(int subdet)            ;
-    void setEnergy(float energy)          ;
-    void setEta(float eta)                ;
-    void setPhi(float phi)                ;
-    void setX(float x)                    ;
-    void setY(float y)                    ;
-    void setZ(float z)                    ;
-    void setLayer(int layer)              ;    
-    void setPt(float pt)                  ;
-    void setIsTrigger(bool var)           ;
+    void setId(unsigned id)      ;
+    void setSubdet(int subdet)   ;
+    void setEnergy(float energy) ;
+    void setEta(float eta)       ;
+    void setPhi(float phi)       ;
+    void setX(float x)           ;
+    void setY(float y)           ;
+    void setZ(float z)           ;
+    void setLayer(int layer)     ;    
+    void setPt(float pt)         ;
+    void setIsTrigger(bool var)  ;
 
     /* get hit parameters */    
     unsigned  id()       const     ;

@@ -6,111 +6,111 @@ HGCpolarHisto<T>::HGCpolarHisto() {
 
 }
 
-template<class T>
-HGCpolarHisto<T>::HGCpolarHisto( unsigned rzNbins , double rzMin , double rzMax, 
-                                 unsigned phiNbins, double phiMin, double phiMax 
-    ){
-
-    _rzNbins = rzNbins; 
-    _phiNbins = phiNbins; 
-
-    _rzMin = rzMin; 
-    _phiMin = phiMin; 
-    _rzMax = rzMax; 
-    _phiMax = phiMax; 
-
-    _rzBinWidth  = (_rzMax-_rzMin) / _rzNbins; 
-    _phiBinWidth = (_phiMax-_phiMin) / _phiNbins; 
-
-    _histo = new TH2D("histo", "histo", 
-                      _phiNbins, _phiMin, _phiMax,
-                      _rzNbins , _rzMin , _rzMax
-        );
-
-    _histoSums = new TH2D("histoSums", "histoSums", 
-                          _phiNbins, _phiMin, _phiMax,
-                          _rzNbins , _rzMin , _rzMax
-        );
-
-    _histoMaxima = new TH2D("histoMaxima", "histoMaxima", 
-                            _phiNbins, _phiMin, _phiMax,
-                            _rzNbins , _rzMin , _rzMax
-        );
-    
-    _graph = new TGraph();
-
-    _grid = new HGCbin*[_phiNbins];
-
-    for (unsigned i=0; i<_phiNbins ; i++)
-        _grid[i] = new HGCbin[_rzNbins];
-
-    _binArea = new double[_rzNbins];
-
-
-    double dR = (_rzMax-_rzMin)/_rzNbins;
-    for(unsigned i=0; i<_rzNbins; i++){
-        double r1 = _rzMin+ i   *dR;
-        double r2 = _rzMin+(i+1)*dR;
-        _binArea[i] = ( (phiMax-phiMin)/(phiNbins*2.) ) * ( pow(r2,2) - pow(r1,2) )  ;
-    }
-
-}
-
-
-template<class T>
-HGCpolarHisto<T>::~HGCpolarHisto() { 
-    
-    delete _histo;
-    delete _histoSums;
-    delete _histoMaxima;
-    delete _graph;
-
-    for (unsigned i=0; i<_phiNbins ; i++)
-        delete[] _grid[i];
-
-    delete[] _grid;
-    delete[] _binArea;
-
-}
-
-template<class T>
-void HGCpolarHisto<T>::addPoint(const T hit) {
-
-    double phi = hit.Phi();
-    double r   = hit.r();
-    double z   = hit.z();
-    double rz  = r/abs(z);
-
-    unsigned rzBinId  = floor( ( rz - _rzMin ) / _rzBinWidth );
-    unsigned phiBinId = floor( ( phi - _phiMin ) / _phiBinWidth );
-
-//    cout << "r/z  "   << r/z     << " - p " << phi << endl;
-//    cout << "br/z "   << rzBinId << " - p " << phiBinId << endl;
-//    cout << phiBinId  << " "     << rzBinId << endl;
+//template<class T>
+//HGCpolarHisto<T>::HGCpolarHisto( unsigned rzNbins , double rzMin , double rzMax, 
+//                                 unsigned phiNbins, double phiMin, double phiMax 
+//    ){
 //
-    if( phiBinId < _phiNbins && rzBinId < _rzNbins){
-        //_histo->Fill( phi, rz, hit.Energy());
-        _grid[phiBinId][rzBinId].addContent( hit.Energy(), hit.id() );
-    }
-    else
-        cout << " >>> HGCpolarHisto: bin Id out of range." << endl;
-    _graph->SetPoint( _graph->GetN(), phi, rz);
+//    _rzNbins = rzNbins; 
+//    _phiNbins = phiNbins; 
+//
+//    _rzMin = rzMin; 
+//    _phiMin = phiMin; 
+//    _rzMax = rzMax; 
+//    _phiMax = phiMax; 
+//
+//    _rzBinWidth  = (_rzMax-_rzMin) / _rzNbins; 
+//    _phiBinWidth = (_phiMax-_phiMin) / _phiNbins; 
+//
+//    _histo = new TH2D("histo", "histo", 
+//                      _phiNbins, _phiMin, _phiMax,
+//                      _rzNbins , _rzMin , _rzMax
+//        );
+//
+//    _histoSums = new TH2D("histoSums", "histoSums", 
+//                          _phiNbins, _phiMin, _phiMax,
+//                          _rzNbins , _rzMin , _rzMax
+//        );
+//
+//    _histoMaxima = new TH2D("histoMaxima", "histoMaxima", 
+//                            _phiNbins, _phiMin, _phiMax,
+//                            _rzNbins , _rzMin , _rzMax
+//        );
+//    
+//    _graph = new TGraph();
+//
+//    _grid = new HGCbin*[_phiNbins];
+//
+//    for (unsigned i=0; i<_phiNbins ; i++)
+//        _grid[i] = new HGCbin[_rzNbins];
+//
+//    _binArea = new double[_rzNbins];
+//
+//
+//    double dR = (_rzMax-_rzMin)/_rzNbins;
+//    for(unsigned i=0; i<_rzNbins; i++){
+//        double r1 = _rzMin+ i   *dR;
+//        double r2 = _rzMin+(i+1)*dR;
+//        _binArea[i] = ( (phiMax-phiMin)/(phiNbins*2.) ) * ( pow(r2,2) - pow(r1,2) )  ;
+//    }
+//
+//}
 
-    _hitsMap[hit.id()] = hit;
-    _hits.push_back( &(_hitsMap[hit.id()]) );
- 
-}
 
-template<class T>
-TH2D* HGCpolarHisto<T>::getHisto() {
+//template<class T>
+//HGCpolarHisto<T>::~HGCpolarHisto() { 
+//    
+//    delete _histo;
+//    delete _histoSums;
+//    delete _histoMaxima;
+//    delete _graph;
+//
+//    for (unsigned i=0; i<_phiNbins ; i++)
+//        delete[] _grid[i];
+//
+//    delete[] _grid;
+//    delete[] _binArea;
+//
+//}
 
-    for (unsigned iphi=0; iphi<_phiNbins; iphi++)
-        for (unsigned irz=0; irz<_rzNbins; irz++)
-            _histo->SetBinContent( iphi+1, irz+1, _grid[iphi][irz].getContent() );
-
-    return _histo;
-
-}
+//template<class T>
+//void HGCpolarHisto<T>::addPoint(const T hit) {
+//
+//    double phi = hit.Phi();
+//    double r   = hit.r();
+//    double z   = hit.z();
+//    double rz  = r/abs(z);
+//
+//    unsigned rzBinId  = floor( ( rz - _rzMin ) / _rzBinWidth );
+//    unsigned phiBinId = floor( ( phi - _phiMin ) / _phiBinWidth );
+//
+////    cout << "r/z  "   << r/z     << " - p " << phi << endl;
+////    cout << "br/z "   << rzBinId << " - p " << phiBinId << endl;
+////    cout << phiBinId  << " "     << rzBinId << endl;
+////
+//    if( phiBinId < _phiNbins && rzBinId < _rzNbins){
+//        //_histo->Fill( phi, rz, hit.Energy());
+//        _grid[phiBinId][rzBinId].addContent( hit.Energy(), hit.id() );
+//    }
+//    else
+//        cout << " >>> HGCpolarHisto: bin Id out of range." << endl;
+//    _graph->SetPoint( _graph->GetN(), phi, rz);
+//
+//    _hitsMap[hit.id()] = hit;
+//    _hits.push_back( &(_hitsMap[hit.id()]) );
+// 
+//}
+//
+//template<class T>
+//TH2D* HGCpolarHisto<T>::getHisto() {
+//
+//    for (unsigned iphi=0; iphi<_phiNbins; iphi++)
+//        for (unsigned irz=0; irz<_rzNbins; irz++)
+//            _histo->SetBinContent( iphi+1, irz+1, _grid[iphi][irz].getContent() );
+//
+//    return _histo;
+//
+//}
 
 template<class T>
 TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
@@ -121,7 +121,7 @@ TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
         for (unsigned iphi=0; iphi<_phiNbins; iphi++) {
             
             double content = _grid[iphi][irz].getContent();
-            doubel weight  = 1;
+            double weight  = 1;
             for(int isbin=1; isbin<=nBinsSide; isbin++ ){
                 
                 int binToSumLeft = iphi;                 
@@ -135,7 +135,7 @@ TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
                 content += ( _grid[binToSumLeft][irz].getContent()  / pow( 2, isbin) ); // quadratic kernel
                 content += ( _grid[binToSumRight][irz].getContent() / pow( 2, isbin) ); // quadratic kernel
                 
-                weight += 2*(1/pow( 2, isbin))
+                weight += 2*(1/pow( 2, isbin));
 
             }
             

@@ -277,8 +277,8 @@ HGCC3Dgen HGCsubdet::getGenC3D(double radius) {
 
     HGCC3Dgen genC3D;
 
-    vector<const HGCC2D*> c2ds = getAll<HGCC2D>();
-    vector<HGCgen*>       gens = getGenAll();
+    vector<const HGCC2D*> c2ds = this->getAll<HGCC2D>();
+    vector<HGCgen*>       gens = this->getGenAll();
     
     for(std::vector<const HGCC2D*>::iterator c2d=c2ds.begin(); c2d!=c2ds.end(); c2d++) {
 
@@ -358,6 +358,73 @@ void HGCsubdet::getC2DallInPhiRegion( double minPhi, double maxPhi, TGraph &grap
 //    _tree->Write();
 //
 //}
+
+vector<HGCgenClu> HGCsubdet::getGenClusters( float ptCutGen, float clusteringNormRadius ) {
+
+    vector<HGCgen*>     allGen     = this->getGenAll();
+    
+    // preliminary gen loop (clustering)
+    vector<HGCgenClu> genClusters;
+    vector<HGCgen*>   genToProcess;
+    vector<HGCgen*>   genProcessed;
+    bool allGenProcessed = false;
+            
+    for( auto gen : allGen ) {
+        if( gen->Status() != 1 ||            // only stable particles 
+            gen->Pt() < ptCutGen ) continue;
+        
+        genToProcess.push_back( gen );
+        
+    }
+    
+    while( !allGenProcessed ) {
+        
+        bool      genCluDone = false;
+        HGCgenClu newGenClu;
+                
+        while( !genCluDone ) {
+            
+            bool added = false;
+            for( auto gen : genToProcess ) {
+                if( gen->Status() != 1 ||            // only stable particles 
+                    gen->Pt() < ptCutGen ) continue;
+                
+                if( find( genProcessed.begin(), genProcessed.end(), gen) != genProcessed.end() )
+                    continue;
+                
+                added = newGenClu.addGen( gen, clusteringNormRadius );
+                
+                if( added ) genProcessed.push_back( gen );
+                
+            }
+            
+            genCluDone = !added;
+        }
+        
+        genClusters.push_back( newGenClu );
+        
+        if( genToProcess.size() == genProcessed.size() )
+            allGenProcessed = true;
+        
+    }
+    
+    return genClusters;
+
+}
+
+
+HGCpolarHisto<HGCgenClu> HGCsubdet::getPolarGenClu( float ptCutGen, float clusteringNormRadius ) {
+        
+    HGCpolarHisto<HGCgenClu> polarGrid( 36, 0.1, 0.52, 216, -TMath::Pi(), TMath::Pi() );
+    
+    vector<HGCgenClu> hits = this->getGenClusters( ptCutGen, clusteringNormRadius );
+
+    for( auto hit : hits ) 
+        polarGrid.addPoint( hit );
+
+    return polarGrid;
+
+}
 
 
 /* clear */

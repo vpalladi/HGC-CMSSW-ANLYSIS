@@ -2,35 +2,35 @@
 /* C++ */
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include <stdlib.h>
-#include <fstream>
 #include <getopt.h>
 
 /* ROOT */
-#include <TString.h>
-#include <TFile.h>
-#include <TChain.h>
-#include <TTree.h>
-#include <TApplication.h>
-#include <TH1.h>
-#include <TH2.h>
-#include <TGraph.h>
-#include <TMultiGraph.h>
-#include <TCanvas.h>
-#include <TList.h>
-#include <TF1.h>
-#include <TLine.h>
-
+//#include <TString.h>
+//#include <TFile.h>
+//#include <TChain.h>
+//#include <TTree.h>
+//#include <TApplication.h>
+//#include <TH1.h>
+//#include <TH2.h>
+//#include <TGraph.h>
+//#include <TMultiGraph.h>
+//#include <TCanvas.h>
+//#include <TList.h>
+//#include <TF1.h>
+//#include <TLine.h>
+//
 /* myIncludes*/
 #include "HGCgeom.h"
-#include "HistoContainer.h"
+//#include "HistoContainer.h"
 #include "HGC.h"
 #include "HGCTC.h"
 #include "HGCC2D.h"
 #include "HGCROC.h"
 //#include "Ntuplizer.h"
-#include "HGCht.h"
-#include "HGCpolarHisto_T.h"
+//#include "HGCht.h"
+//#include "HGCpolarHisto_T.h"
 
 #include "MP7gen.h"
 
@@ -38,7 +38,7 @@ using namespace std;
 
 
 /* some handy functions */
-bool isIndexEven(){
+bool isIndexEven(HGCTC i){
 
     static int index = 0;
 
@@ -50,11 +50,11 @@ bool isIndexEven(){
 }
 
 
-bool isIndexOdd(){
+bool isIndexOdd(HGCTC i){
 
     static int index = 0;
 
-    if( index++ % 2 == 1 )
+    if( index++ % 2 !=0 )
         return true;
     else
         return false;
@@ -64,8 +64,8 @@ bool isIndexOdd(){
 
 bool sortByRZ (HGCTC a, HGCTC b) { 
     
-    float A = a.r()/a.z();
-    float B = b.r()/b.z(); 
+    float A = a.r()/abs(a.z());
+    float B = b.r()/abs(b.z()); 
 
     return (A<B); 
 
@@ -98,6 +98,7 @@ const bool flagGenPart = false;
 //const bool flagHistos = false;
 const bool flagNtuple = false;
 
+const unsigned nLinks = 72;
 
 
 int main(int argc, char **argv){
@@ -107,7 +108,7 @@ int main(int argc, char **argv){
 
     // files and event control
     TString inputFileName;
-    TString outputFileName("tmp.root");
+    string  outputFileName("tmp.root");
     int iEvt = 0;
     
     // graphics
@@ -179,9 +180,7 @@ int main(int argc, char **argv){
     double pi = TMath::Pi();
     double dPhi = ( 2*pi )/( nPhiSectors ); // NO overlap
     for(unsigned isector=0; isector<nPhiSectors; isector++){
-        
-        
-        
+
         minPhis[isector] = - pi + dPhi * (isector) ; // NO overlap
         maxPhis[isector] = - pi + dPhi * (isector+1) ;
 
@@ -258,156 +257,80 @@ int main(int argc, char **argv){
             layer_link[iw][il] = (layer_link[iw-1][il] == -1) ? -1 : (layer_link[iw-1][il]+1);
                 
 
-    /********************/
-    /* Loop Over Events */    
-
     /* Get Entry */
     detector.getEvent( iEvt );
-    
         
     /********************/
-    /* looping over TCs */
-    if( detector.areTCpresent() ){
-            
-        /* endcap loop */
-        for(unsigned iendcap=0; iendcap<2; iendcap++) {
-
-            HGCsubdet* subdetector = detector.getSubdet(iendcap, 3);
-
-            vector<HGCTC> data_tc[3][72]; // 3 120deg wedges times 72 links
-            
-            /* sector loop */
-            for(unsigned isector=0; isector<nPhiSectors; isector++){
-                /* get tcs vector */
-                vector<const HGCTC*> tcs = subdetector->getAllInRegion<HGCTC>( 0, std::numeric_limits<double>::max(), 
-                                                                               minPhis[isector], 
-                                                                               maxPhis[isector]
-                    );
-                vector<const HGCC2D*> c2ds = subdetector->getAllInRegion<HGCC2D>( 0, std::numeric_limits<double>::max(), 
-                                                                                  minPhis[isector], 
-                                                                                  maxPhis[isector]
-                    );
-                
-                /* TCs LOOP */
-                unsigned nTC = tcs.size();
-                for( unsigned itc=0; itc<nTC; itc++ ){
-                    
-                    /* get the trigger cell */
-                    const HGCTC* tc = tcs.at(itc);
-                    
-                    if( layer_link[0][tc->layer()] == -1 )
-                        continue;
-                    
-                    int layer = tc->layer(); 
-                    int wedge = sector_wedge[isector];
-
-                    int link0 = layer_link[ 2*isector%8 ][ layer ];
-                    int link1 = layer_link[ 2*isector%8+1 ][ layer ];
-                    //int len0 = data_tc[ wedge ][ link0 ].size();
-                    //int len1 = data_tc[ wedge ][ link1 ].size();
-                    
-                    
-//                    int link = 0;
-//                    if( len0==len1 ) {
-//                        link = layer_link[ 2*isector%8 ][ layer ];
-//                    } 
-//                    else {
-//                        link = layer_link[ 2*isector%8+1 ][ layer ];
-//                    }
-                   
-                    data_tc[ wedge ][ link0 ].push_back(*tc);
-                    data_tc[ wedge ][ link1 ].push_back(*tc);
-
-                }// end loop tc
-
-//                /* C2Ds LOOP */
-//                unsigned nC2D = c2ds.size();
-//                for( unsigned ic2d=0; ic2d<nC2D; ic2d++ ){
-//                    
-//                    /* get the trigger cell */
-//                    const HGCC2D* c2d = c2ds.at(ic2d);
-//                   
-//                    cout << " c2d layer " << c2d->layer() << endl;
-// 
-//                }// end loop c2d
-                
-            }// end encap loop
-            
-            /* sorting according to rz */
-            //for(unsigned iwedge=0; iwedge<3; iwedge++)
-            //    for(unsigned ilink=0; ilink<3; ilink++)
-            //        std::sort( data_tc[iwedge][ilink].begin(), 
-            //                   data_tc[iwedge][ilink].end(),
-            //                   sortByRZ
-            //            );
-            
-            /* split data over 2 links removing evey second odd/even (for odd/even link) data */
-            for(unsigned iwedge=0; iwedge<3; iwedge++)
-                for(unsigned ilink=0; ilink<3; ilink++){
-                    cout << "LINK " << ilink << endl;
-                    cout << "before " << endl;
-                    for( auto data : data_tc[iwedge][ilink] )
-                        cout << (data.r()/data.z()) << endl;
-                    cout << "****** " << endl;
-
-                    
-                    if( ilink % 2==0 ){
-                        
-                        data_tc[iwedge][ilink].erase( std::remove_if( data_tc[iwedge][ilink].begin(), data_tc[iwedge][ilink].end(),
-                                                                      isIndexEven ), data_tc[iwedge][ilink].end());
-                        
-                    }
-                    else {
-
-//                        data_tc[iwedge][ilink].erase( std::remove_if( data_tc[iwedge][ilink].begin(), data_tc[iwedge][ilink].end(),
-//                                                                      isIndexOdd ), data_tc[iwedge][ilink].end());                        
- 
-                   }
-                    
-
-                    cout << "after " << endl;
-                    for( auto data : data_tc[iwedge][ilink] )
-                        cout << (data.r()/data.z()) << endl;
-                    cout << "****** " << endl;
-
-
-                }
-                    
-
-
-            MP7gen<HGCTC> mp7tc("tc.mp7", data_tc[0]);
-
-
-        }// end TCs LOOP
+    /* looping over endcaps */
+    
+    /* endcap loop */
+    for(unsigned iendcap=0; iendcap<2; iendcap++) {
         
-    }// end TCs
-    
-    
-    /************************/
-    /* looping over the C2D */
-//    if( detector.areC2Dpresent() ) {
-//        
-//        /* endcap loop */
-//        for(unsigned iendcap=0; iendcap<HGCgeom::instance()->nEndcaps(); iendcap++) {
-//            
-//            /* get subdetector */
-//            HGCsubdet* subdetector = detector.getSubdet(iendcap, 3);
-//            
-//            /* loop over PHI sectors */                    
-//            for(unsigned isector=0; isector<nPhiSectors; isector++){
-//                
-////                subdetector->getC2DallInPhiRegion( minPhis[isector], maxPhis[isector], gC2DxyPhi );
-////                
-////                if( isection ==3 ) {
-////                    
-////                    
-////                } // end only section 3  
-//                
-//            } // endl loop over sectors
-//            
-//        } // end loop over endcaps
-//    
-//    } // end c2d
+        HGCsubdet* subdetector = detector.getSubdet(iendcap, 3);
+        
+        vector<HGCTC> data_tc[3][nLinks]; // 3 120deg wedges times nLinks links
+            
+        /* sector loop */
+        for(unsigned isector=0; isector<nPhiSectors; isector++){
+            /* get tcs and c2ds vectors */
+            vector<const HGCTC*>   tcs = subdetector->getAllInRegion<HGCTC> ( 0, std::numeric_limits<double>::max(), 
+                                                                              minPhis[isector], maxPhis[isector] );
+            vector<const HGCC2D*> c2ds = subdetector->getAllInRegion<HGCC2D>( 0, std::numeric_limits<double>::max(), 
+                                                                              minPhis[isector], maxPhis[isector] );
+
+            /* TCs LOOP */
+            unsigned nTC = tcs.size();
+            for( unsigned itc=0; itc<nTC; itc++ ){
+                    
+                /* get the trigger cell */
+                const HGCTC* tc = tcs.at(itc);
+                    
+                if( layer_link[0][tc->layer()] == -1 )
+                    continue;
+                    
+                int layer = tc->layer(); 
+                int wedge = sector_wedge[isector];
+
+                int link0 = layer_link[ 2*isector%8 ][ layer ];
+                int link1 = layer_link[ 2*isector%8+1 ][ layer ];
+               
+                data_tc[ wedge ][ link0 ].push_back(*tc);
+                data_tc[ wedge ][ link1 ].push_back(*tc);
+
+            }// end loop tc
+           
+        }// end sector loop
+
+        /* sorting and split data over 2 links removing evey second odd/even (for odd/even link) data */
+        for(unsigned iwedge=0; iwedge<3; iwedge++) {
+            for(unsigned ilink=0; ilink<nLinks; ilink++){
+                
+                // sorting
+                std::sort( data_tc[iwedge][ilink].begin(), data_tc[iwedge][ilink].end(),sortByRZ );
+                
+                // split data
+                if( ilink % 2==0 ) data_tc[iwedge][ilink].erase( std::remove_if( data_tc[iwedge][ilink].begin(), data_tc[iwedge][ilink].end(),
+                                                                                 isIndexOdd ), data_tc[iwedge][ilink].end());
+                else  data_tc[iwedge][ilink].erase( std::remove_if( data_tc[iwedge][ilink].begin(), data_tc[iwedge][ilink].end(),
+                                                                    isIndexEven ), data_tc[iwedge][ilink].end());                        
+                
+            } // end link loop
+        } // end wedge loop
+        
+        
+        for(int iw=0; iw<3; iw++){
+                
+            stringstream oName ;
+            oName << outputFileName 
+                  << "Endcap" << Form("%d", iendcap) 
+                  << "Wedge"  << Form("%d", iw) 
+                  << ".mp7";
+            cout << oName.str() << endl;
+            MP7gen<HGCTC> mp7tc( oName.str().c_str(), data_tc[iw]);
+                
+        }
+            
+    }// end endcap loop
 
     return 0;
 

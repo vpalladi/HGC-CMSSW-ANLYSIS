@@ -16,6 +16,7 @@
 #include "HGCforest.h"
 #include "HGCsingleC3D.h"
 #include "HGCC3Dgen.h"
+#include "HGCgenClu.h"
 //#include "HGCpolarHisto.h"
 #include "HGCpolarHisto_T.h"
 
@@ -38,7 +39,7 @@ public:
 
     /* add */
     template<class T>
-    void add     ( T t );
+    void add       ( T t );
     void addGen    ( HGCgen gen );
 
     /* get */
@@ -109,7 +110,6 @@ public:
         return polarGrid;    
     }
     
-
     /* HOUGH transform */
     HGCht getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 
                                 int nRowsRho, double rhoMin, double rhoMax, 
@@ -123,6 +123,10 @@ public:
     /* fill and save tree */
 //    void fillTree();    
 //    void saveTree(TFile* f);
+
+    vector<HGCgenClu> getGenClusters( float ptCutGen, float clusteringNormRadius );
+    
+    HGCpolarHisto<HGCgenClu> getPolarGenClu( float ptCutGen, float clusteringNormRadius );
 
     /* clear */
     void clear();
