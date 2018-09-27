@@ -113,7 +113,7 @@ HGCpolarHisto<T>::HGCpolarHisto() {
 //}
 
 template<class T>
-TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
+TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum, bool smear ) {
     
     for (unsigned irz=0; irz<_rzNbins; irz++) {
         int nBinsSide = (nBinsToSum[irz]-1)/2;
@@ -141,8 +141,9 @@ TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
             
             double area = _binArea[irz]*weight;
 
-            _histoSums->SetBinContent(iphi+1, irz+1, content/area);
-            
+	    if ( smear )   _histoSums->SetBinContent(iphi+1, irz+1, content/area);
+	    if ( !smear ) _histoSums->SetBinContent(iphi+1, irz+1, _grid[iphi][irz].getContent());
+
         }
     }
     
@@ -171,14 +172,13 @@ TH2D* HGCpolarHisto<T>::getHistoSums( unsigned *nBinsToSum ) {
 
 
 template<class T>
-TH2D* HGCpolarHisto<T>::getHistoMaxima( unsigned *nBinsToSum ) {
+void HGCpolarHisto<T>::getDefaultMaximum( unsigned *nBinsToSum ) {
 
-    /* filling _histoSums */
-    this->getHistoSums( nBinsToSum );
 
-    /* searching for maxima */
-    for (unsigned irz=0; irz<_rzNbins; irz++) {
-
+  
+  /* searching for maxima */
+  for (unsigned irz=0; irz<_rzNbins; irz++) {
+    
         double rows[_phiNbins][3];
         
         for (unsigned iphi=0; iphi<_phiNbins; iphi++) {
@@ -202,11 +202,12 @@ TH2D* HGCpolarHisto<T>::getHistoMaxima( unsigned *nBinsToSum ) {
         }
 
         int nBinsSide = nBinsToSum[irz]-1/2;
-
+  
         for (unsigned iphi=0; iphi<_phiNbins; iphi++) {
             
             bool isMaxima = true;
-            double centralValue = rows[iphi][1];
+	    
+            double centralValue = rows[iphi][1];	    
 
             if( !( centralValue > rows[iphi][2] ) || !( centralValue >= rows[iphi][0] ) ) 
                 isMaxima = false;
@@ -237,45 +238,125 @@ TH2D* HGCpolarHisto<T>::getHistoMaxima( unsigned *nBinsToSum ) {
                 }
             }
                         
-            if( isMaxima ){
-                
-                _histoMaxima->SetBinContent(iphi+1, irz+1, rows[iphi][1]);
-                
-                vector<unsigned> idsBin = _grid[iphi][irz].getIds();
-                
-                maximaT maxima(0.,0.);
-                
-                for( auto id : idsBin ){
-                    T *hit = &(_hitsMap[id]);
-                                       
-                    maxima.first = maxima.first + hit->xNorm(); 
-                    maxima.second = maxima.second + hit->yNorm();
-                    
-                }
-              
-                if( idsBin.size() == 0 ) continue;
-                maxima.first = maxima.first / idsBin.size(); 
-                maxima.second = maxima.second / idsBin.size(); 
+	
 
-                _maxima.push_back( maxima );
 
-            }
+	
+	
+	    
+	    if(  isMaxima  ){
 
-        }
+	      
+	      _histoMaxima->SetBinContent(iphi+1, irz+1, rows[iphi][1]);
+	      
+	      vector<unsigned> idsBin = _grid[iphi][irz].getIds();
+	      
+	      maximaT maxima(0.,0.);
+	      
+	      for( auto id : idsBin ){
+		T *hit = &(_hitsMap[id]);
+		
+		maxima.first = maxima.first + hit->xNorm(); 
+		maxima.second = maxima.second + hit->yNorm();
+		
+	      }
+	      
+	      if( idsBin.size() == 0 ) continue;
+	      maxima.first = maxima.first / idsBin.size(); 
+	      maxima.second = maxima.second / idsBin.size(); 
+	      
+	      _maxima.push_back( maxima );
+	      
+	    }
+	    
+	}
+  }
+  
 
+}
+
+template<class T>
+void HGCpolarHisto<T>::getThreshold( unsigned *nBinsToSum, double threshold ) {//in MIPT
+
+  for (unsigned irz=0; irz<_rzNbins; irz++) {
+    for (unsigned iphi=0; iphi<_phiNbins; iphi++) {
+      
+      bool isThreshold = false;
+      double centralValue = _histoSums->GetBinContent(iphi+1, irz+1);
+      
+      if ( centralValue > threshold ) isThreshold = true;
+      
+      if ( isThreshold ){
+	
+	_histoMaxima->SetBinContent(iphi+1, irz+1, centralValue);
+	
+	vector<unsigned> idsBin = _grid[iphi][irz].getIds();
+	
+	maximaT maxima(0.,0.);
+	
+	for( auto id : idsBin ){
+	  T *hit = &(_hitsMap[id]);
+	  
+	  maxima.first = maxima.first + hit->xNorm(); 
+	  maxima.second = maxima.second + hit->yNorm();
+	
+	}
+	
+	if( idsBin.size() == 0 ) continue;
+	maxima.first = maxima.first / idsBin.size(); 
+	maxima.second = maxima.second / idsBin.size(); 
+	
+	_maxima.push_back( maxima );
+	
+      }
+      
     }
+  
+  }
+  
 
-    return _histoMaxima;
-    
+
 }
 
 
 template<class T>
-vector<maximaT> HGCpolarHisto<T>::getMaxima( unsigned *nBinsToSum ){
+TH2D * HGCpolarHisto<T>::getHistoMaxima( unsigned *nBinsToSum, TString strategy, bool smear ) {
+
+  /* filling _histoSums */
+  this->getHistoSums( nBinsToSum, smear );
+
+
+  if ( strategy == "defaultMaximum" ){
+
+
+    this->getDefaultMaximum( nBinsToSum );    
+
+  }
+
+
+
+  if ( strategy == "threshold" ){
+
+
+    this->getThreshold( nBinsToSum, 2 );
+
+
+  }
+
+
+  
+  
+  return _histoMaxima;
+  
+}
+
+
+template<class T>
+vector<maximaT> HGCpolarHisto<T>::getMaxima( unsigned *nBinsToSum, TString strategy, bool smear ){
 
     _maxima.clear();
     
-    this->getHistoMaxima( nBinsToSum );
+    this->getHistoMaxima( nBinsToSum, strategy, smear );
     
     return _maxima;
 
@@ -283,9 +364,9 @@ vector<maximaT> HGCpolarHisto<T>::getMaxima( unsigned *nBinsToSum ){
 
 
 template<class T>
-vector<HGCC3D> HGCpolarHisto<T>::getNewC3Ds( double radius, unsigned *nBinsToSum ) {
+vector<HGCC3D> HGCpolarHisto<T>::getNewC3Ds( double radius, unsigned *nBinsToSum, TString strategy, bool smear ) {
     
-    this->getMaxima( nBinsToSum );
+  this->getMaxima( nBinsToSum, strategy, smear );
 
     HGCC3D c3ds[_maxima.size()];
 

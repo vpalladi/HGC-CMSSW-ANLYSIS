@@ -109,6 +109,8 @@ public:
             polarGrid.addPoint( *(*hit) );
         return polarGrid;    
     }
+
+
     
     /* HOUGH transform */
     HGCht getRhoZtransform_C2D( int nColsTanTheta, double tanThetaMin, double tanThetaMax, 

@@ -323,15 +323,15 @@ int main(int argc, char **argv){
                                         
                     unsigned iendcap = gen->getEndcapId();
                     unsigned isector = gen->getPhiSectorProj( nPhiSectors, minPhis, maxPhis, HGCgeom::instance()->layerZ(iendcap, 1) );
-                    gGenProjXY[iendcap][isection][isector].SetPoint( gGenProjXY[iendcap][isection][isector].GetN(),
-                                                                     gen->getZprojection( HGCgeom::instance()->layerZ(iendcap, 1) ).X(), 
-                                                                     gen->getZprojection( HGCgeom::instance()->layerZ(iendcap, 1) ).Y()
-                        );
+                    // gGenProjXY[iendcap][isection][isector].SetPoint( gGenProjXY[iendcap][isection][isector].GetN(),
+                    //                                                  gen->getZprojection( HGCgeom::instance()->layerZ(iendcap, 1) ).X(), 
+                    //                                                  gen->getZprojection( HGCgeom::instance()->layerZ(iendcap, 1) ).Y()
+                    //     );
                     
-                    gGenProjXYnorm[iendcap][isection][isector].SetPoint( gGenProjXYnorm[iendcap][isection][isector].GetN(),
-                                                                         gen->xNorm(), 
-                                                                         gen->yNorm()
-                        );        
+                    // gGenProjXYnorm[iendcap][isection][isector].SetPoint( gGenProjXYnorm[iendcap][isection][isector].GetN(),
+                    //                                                      gen->xNorm(), 
+                    //                                                      gen->yNorm()
+                    //     );        
                 }
                 
             } // end gen loop
@@ -562,12 +562,12 @@ int main(int argc, char **argv){
                                 
                                 if( saveEventByEvent ) { 
                                     grid.getHisto()               ->Write( "polarFW_gridH" );
-                                    grid.getHistoSums( binSums )  ->Write( "polarFW_gridHS" );
-                                    grid.getHistoMaxima( binSums )->Write( "polarFW_gridM" );
+                                    grid.getHistoSums( binSums, true )  ->Write( "polarFW_gridHS" );
+                                    grid.getHistoMaxima( binSums, "defaultMaximum", true )->Write( "polarFW_gridM" );
                                     grid.getGraph()               ->Write( "polarFW_gridG" );
                                 }
 
-                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums );
+                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums, "defaultMaximum", true );
 
                                 for(unsigned ic3d=0; ic3d<newC3Ds[iendcap].size(); ic3d++) {
                                     newC3Ds[iendcap].at(ic3d).setNearestGen( detector.getGenAll() );
@@ -582,13 +582,34 @@ int main(int argc, char **argv){
                                                                 
                                 if( saveEventByEvent ) { 
                                     grid.getHisto()               ->Write( "polarFWtc_gridTcH"  );
-                                    grid.getHistoSums( binSums )  ->Write( "polarFWtc_gridTcHS" );
-                                    grid.getHistoMaxima( binSums )->Write( "polarFWtc_gridTcM"  );
+                                    grid.getHistoSums( binSums, true )  ->Write( "polarFWtc_gridTcHS" );
+                                    grid.getHistoMaxima( binSums, "defaultMaximum" ,true )->Write( "polarFWtc_gridTcM"  );
                                     grid.getGraph()               ->Write( "polarFWtc_gridTcG"  );
                                 }
 
-                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums );
+                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums, "defaultMaximum", true );
                                 
+                                for(unsigned ic3d=0; ic3d<newC3Ds[iendcap].size(); ic3d++) {
+                                    newC3Ds[iendcap].at(ic3d).setNearestGen( detector.getGenAll() );
+                                }
+
+                            }
+
+
+
+                            if( newC3DsStrategy == "polarFWThresh" ){
+
+                                HGCpolarHisto<HGCC2D> grid = detector.getSubdet(iendcap, isection)->getPolarFwC3D<HGCC2D>( c3dRadius );
+                                
+                                if( saveEventByEvent ) { 
+                                    grid.getHisto()               ->Write( "polarFWThresh_gridH" );
+                                    grid.getHistoSums( binSums, true )  ->Write( "polarFWThresh_gridHS" );
+                                    grid.getHistoMaxima( binSums, "defaultMaximum", true )->Write( "polarFWThresh_gridM" );
+                                    grid.getGraph()               ->Write( "polarFWThresh_gridG" );
+                                }
+
+                                newC3Ds[iendcap] = grid.getNewC3Ds( c3dRadius, binSums, "threshold", true );
+
                                 for(unsigned ic3d=0; ic3d<newC3Ds[iendcap].size(); ic3d++) {
                                     newC3Ds[iendcap].at(ic3d).setNearestGen( detector.getGenAll() );
                                 }

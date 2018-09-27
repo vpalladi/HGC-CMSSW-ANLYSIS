@@ -3,3 +3,15 @@ obj/
 *.root
 *.txt
 bin/
+*pcm
+*.o
+DictHGC.cxx
+DictHGCC2D.cxx
+DictHGCC3D.cxx
+DictHGCTC.cxx
+DictHGCgen.cxx
+DictHGCgenpart.cxx
+DictHGChit.cxx
+*tmp
+lib/
+*.in

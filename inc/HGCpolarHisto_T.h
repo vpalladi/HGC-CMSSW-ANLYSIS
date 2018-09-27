@@ -118,14 +118,14 @@ public:
         }
         return _histo;
     }
-    TH2D*   getHistoSums( unsigned *nBinsToSum ); // WARNING: must be the number of bins to sum per row it is supposed to be an odd number
-    TH2D*   getHistoMaxima( unsigned *nBinsToSum ); // WARNING: must be the number of bins to sum per row it is supposed to be an odd number
+    TH2D*   getHistoSums( unsigned *nBinsToSum, bool smear=true ); // WARNING: must be the number of bins to sum per row it is supposed to be an odd number
+    TH2D*   getHistoMaxima( unsigned *nBinsToSum, TString strategy = "defaultMaximum", bool smear=true ); // WARNING: must be the number of bins to sum per row it is supposed to be an odd number
     
     TGraph* getGraph();
 
-    vector<maximaT> getMaxima( unsigned *nBinsToSum ); // in x/z and y/z
+    vector<maximaT> getMaxima( unsigned *nBinsToSum, TString strategy= "defaultMaximum", bool smear=true ); // in x/z and y/z
 
-    vector<HGCC3D> getNewC3Ds( double radius, unsigned *nBinsToSum );
+    vector<HGCC3D> getNewC3Ds( double radius, unsigned *nBinsToSum, TString strategy= "defaultMaximum", bool smear=true );
 
     void clear();
 
@@ -135,6 +135,9 @@ private:
 
     void buildNewC3Ds( HGCsubdet *sdet );    
     map<unsigned,T> _hitsMap;
+
+    void getDefaultMaximum(unsigned *nBinsToSum);
+    void getThreshold( unsigned *nBinsToSum, double threshold = 2);//in MIPT
 
     vector<T*> _hits;
 
