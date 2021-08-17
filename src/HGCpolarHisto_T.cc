@@ -366,7 +366,7 @@ vector<maximaT> HGCpolarHisto<T>::getMaxima( unsigned *nBinsToSum, TString strat
 template<class T>
 vector<HGCC3D> HGCpolarHisto<T>::getNewC3Ds( double radius, unsigned *nBinsToSum, TString strategy, bool smear ) {
     
-  this->getMaxima( nBinsToSum, strategy, smear );
+  this->getMaxima( nBinsToSum, strategy, smear );//determine the seeds
 
     HGCC3D c3ds[_maxima.size()];
 
@@ -380,7 +380,7 @@ vector<HGCC3D> HGCpolarHisto<T>::getNewC3Ds( double radius, unsigned *nBinsToSum
 
        for( auto c3d : c3ds ) {
        
-           double dist = sqrt( pow( _maxima.at(i).first-hit->xNorm() , 2 ) + pow( _maxima.at(i).second-hit->yNorm(), 2 ) );
+           double dist = sqrt( pow( _maxima.at(i).first - hit->xNorm() , 2 ) + pow( _maxima.at(i).second - hit->yNorm(), 2 ) );
        
            if( distance>dist ) {
                distance = dist; 
